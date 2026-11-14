@@ -10,14 +10,22 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsc -p tsconfig.json --noEmit",
-    "dev": "vite"
+    "dev": "vite",
+    "build:web": "vite build",
+    "start": "tsx src/api/server.node.ts",
+    "api": "tsx --env-file=.env src/api/server.node.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "jsdom": "^31.0.1",
     "typescript": "^7.0.2",
+    "vite": "^8.3.8",
     "vitest": "^5.1.0"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.8.0"
+    "@anthropic-ai/sdk": "^1.8.0",
+    "@hono/node-server": "^2.1.8",
+    "hono": "^4.13.18",
+    "tsx": "^4.23.15"
   }
 }

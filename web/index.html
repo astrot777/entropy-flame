@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Entropy — microgravity fire-safety atlas</title>
+  <meta name="description" content="A fire-safety atlas of NASA microgravity combustion research: every value traced to its source sentence." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <h1>Entropy</h1>
+      <p class="tag">A fire-safety atlas of microgravity combustion research</p>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+  <section class="add" id="add"></section>
+  <section class="controls" id="controls"></section>
+  <main>
+    <div class="status" id="status" role="status"></div>
+    <div class="table-wrap"><table id="catalogue"></table></div>
+    <section id="compare" class="compare" hidden></section>
+  </main>
+  <aside class="panel" id="panel" hidden aria-live="polite"></aside>
+  <footer id="footer"></footer>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
