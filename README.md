@@ -6,6 +6,8 @@ Entropy is for researchers and spacecraft fire-safety engineers who need to comp
 
 Entropy doesn't score fire risk, convert units, or replace reading the original records.
 
+**Live site:** [entropy-flame.vercel.app](https://entropy-flame.vercel.app) — opens without a login.
+
 ## What it does
 
 The dashboard has three parts:
@@ -22,7 +24,7 @@ Each investigation goes through three steps:
 2. An LLM extracts the 12 fields, one JSON line per field, each with a word-for-word quote from the record.
 3. Code keeps a value only if its quote appears in the source text and the value appears inside the quote. Numbers are never converted.
 
-The project is written in TypeScript and runs on Node.js, with Hono for the API, Vite for the dashboard, and Vitest for tests.
+The project is written in TypeScript and runs on Node.js, with Hono for the API, Vite for the dashboard, and Vitest for tests. The live site is hosted on Vercel.
 
 ## Use of Super Intelligence (SI)
 
@@ -89,6 +91,7 @@ Entropy uses the following open-source code and resources:
 - [@anthropic-ai/sdk](https://www.npmjs.com/package/@anthropic-ai/sdk) (Apache-2.0): LLM API client
 - [Hono](https://hono.dev/) and [@hono/node-server](https://www.npmjs.com/package/@hono/node-server) (MIT): API server
 - [Vite](https://vite.dev/) (MIT): dashboard build
+- [Vercel](https://vercel.com/) (Hobby plan): hosting
 - [Vitest](https://vitest.dev/) and [jsdom](https://www.npmjs.com/package/jsdom) (MIT): tests
 - [tsx](https://www.npmjs.com/package/tsx) (MIT) and [TypeScript](https://www.typescriptlang.org/) (Apache-2.0): runtime and language
 - [IBM Plex](https://fonts.google.com/?query=IBM+Plex) fonts through Google Fonts (SIL Open Font License)
