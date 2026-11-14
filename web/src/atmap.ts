@@ -73,7 +73,7 @@ export async function mountAtmosphereMap(box: HTMLElement, psiIds: string[], nam
 
   const dots = svg('g', { class: 'dots' });
   for (const p of points) {
-    const c = svg('circle', { cx: sx(p.atm), cy: sy(p.o2), r: 4, fill: color(p.psiId), class: 'dot' });
+    const c = svg('circle', { cx: sx(p.atm), cy: sy(p.o2), r: 3.5, fill: color(p.psiId), class: 'dot' });
     c.addEventListener('mouseenter', (e) => showTip(e, [`${p.psiId} ${names[p.psiId] ?? ''}`, `${p.file}, row ${p.row}`, `${p.o2Column}: ${p.o2Text}`, `${p.pColumn}: ${p.pText}`]));
     c.addEventListener('mouseleave', hideTip);
     dots.append(c);
@@ -86,7 +86,10 @@ export async function mountAtmosphereMap(box: HTMLElement, psiIds: string[], nam
     d.addEventListener('mouseenter', (e) => showTip(e, [`${a.label}: ${a.psia} psia, ${a.o2}% oxygen`, `${a.psiId} record: "${a.quote}"`]));
     d.addEventListener('mouseleave', hideTip);
     chart.append(d);
-    chart.append(svg('text', { x: x + 13, y: y + (i === 0 ? 18 : 4), class: 'crew-label' }, `${a.psia} psia · ${a.o2}%`));
+    // Labels sit in the empty band right of the dots, joined to their diamond by a thin leader line.
+    const lx = sx(1.5), ly = y + (i === 0 ? 20 : 4);
+    chart.append(svg('line', { x1: x + s + 2, y1: y, x2: lx - 6, y2: ly - 4, class: 'leader' }));
+    chart.append(svg('text', { x: lx, y: ly, class: 'crew-label' }, `${a.psia} psia · ${a.o2}%`));
   });
 
   plot.append(chart, tip);

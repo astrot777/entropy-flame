@@ -232,14 +232,15 @@ td .cab { display: table; }
 .atmap-kicker { margin: 0 0 6px; font: 600 11px var(--space); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-ink); }
 .atmap-head h2 { margin: 0 0 8px; font: 700 26px/1.2 var(--sans); color: var(--navy); }
 .atmap-lead { margin: 0 0 20px; max-width: 75ch; color: var(--muted); }
-.atmap-body { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 32px; align-items: start; }
+.atmap-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 400px); gap: 40px; align-items: start; max-width: 1360px; }
 .atmap-plot { position: relative; }
 .atmap-plot svg { width: 100%; height: auto; display: block; }
 .atmap-plot .grid { stroke: #e6e9f0; stroke-width: 1; }
 .atmap-plot .tick { font: 12px var(--mono); fill: var(--muted); }
 .atmap-plot .axis-title { font: 600 12px var(--sans); fill: var(--muted); }
 .atmap-plot .zone { fill: rgba(11,19,43,0.05); stroke: rgba(11,19,43,0.35); stroke-dasharray: 3 3; }
-.atmap-plot .dot { stroke: #fff; stroke-width: 1; opacity: 0.85; cursor: pointer; }
+.atmap-plot .dot { stroke: #fff; stroke-width: 0.8; opacity: 0.8; cursor: pointer; }
+.atmap-plot .leader { stroke: var(--navy); stroke-width: 1; opacity: 0.55; }
 .atmap-plot .dot:hover { opacity: 1; stroke: var(--navy); stroke-width: 2; }
 .atmap-plot .crew { fill: var(--navy); stroke: var(--gold); stroke-width: 2; cursor: pointer; }
 .atmap-plot .crew-label { font: 700 12px var(--sans); fill: var(--navy); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
@@ -250,10 +251,10 @@ td .cab { display: table; }
 .atmap-stat { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .atmap-stat b { font: 700 30px var(--space); color: var(--navy); }
 .atmap-stat.gap b { color: var(--flame); }
-.atmap-stat span { font-weight: 600; color: var(--text); }
+.atmap-stat span { font-size: 16px; font-weight: 600; color: var(--text); }
 .atmap-stat small { display: block; margin-top: 4px; font: 400 12px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
-.atmap-note { margin: 14px 0 16px; font-size: 13px; color: var(--muted); }
-.atmap-legend { display: grid; gap: 6px; font-size: 13px; }
+.atmap-note { margin: 14px 0 16px; font-size: 14px; color: var(--muted); }
+.atmap-legend { display: grid; gap: 8px; font-size: 15px; }
 .atmap-key { display: flex; align-items: center; gap: 8px; }
 .atmap-key i { width: 10px; height: 10px; border-radius: 50%; border: 1px solid #fff; box-shadow: 0 0 0 1px #d9deea; flex: none; }
 .atmap-key i.diamond { border-radius: 0; transform: rotate(45deg); background: var(--navy); box-shadow: 0 0 0 2px var(--gold); }
