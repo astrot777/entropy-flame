@@ -14,7 +14,7 @@ The dashboard has four parts:
 
 - **Catalogue**: the 19 combustion investigations named in the challenge, with search and filters. Click any value to see its source quote and a link to the PSI record.
 - **Compare**: select 2 to 4 investigations to see which facts are the same, different, or not stated.
-- **Experiment view**: select **3D** on any row to see a schematic of the experiment built only from that row's stated values: the sample's shape and proportions, the airflow speed, the enclosure, and the sensors. Parts NASA doesn't state stay grey, and selecting a part shows its source quote. **Replay the tests** plays five tests spread over NASA's experimental table in a few seconds, and **Next** or the slider opens any other test. For each test it plays what the table records: ignition time, burn time, the droplet's diameter from start to extinction, oxygen and pressure from start to end, and the burned length of a sheet. A test with no such values says so on screen. NASA gives the start, the end, and the duration, so values in between move in a straight line. The schematic isn't to scale and isn't a physical simulation: surface textures are illustrative, and a glow marks when a test was burning, not the shape of the flame.
+- **Experiment view**: select **3D** on any row to see a schematic of the experiment built only from that row's stated values: the sample's shape and proportions, the airflow speed, the enclosure, and the sensors. Parts NASA doesn't state stay grey, and selecting a part shows its source quote. Moving lines show the stated airflow speed. The schematic isn't to scale and isn't a physical simulation: shapes, layout, and surface textures are illustrative, and no flame is drawn.
 - **Add live**: enter any PSI investigation ID. A large language model (LLM) reads the record, and each value appears after code checks its quote against the source. Live rows are marked **Unreviewed** and disappear when you reload the page.
 
 ## How it works
@@ -30,7 +30,7 @@ Each investigation goes through three steps:
 - The check in step 3 is a text match. It traces a value to its source; it doesn't confirm the scientific interpretation.
 - **Objectives** is a summary and **Pillar** is a classification, both written by the LLM, so the value isn't required to appear inside the quote for these two fields.
 - A table quote is a summary line that Entropy computed from one column. It isn't NASA's wording, and the source panel says so.
-- "Not stated" means Entropy found no supporting text in what it read. The record might still state the fact elsewhere. Entropy reads up to 6 table files per investigation, and the test replay reads the first 400 rows of a table.
+- "Not stated" means Entropy found no supporting text in what it read. The record might still state the fact elsewhere. Entropy reads up to 6 table files per investigation.
 - A value that can't be right as written, such as an oxygen percentage above 100 in a NASA table, stays as written and gets a **Check source** note.
 - Compare matches text as written. Two ways of writing the same quantity show as different.
 - A hand check of 55 cells in 5 investigations found 53 correct and 2 wrong (PSI-159 Pillar and Fuel). That sample doesn't establish the accuracy of the whole catalogue.
@@ -40,7 +40,7 @@ The project is written in TypeScript and runs on Node.js, with Hono for the API,
 ## Use of Super Intelligence (SI)
 
 - **In the product**: an LLM, chosen by the `LLM_MODEL` setting, extracts the values in `data/investigations.json` and in live rows, and code then verifies each value against its source. The data file's `meta.generatedBy` field records this. The **Objectives** column is an LLM-written summary and the **Pillar** column is an LLM classification; every other value is copied from its quote.
-- **In development**: an LLM coding assistant helped write the code. The idea, the challenge choice, and every design decision are the team's, including the 3D experiment view and the test replay. The team checked 55 extracted values by hand against NASA's records, directed the fixes, and tested the live site.
+- **In development**: an LLM coding assistant helped write the code. The idea, the challenge choice, and every design decision are the team's, including the 3D experiment view. The team checked 55 extracted values by hand against NASA's records, directed the fixes, and tested the live site.
 - Entropy uses no SI-generated images, video, or audio.
 
 ## NASA data

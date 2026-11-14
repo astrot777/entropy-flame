@@ -13,6 +13,10 @@ import type { SceneHandle } from './scene/view';
 
 let closeCurrent: (() => void) | null = null;
 
+// The test replay is switched off. NASA's tables give the start, the end and the duration of a test, not its
+// motion, so the result did not read as a replay of the experiment. The code stays so it can be turned back on.
+const REPLAY_ENABLED = false;
+
 async function loadTables(psiId: string): Promise<TestTables | null> {
   for (const url of [`tests/${psiId}.json`, `/api/tests/${psiId}`]) {
     try {
@@ -44,7 +48,7 @@ export async function openExperiment(row: Row): Promise<void> {
   stage.append(loading);
   const bar = el('div', 'xp-replay');
   bar.hidden = true;
-  const note = el('p', 'xp-note', 'Solid parts come from a stated value; grey wireframe parts are Not stated. Shapes and layout are illustrative, picked from the words NASA uses. Not to scale and not a physical simulation. Surface textures are illustrative; a glow marks when a test was burning, not the shape of the flame. Drag to rotate, scroll to zoom, click a part for its source.');
+  const note = el('p', 'xp-note', 'Solid parts come from a stated value; grey wireframe parts are Not stated. Shapes and layout are illustrative, picked from the words NASA uses. Not to scale and not a physical simulation. Surface textures are illustrative; moving lines show the stated airflow. Drag to rotate, scroll to zoom, click a part for its source.');
 
   const side = el('aside', 'xp-side');
   side.append(el('h3', '', 'Every part and its source'));
@@ -271,7 +275,7 @@ export async function openExperiment(row: Row): Promise<void> {
   select(selected);
 
   // The replay needs only the tables, so it is prepared even if the 3D view cannot start.
-  void loadTables(spec.psiId).then((tables) => {
+  if (REPLAY_ENABLED) void loadTables(spec.psiId).then((tables) => {
     if (closeCurrent !== shut || !tables) return;
     replay = buildReplay(row, tables);
     if (!replay) return;
