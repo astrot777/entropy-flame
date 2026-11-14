@@ -82,7 +82,7 @@ npm test
 
 ## Team
 
-Team "be alone, that is when ideas are born." (Riyadh Local Event). Member: [astrot777](https://github.com/astrot777).
+be alone, that is when ideas are born.
 
 ## References
 
