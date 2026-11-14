@@ -1,0 +1,20 @@
+{
+  "name": "entropy-flame",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Entropy: a fire-safety atlas of microgravity combustion research (NASA Space Apps 2026, Flame in Freefall)",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.json --noEmit",
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}
