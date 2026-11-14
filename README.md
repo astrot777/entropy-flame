@@ -14,7 +14,7 @@ The dashboard has four parts:
 
 - **Catalogue**: the 19 combustion investigations named in the challenge, with search and filters. Click any value to see its source quote and a link to the PSI record.
 - **Compare**: select 2 to 4 investigations to see which facts are the same, different, or not stated.
-- **Experiment view**: select **3D** on any row to see a schematic of the experiment built only from that row's stated values: the sample's shape and proportions, the airflow speed, the enclosure, and the sensors. Parts NASA doesn't state stay grey, and selecting a part shows its source quote. Where a value comes from NASA's experimental table, **Replay the tests** steps through the table one test at a time. The schematic isn't to scale and isn't a physical simulation: the replay shows each test's stated conditions, not the motion of the flame.
+- **Experiment view**: select **3D** on any row to see a schematic of the experiment built only from that row's stated values: the sample's shape and proportions, the airflow speed, the enclosure, and the sensors. Parts NASA doesn't state stay grey, and selecting a part shows its source quote. **Replay the tests** steps through NASA's experimental table one test at a time and plays what the table records for that test: ignition time, burn time, the droplet's diameter from start to extinction, oxygen before and after, and the burned length of a sheet. NASA gives the start, the end, and the duration, so values in between move in a straight line. The schematic isn't to scale and isn't a physical simulation: surface textures are illustrative, and a glow marks when a test was burning, not the shape of the flame.
 - **Add live**: enter any PSI investigation ID. A large language model (LLM) reads the record, and each value appears after code checks its quote against the source. Live rows are marked **Unreviewed** and disappear when you reload the page.
 
 ## How it works
@@ -30,7 +30,7 @@ The project is written in TypeScript and runs on Node.js, with Hono for the API,
 ## Use of Super Intelligence (SI)
 
 - **In the product**: an LLM, chosen by the `LLM_MODEL` setting, extracts the values in `data/investigations.json` and in live rows, and code then verifies each value against its source. The data file's `meta.generatedBy` field records this. The **Objectives** column is an LLM-written summary; every other value is copied from its quote.
-- **In development**: an LLM coding assistant helped write and test the code. The idea, the challenge choice, and every design decision are the team's, and the team reviewed all code.
+- **In development**: an LLM coding assistant helped write the code. The idea, the challenge choice, and every design decision are the team's, including the 3D experiment view and the test replay. The team checked 55 extracted values by hand against NASA's records, directed the fixes, and tested the live site.
 - Entropy uses no SI-generated images, video, or audio.
 
 ## NASA data

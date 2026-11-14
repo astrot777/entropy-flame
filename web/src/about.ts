@@ -12,7 +12,7 @@ export async function mountAbout(box: HTMLElement, pulledOn: string): Promise<vo
     ['Where the data comes from', `NASA Physical Sciences Informatics (PSI): each investigation's record and its experimental-table CSV files. Data pulled ${pulledOn}.`],
     ['What the LLM does', 'Reads one investigation and proposes a value and a word-for-word quote for each of 12 fields. It writes the Objectives summary.'],
     ['What code checks', 'A value is kept only if its quote appears in the PSI text and the value appears inside the quote. Otherwise the cell reads "Not stated". Numbers keep the units written in the source and are never converted.'],
-    ['The 3D experiment view', 'A schematic drawn only from the stated values of a row. Parts NASA does not state are grey. It is not to scale and not a physical simulation; no flame is drawn.'],
+    ['The 3D experiment view', 'A schematic drawn only from the stated values of a row. Parts NASA does not state are grey. Replay plays each test over the burn time NASA recorded; values between the stated start and end move in a straight line. It is not to scale and not a physical simulation: textures are illustrative, and a glow marks when a test was burning, not the shape of the flame.'],
     ['What it does not do', 'It does not score fire risk, invent values, or replace reading the original records. Rows added live are marked Unreviewed and are not saved.'],
   ];
   const dl = el('dl', 'facts');
