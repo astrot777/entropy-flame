@@ -264,3 +264,13 @@ td .cab { display: table; }
 .atmap-table th { position: static; }
 @media (max-width: 960px) { .atmap-body { grid-template-columns: 1fr; } .atmap { padding: 20px 16px; } }
 
+/* Space map */
+.map-open { font: 600 11px var(--space); letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: var(--navy); border-color: var(--navy); padding: 8px 14px; }
+.map-open:hover:not(:disabled) { background: var(--navy-2); border-color: var(--gold); }
+.xp.map .xp-stage { background: #02040a; }
+.map-tabs { position: absolute; left: 20px; bottom: 20px; z-index: 3; display: flex; gap: 8px; }
+.map-tabs button { font: 600 12px var(--space); letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 14px; background: rgba(11,19,43,0.82); border-color: #26315a; color: #c9cfde; }
+.map-tabs button.active { background: #16c784; border-color: #16c784; color: #04130c; }
+.map-label { background: rgba(4,19,12,0.9); border-color: #16c784; color: #eafff5; pointer-events: none; }
+.map-label[hidden] { display: none; }
+

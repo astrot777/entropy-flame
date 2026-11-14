@@ -14,6 +14,7 @@ The dashboard has four parts:
 
 - **Catalogue**: the 19 combustion investigations named in the challenge, with search and filters. Click any value to see its source quote and a link to the PSI record.
 - **Compare**: select 2 to 4 investigations to see which facts are the same, different, or not stated.
+- **Map**: select **Map** in the header for a 3D view of the project above the Earth: one marker per investigation, per NASA test table, and per result. Select a marker to fly to it and read its data on a panel inside the scene. Marker positions are a layout, not locations, and a value the data files don't hold reads "غير متوفر" (not available).
 - **Tested atmospheres**: a chart of every test in NASA's experimental tables that records both oxygen and pressure (747 tests in 4 investigations), against the three crew atmospheres NASA names in the PSI-20 record: 14.7 psia with 21% oxygen, 10.2 psia with 26.5%, and 8.2 psia with 34%. It counts the tests inside a zone around each one and names the closest test when a zone is empty. Hover over a dot to see its table, row, and cells as written.
 - **Compared with ISS cabin air**: every stated oxygen and pressure value carries a tag that places it against the air on the International Space Station, 21% oxygen at 14.7 psia, as given in [a NASA technical brief on habitable atmospheres](https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-003-habitable-atmosphere.pdf). A filter shows the experiments with more oxygen than the station. Units are converted only for this comparison, and it compares conditions; it isn't a fire-risk score.
 - **Experiment view**: select **3D** on any row to see a schematic of the experiment built only from that row's stated values: the sample's shape and proportions, the airflow speed, the enclosure, and the sensors. Parts NASA doesn't state stay grey, and selecting a part shows its source quote. Moving lines show the stated airflow speed. The schematic isn't to scale and isn't a physical simulation: shapes, layout, and surface textures are illustrative, and no flame is drawn.
@@ -104,7 +105,8 @@ Entropy uses the following open-source code and resources:
 - [@anthropic-ai/sdk](https://www.npmjs.com/package/@anthropic-ai/sdk) (Apache-2.0): LLM API client
 - [Hono](https://hono.dev/) and [@hono/node-server](https://www.npmjs.com/package/@hono/node-server) (MIT): API server
 - [Vite](https://vite.dev/) (MIT): dashboard build
-- [three.js](https://threejs.org/) (MIT): the 3D experiment view
+- [three.js](https://threejs.org/) (MIT): the 3D experiment view and the map
+- NASA imagery used by the map, stored in `data/assets/`: the Blue Marble Earth map ([NASA Visible Earth](https://visibleearth.nasa.gov/collection/1484/blue-marble)), the LROC colour Moon map from the [CGI Moon Kit](https://svs.gsfc.nasa.gov/4720), and the [Deep Star Maps 2020](https://svs.gsfc.nasa.gov/4851) star map (NASA's Scientific Visualization Studio)
 - [Vercel](https://vercel.com/) (Hobby plan): hosting
 - [Vitest](https://vitest.dev/) and [jsdom](https://www.npmjs.com/package/jsdom) (MIT): tests
 - [tsx](https://www.npmjs.com/package/tsx) (MIT) and [TypeScript](https://www.typescriptlang.org/) (Apache-2.0): runtime and language

@@ -8,6 +8,7 @@ import { mountAdd } from './add';
 import { mountAbout } from './about';
 import { openExperiment } from './experiment';
 import { mountAtmosphereMap } from './atmap';
+import { openMap } from './map';
 
 interface DataFile { meta: { generatedAt: string; generatedBy: string; source: string }; rows: Row[] }
 
@@ -147,6 +148,7 @@ async function load() {
     buildFooter(data.meta);
     render();
     void mountAbout($('about'), data.meta.generatedAt.slice(0, 10));
+    $('open-map').addEventListener('click', () => { void openMap(data.rows); });
     const names = Object.fromEntries(data.rows.map((r) => [r.psiId.value ?? '', r.name.value ?? '']));
     void mountAtmosphereMap($('atmap'), data.rows.map((r) => r.psiId.value ?? ''), names);
   } catch {
