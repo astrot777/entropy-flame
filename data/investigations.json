@@ -2,7 +2,8 @@
   "meta": {
     "generatedAt": "2026-11-14T08:44:14.109Z",
     "generatedBy": "Extracted by a large language model (SI) from NASA PSI records, then every cell checked by code against its source quote. Not reviewed by a person unless marked reviewed.",
-    "source": "NASA Physical Sciences Informatics (PSI), https://psi.nasa.gov"
+    "source": "NASA Physical Sciences Informatics (PSI), https://psi.nasa.gov",
+    "note": "PSI-20 re-extracted 2026-11-14 after the table summary stopped giving a range for columns where only a few cells are single numbers."
   },
   "rows": [
     {
@@ -99,7 +100,7 @@
         "status": "stated"
       },
       "objectives": {
-        "value": "To find out whether, and under what conditions, fuels representing real condensed materials can burn steadily in still microgravity air, depending on their material properties.",
+        "value": "To find the conditions under which fuels burn in still microgravity air as a function of their material properties.",
         "quote": "The BRE flight program seeks to establish the burning conditions in a quiescent microgravity ambient in terms of material properties.",
         "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
         "status": "stated"
@@ -112,19 +113,19 @@
       },
       "fuel": {
         "value": "CH4/N2 and C2H4/N2mixtures",
-        "quote": "Observe burning behavior in long-duration microgravity for CH4/N2 and C2H4/N2mixtures on porous circular burners of 25  and 50 mm diameter.",
+        "quote": "1. Observe burning behavior in long-duration microgravity for CH4/N2 and C2H4/N2mixtures on porous circular burners of 25  and 50 mm diameter.",
         "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
         "status": "stated"
       },
       "sample": {
         "value": "porous circular burners of 25  and 50 mm diameter",
-        "quote": "Observe burning behavior in long-duration microgravity for CH4/N2 and C2H4/N2mixtures on porous circular burners of 25  and 50 mm diameter.",
+        "quote": "1. Observe burning behavior in long-duration microgravity for CH4/N2 and C2H4/N2mixtures on porous circular burners of 25  and 50 mm diameter.",
         "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
         "status": "stated"
       },
       "oxygen": {
-        "value": "2100 to 3400",
-        "quote": "Column \"Oxygen Conc (percent)\" (PSI-20_Experimental table_ACME BRE.csv): 2100 to 3400 across 2 rows",
+        "value": "21; 25; 26.5; 34; 40; 2100%; 3400%",
+        "quote": "Column \"Oxygen Conc (percent)\" (PSI-20_Experimental table_ACME BRE.csv): 21; 25; 26.5; 34; 40; 2100%; 3400% (18 rows)",
         "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
         "status": "stated"
       },

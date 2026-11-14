@@ -2,6 +2,7 @@ import { FIELDS, type FieldKey, type Row } from '../../src/shared/types';
 import { el, setText } from './dom';
 import { LABELS } from './labels';
 import { unitFromQuote } from './units';
+import { oddValueNote } from './source';
 
 const NUMERIC: FieldKey[] = ['oxygen', 'pressure', 'airflow'];
 
@@ -23,6 +24,7 @@ export function renderCell(td: HTMLTableCellElement, row: Row, field: FieldKey):
   else setText(td, text);
   const unit = NUMERIC.includes(field) || field === 'sample' ? unitFromQuote(text, c.quote ?? '') : null;
   if (unit) td.append(el('span', 'unit', ` ${unit}`));
+  if (oddValueNote(field, c)) td.append(el('span', 'badge', 'Check source'));
   if (field === 'psiId' && row.unreviewed) td.append(el('span', 'badge', 'Unreviewed'));
 }
 

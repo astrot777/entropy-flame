@@ -56,7 +56,7 @@ function renderStats() {
   stats.replaceChildren();
   const items: [string, string][] = [
     [String(rows.length), 'investigations'],
-    [String(stated), 'values with a source quote'],
+    [String(stated), 'values with a NASA source'],
     [String(cells.length - stated), 'not stated'],
   ];
   for (const [n, label] of items) {
@@ -122,7 +122,7 @@ function buildFooter(meta: DataFile['meta']) {
   f.append(
     src,
     el('p', '', meta.generatedBy),
-    el('p', '', 'Numbers keep the units written in the source and are never converted. Objectives are an AI summary; every other value is copied from its quote.'),
+    el('p', '', 'Numbers keep the units written in the source and are never converted. Objectives are an AI summary and Pillar is an AI classification; every other value is copied from its quote.'),
   );
 }
 

@@ -53,6 +53,8 @@ tr.live td.cell.arrive { animation: arrive 0.6s ease-out; }
 .panel a { color: var(--cool); }
 .panel .close { position: absolute; top: 16px; right: 16px; }
 .panel .note { color: var(--muted); font-size: 12px; }
+.panel .note.warn, .hint.warn { color: var(--warn); }
+.compare .hint, #compare .hint { margin: 0 0 10px; }
 .compare { margin-top: 24px; }
 .compare h2 { font-size: 16px; }
 .state { font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 4px; }

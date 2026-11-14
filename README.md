@@ -21,15 +21,25 @@ The dashboard has four parts:
 
 Each investigation goes through three steps:
 
-1. Entropy fetches the PSI record and its experimental-table CSV files, then summarizes each CSV file deterministically: the minimum and maximum of every numeric column, with the units the column header gives.
-2. An LLM extracts the 12 fields, one JSON line per field, each with a word-for-word quote from the record.
-3. Code keeps a value only if its quote appears in the source text and the value appears inside the quote. Numbers are never converted.
+1. Entropy fetches the PSI record and its experimental-table CSV files, then summarizes each CSV file deterministically: the minimum and maximum of every column that is mostly numbers, or the listed values of a column that holds lists, with the units the column header gives.
+2. An LLM extracts the 12 fields, one JSON line per field, each with a supporting quote: a sentence copied from the record, or one of the table summary lines from step 1.
+3. Code keeps a value only if its quote appears in the source text and the value appears inside the quote. Numbers are never converted or corrected.
+
+## Limits
+
+- The check in step 3 is a text match. It traces a value to its source; it doesn't confirm the scientific interpretation.
+- **Objectives** is a summary and **Pillar** is a classification, both written by the LLM, so the value isn't required to appear inside the quote for these two fields.
+- A table quote is a summary line that Entropy computed from one column. It isn't NASA's wording, and the source panel says so.
+- "Not stated" means Entropy found no supporting text in what it read. The record might still state the fact elsewhere. Entropy reads up to 6 table files per investigation, and the test replay reads the first 400 rows of a table.
+- A value that can't be right as written, such as an oxygen percentage above 100 in a NASA table, stays as written and gets a **Check source** note.
+- Compare matches text as written. Two ways of writing the same quantity show as different.
+- A hand check of 55 cells in 5 investigations found 53 correct and 2 wrong (PSI-159 Pillar and Fuel). That sample doesn't establish the accuracy of the whole catalogue.
 
 The project is written in TypeScript and runs on Node.js, with Hono for the API, Vite for the dashboard, and Vitest for tests. The live site is hosted on Vercel.
 
 ## Use of Super Intelligence (SI)
 
-- **In the product**: an LLM, chosen by the `LLM_MODEL` setting, extracts the values in `data/investigations.json` and in live rows, and code then verifies each value against its source. The data file's `meta.generatedBy` field records this. The **Objectives** column is an LLM-written summary; every other value is copied from its quote.
+- **In the product**: an LLM, chosen by the `LLM_MODEL` setting, extracts the values in `data/investigations.json` and in live rows, and code then verifies each value against its source. The data file's `meta.generatedBy` field records this. The **Objectives** column is an LLM-written summary and the **Pillar** column is an LLM classification; every other value is copied from its quote.
 - **In development**: an LLM coding assistant helped write the code. The idea, the challenge choice, and every design decision are the team's, including the 3D experiment view and the test replay. The team checked 55 extracted values by hand against NASA's records, directed the fixes, and tested the live site.
 - Entropy uses no SI-generated images, video, or audio.
 

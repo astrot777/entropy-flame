@@ -162,14 +162,37 @@ export function summarizeCsv(fileName: string, csv: string): string {
         if (!max || n > max.n) max = { n, s };
       }
     }
-    if (count && min && max) {
+    const filled = body.map((r) => (r[col] ?? '').trim()).filter(Boolean);
+    // A range is honest only when most cells are single numbers. A range taken from 2 cells of 18 would
+    // describe those 2 cells, not the column.
+    if (count && min && max && count * 2 >= filled.length) {
       lines.push(`Column "${name}" (${fileName}): ${min.s} to ${max.s} across ${count} rows`);
       return;
     }
-    const text = textSummary(name, body.map((r) => (r[col] ?? '').trim()).filter(Boolean));
+    const listed = valueList(filled);
+    if (listed) {
+      lines.push(`Column "${name}" (${fileName}): ${listed} (${filled.length} rows)`);
+      return;
+    }
+    const text = textSummary(name, filled);
     if (text) lines.push(`Column "${name}" (${fileName}): ${text}`);
   });
   return lines.join('\n');
+}
+
+const MAX_LIST_VALUES = 12;
+
+/**
+ * For a column whose cells hold lists of numbers ("21; 26.5; 40"): every distinct value, exactly as written,
+ * smallest first. Null when a cell holds anything that is not a number, or there are too many values to list.
+ */
+function valueList(cells: string[]): string | null {
+  const tokens = cells.flatMap((c) => c.split(';')).map((t) => t.trim()).filter(Boolean);
+  if (!tokens.length || !tokens.every((t) => NUMERIC_CELL.test(t))) return null;
+  const distinct = [...new Set(tokens)];
+  if (distinct.length > MAX_LIST_VALUES) return null;
+  const first = (t: string) => Number(NUMERIC_CELL.exec(t)![1]);
+  return distinct.sort((a, b) => first(a) - first(b)).join('; ');
 }
 
 const NOT_DESCRIPTIVE = /^(test|test id|run|id|no\.?|#|date|time|day|comments?|notes?|file|filename|remarks?)$/i;

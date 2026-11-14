@@ -86,3 +86,16 @@ describe('summarizeCsv', () => {
     expect(summarizeCsv('a.csv', 'Date\n2019-03-05\n2019-04-01\n')).not.toContain('"Date"');
   });
 });
+
+describe('summarizeCsv: a column where only a few cells are single numbers', () => {
+  const csv = 'Burner,Oxygen Conc (percent)\nA,"21; 26.5; 40"\nB,"26.5; 34"\nC,3400%\nD,2100%\nE,"25; 34; 40"\n';
+  it('lists the values as written instead of a range taken from those few cells', () => {
+    const s = summarizeCsv('t.csv', csv);
+    expect(s).toContain('Column "Oxygen Conc (percent)" (t.csv): 21; 25; 26.5; 34; 40; 2100%; 3400% (5 rows)');
+    expect(s).not.toContain('2100 to 3400');
+  });
+  it('still gives a range when most cells are numbers', () => {
+    const s = summarizeCsv('t.csv', 'Test,O2\n1,21\n2,34\n3,40\n4,n/a\n');
+    expect(s).toContain('Column "O2" (t.csv): 21 to 40 across 3 rows');
+  });
+});

@@ -2,6 +2,7 @@ import { FIELDS, type FieldKey, type Row } from '../../src/shared/types';
 import { normalizeText } from '../../src/shared/normalize';
 import { el, setText } from './dom';
 import { LABELS } from './labels';
+import { cellText } from './source';
 
 export type FieldState = 'same' | 'different' | 'not-stated';
 
@@ -42,12 +43,13 @@ export function renderCompare(box: HTMLElement, rows: Row[]): void {
     tr.append(s);
     for (const r of rows) {
       const td = el('td', r[field].status === 'not stated' ? 'cell ns' : 'cell');
-      setText(td, r[field].value ?? 'Not stated');
+      setText(td, cellText(field, r[field]));
       tr.append(td);
     }
     tbody.append(tr);
   }
   table.append(thead, tbody);
   wrap.append(table);
-  box.append(head, wrap);
+  const hint = el('p', 'hint', 'Same and Different compare the text as NASA wrote it. Units are not converted, so two ways of writing the same quantity show as Different.');
+  box.append(head, hint, wrap);
 }

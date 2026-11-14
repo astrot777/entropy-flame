@@ -10,8 +10,10 @@ export async function mountAbout(box: HTMLElement, pulledOn: string): Promise<vo
   const facts: [string, string][] = [
     ['What it is', 'A comparable, searchable table of NASA microgravity combustion investigations, built for researchers and spacecraft fire-safety engineers.'],
     ['Where the data comes from', `NASA Physical Sciences Informatics (PSI): each investigation's record and its experimental-table CSV files. Data pulled ${pulledOn}.`],
-    ['What the LLM does', 'Reads one investigation and proposes a value and a word-for-word quote for each of 12 fields. It writes the Objectives summary.'],
-    ['What code checks', 'A value is kept only if its quote appears in the PSI text and the value appears inside the quote. Otherwise the cell reads "Not stated". Numbers keep the units written in the source and are never converted.'],
+    ['What the LLM does', 'Reads one investigation and proposes a value and a supporting quote for each of 12 fields. It writes the Objectives summary and picks the Pillar.'],
+    ['What code checks', 'A value is kept only if its quote appears in the PSI text and the value appears inside the quote. Objectives and Pillar are exempt from the second check, because they are the summary and the classification written by the model. Otherwise the cell reads "Not stated". This is a text match: it traces a value to its source, but it does not confirm the scientific interpretation. Numbers keep the units written in the source and are never converted or corrected.'],
+    ['Values from tables', 'When a value comes from an experimental table published by NASA, its quote is a summary line Entropy computed from one column (its range, or its listed values). That line is not NASA wording; the panel says so.'],
+    ['Limits', '"Not stated" means Entropy found no supporting text in what it read; the record may still state it elsewhere. Entropy reads up to 6 table files per investigation, and the test replay reads the first 400 rows of a table.'],
     ['The 3D experiment view', 'A schematic drawn only from the stated values of a row. Parts NASA does not state are grey. Replay plays each test over the burn time NASA recorded; values between the stated start and end move in a straight line. It is not to scale and not a physical simulation: textures are illustrative, and a glow marks when a test was burning, not the shape of the flame.'],
     ['What it does not do', 'It does not score fire risk, invent values, or replace reading the original records. Rows added live are marked Unreviewed and are not saved.'],
   ];
@@ -25,10 +27,12 @@ export async function mountAbout(box: HTMLElement, pulledOn: string): Promise<vo
     const data = (await res.json()) as AccuracyFile;
     let correct = 0;
     let total = 0;
-    for (const m of data.marks) for (const ok of Object.values(m.cells)) { total += 1; if (ok) correct += 1; }
+    const wrong: string[] = [];
+    for (const m of data.marks) for (const [field, ok] of Object.entries(m.cells)) { total += 1; if (ok) correct += 1; else wrong.push(`${m.id} ${field}`); }
     if (!total) return;
     const p = el('p', 'accuracy');
-    setText(p, `${correct} of ${total} cells verified by hand against their PSI pages (${data.marks.length} investigations, reviewed ${data.reviewedAt}).`);
+    const failed = wrong.length ? ` ${wrong.length} were marked wrong and are still shown as extracted: ${wrong.join(', ')}.` : '';
+    setText(p, `${total} cells of ${data.marks.length} investigations were checked by hand against their PSI pages (reviewed ${data.reviewedAt}): ${correct} correct.${failed} This sample does not establish the accuracy of the whole catalogue.`);
     box.append(p);
   } catch {
     /* no accuracy file: show nothing about accuracy */

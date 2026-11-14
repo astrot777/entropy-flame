@@ -1,6 +1,7 @@
 import type { Cell, FieldKey, Row } from '../../src/shared/types';
 import { el, setText } from './dom';
 import { LABELS } from './labels';
+import { cellText, oddValueNote, sourceHeading } from './source';
 
 export function openPanel(panel: HTMLElement, row: Row, field: FieldKey): void {
   const cell: Cell = row[field];
@@ -11,12 +12,14 @@ export function openPanel(panel: HTMLElement, row: Row, field: FieldKey): void {
   if (cell.status === 'not stated') {
     panel.append(
       el('p', 'value', 'Not stated'),
-      el('p', 'note', 'The PSI record does not state this, or no sentence in it supports a value, so Entropy leaves it empty instead of guessing.'),
+      el('p', 'note', 'Entropy found no sentence or table line in what it read of the PSI record that supports a value, so it leaves this empty instead of guessing. The record may still state it elsewhere.'),
     );
   } else {
-    panel.append(el('p', 'value', cell.value ?? ''));
-    panel.append(el('h2', '', field === 'objectives' ? 'Source sentence (the value above is an AI summary of it)' : 'Source quote, word for word'));
+    panel.append(el('p', 'value', cellText(field, cell)));
+    panel.append(el('h2', '', sourceHeading(field, cell.quote ?? '')));
     panel.append(el('blockquote', '', cell.quote ?? ''));
+    const odd = oddValueNote(field, cell);
+    if (odd) panel.append(el('p', 'note warn', odd));
   }
   const link = el('a');
   link.href = cell.source;

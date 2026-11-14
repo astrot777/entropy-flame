@@ -5,6 +5,7 @@ import type { Row } from '../../src/shared/types';
 import type { TestTables } from '../../src/psi/tables';
 import { el, setText } from './dom';
 import { LABELS } from './labels';
+import { oddValueNote, sourceHeading } from './source';
 import { buildSceneSpec, PARTS, type PartKey, type SceneSpec } from './scene/spec';
 import { buildReplay, pickTests, rowForStep, type Replay } from './scene/replay';
 import { momentAt, type Moment, type TestTime } from './scene/timeline';
@@ -43,7 +44,7 @@ export async function openExperiment(row: Row): Promise<void> {
   stage.append(loading);
   const bar = el('div', 'xp-replay');
   bar.hidden = true;
-  const note = el('p', 'xp-note', 'Solid parts come from a stated value; grey wireframe parts are Not stated. Not to scale and not a physical simulation. Surface textures are illustrative; a glow marks when a test was burning, not the shape of the flame. Drag to rotate, scroll to zoom, click a part for its source.');
+  const note = el('p', 'xp-note', 'Solid parts come from a stated value; grey wireframe parts are Not stated. Shapes and layout are illustrative, picked from the words NASA uses. Not to scale and not a physical simulation. Surface textures are illustrative; a glow marks when a test was burning, not the shape of the flame. Drag to rotate, scroll to zoom, click a part for its source.');
 
   const side = el('aside', 'xp-side');
   side.append(el('h3', '', 'Every part and its source'));
@@ -75,11 +76,13 @@ export async function openExperiment(row: Row): Promise<void> {
       detail.append(el('p', 'hint', `This test, from NASA's experimental table`));
       detail.append(el('blockquote', '', `${replay.file}\nrow ${s.row}, column "${column}": ${s.values[part] || '(blank)'}`));
     } else if (cell.status === 'not stated') {
-      detail.append(el('p', 'value ns', 'Not stated'), el('p', 'hint', 'The PSI record gives no sentence or table line that supports a value, so this part stays grey in the schematic.'));
+      detail.append(el('p', 'value ns', 'Not stated'), el('p', 'hint', 'Entropy found no sentence or table line in what it read of the PSI record that supports a value, so this part stays grey in the schematic.'));
     } else {
       detail.append(el('p', 'value', spec.parts[part].text));
-      detail.append(el('p', 'hint', 'Source quote, word for word'));
+      detail.append(el('p', 'hint', sourceHeading(part, cell.quote ?? '')));
       detail.append(el('blockquote', '', cell.quote ?? ''));
+      const odd = oddValueNote(part, cell);
+      if (odd) detail.append(el('p', 'hint warn', odd));
     }
     const link = el('a', '', 'Open the PSI record');
     link.href = cell.source || row.psiId.source;
