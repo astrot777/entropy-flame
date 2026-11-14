@@ -19,8 +19,13 @@ export function addLiveRow(session: Row[], row: Row): Row[] {
   return [...session, { ...row, unreviewed: true }];
 }
 
+/**
+ * The visitor's IP as seen by the hosting proxy. The proxy (Azure App Service front end) appends the real
+ * client address as the right-most X-Forwarded-For entry; earlier entries are client-supplied and ignored.
+ */
 function clientIp(h: (name: string) => string | undefined): string {
-  return (h('x-forwarded-for') ?? '').split(',')[0].trim().replace(/:\d+$/, '') || 'unknown';
+  const parts = (h('x-forwarded-for') ?? '').split(',').map((p) => p.trim()).filter(Boolean);
+  return (parts.at(-1) ?? '').replace(/:\d+$/, '') || 'unknown';
 }
 
 export function createApp(deps: AppDeps): Hono {

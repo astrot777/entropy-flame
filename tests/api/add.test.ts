@@ -60,6 +60,12 @@ describe('POST /add', () => {
     await (await app.request('/add', post({ id: 'PSI-9' }))).text();
     expect((await app.request('/add', post({ id: 'PSI-8' }))).status).toBe(429);
   });
+  it('a spoofed left-most X-Forwarded-For entry does not reset the per-visitor limit', async () => {
+    const app = createApp(makeDeps(1));
+    const spoof = (fake: string) => ({ ...post({ id: 'PSI-9' }), headers: { 'content-type': 'application/json', 'x-forwarded-for': `${fake}, 9.9.9.9` } });
+    await (await app.request('/add', spoof('1.2.3.4'))).text();
+    expect((await app.request('/add', spoof('5.6.7.8'))).status).toBe(429);
+  });
   it('never leaks the key', async () => {
     process.env.ANTHROPIC_API_KEY = 'sk-test-secret';
     const app = createApp(makeDeps());
