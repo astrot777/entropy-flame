@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 // Usage: npx tsx scripts/smoke.ts https://<app>.azurewebsites.net
 export async function smoke(baseUrl: string): Promise<string[]> {
   const base = baseUrl.replace(/\/$/, '');

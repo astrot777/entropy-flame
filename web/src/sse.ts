@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 import { FIELDS, type Row } from '../../src/shared/types';
 
 /** Incremental Server-Sent Events parser: feed it text chunks, it calls onEvent for each complete event. */

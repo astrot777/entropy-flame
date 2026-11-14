@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 // Usage: npx tsx --env-file=.env scripts/ingest-batch.ts data/ids.txt --out data/investigations.json
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fetchInvestigation } from '../src/psi/fetch';
@@ -26,7 +25,7 @@ const { rows, errors } = await runBatch(todo, { fetchDoc: (id) => fetchInvestiga
 rows.sort((a, b) => Number(a.psiId.value!.slice(4)) - Number(b.psiId.value!.slice(4)));
 const meta = {
   generatedAt: new Date().toISOString(),
-  generatedBy: `Extracted by ${model} (Anthropic Claude, an SI model) from NASA PSI records, then every cell checked by code against its source quote. Not reviewed by a person unless marked reviewed.`,
+  generatedBy: `Extracted by a large language model (SI) from NASA PSI records, then every cell checked by code against its source quote. Not reviewed by a person unless marked reviewed.`,
   source: 'NASA Physical Sciences Informatics (PSI), https://psi.nasa.gov',
 };
 writeFileSync(outPath, JSON.stringify({ meta, rows }, null, 2) + '\n');

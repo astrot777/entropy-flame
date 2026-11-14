@@ -18,7 +18,7 @@ Stack: TypeScript, Node, Hono, Vite, an LLM API, Azure App Service. Tests: Vites
 
 ## Use of Super Intelligence (SI)
 - **In the product**: values in `data/investigations.json` and in live rows are extracted by a large language model (LLM, chosen by the `LLM_MODEL` setting) and then verified by code against the source; the file's `meta.generatedBy` says so. The Objectives column is an AI-written summary; every other value is copied from its quote.
-- **In development**: source files marked "Written with an LLM coding assistant (SI)" were written with an LLM coding assistant and reviewed by the team. The idea, the challenge choice and the design decisions are the team's.
+- **In development**: an LLM coding assistant helped write and test the code; the idea, the challenge choice and every design decision are the team's, and all code was reviewed by the team.
 - No SI-generated images or video are used.
 
 ## NASA data

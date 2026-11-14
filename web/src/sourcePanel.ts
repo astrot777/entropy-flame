@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 import type { Cell, FieldKey, Row } from '../../src/shared/types';
 import { el, setText } from './dom';
 import { LABELS } from './labels';

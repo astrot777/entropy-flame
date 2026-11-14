@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 import { normalizePsiId } from '../shared/normalize';
 
 export interface PsiDocument { psiId: string; url: string; text: string; fetchedAt: string }

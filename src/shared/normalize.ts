@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 const BARE_ID = /^PSI-(\d+)$/i;
 const PSI_URL = /^https:\/\/psi\.nasa\.gov\/physci\/repo\/data\/investigations\/(PSI-\d+)\/?$/i;
 

@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 // One Node process for Azure App Service: serves the built dashboard and the API on PORT.
 import { readFileSync } from 'node:fs';
 import { Hono } from 'hono';

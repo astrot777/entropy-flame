@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 import type { Row } from '../../src/shared/types';
 
 export interface Filters { pillar?: string; fuel?: string; hardware?: string; oxygenMin?: number; oxygenMax?: number; text?: string }

@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 import Anthropic from '@anthropic-ai/sdk';
 
 /** A model that streams plain text for one system + user prompt. */

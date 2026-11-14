@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 export interface LimitStore { incr(key: string, ttlSeconds: number): Promise<number> }
 
 /** In-memory counter store (one server process). Expired keys are dropped on access. */

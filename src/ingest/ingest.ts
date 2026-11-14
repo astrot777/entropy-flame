@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 import type { Cell, FieldKey, Row } from '../shared/types';
 import { normalizePsiId } from '../shared/normalize';
 import { PsiError, type PsiDocument } from '../psi/fetch';

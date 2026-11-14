@@ -1,7 +1,7 @@
 {
   "meta": {
     "generatedAt": "2026-11-14T06:41:52.291Z",
-    "generatedBy": "Extracted by claude-opus-5-5 (Anthropic Claude, an SI model) from NASA PSI records, then every cell checked by code against its source quote. Not reviewed by a person unless marked reviewed.",
+    "generatedBy": "Extracted by a large language model (SI) from NASA PSI records, then every cell checked by code against its source quote. Not reviewed by a person unless marked reviewed.",
     "source": "NASA Physical Sciences Informatics (PSI), https://psi.nasa.gov"
   },
   "rows": [

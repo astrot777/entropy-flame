@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 import { FIELDS, type FieldKey, type Row } from '../../src/shared/types';
 import { normalizeText } from '../../src/shared/normalize';
 import { el, setText } from './dom';

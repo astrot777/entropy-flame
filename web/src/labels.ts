@@ -1,4 +1,3 @@
-// Written with an LLM coding assistant (SI); reviewed by the team.
 import type { FieldKey } from '../../src/shared/types';
 
 export const LABELS: Record<FieldKey, string> = {
