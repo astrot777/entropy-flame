@@ -14,11 +14,11 @@ Entropy reads NASA Physical Sciences Informatics (PSI) combustion investigations
 2. Claude extracts the 12 fields as one JSON line each, with a verbatim quote.
 3. Code keeps a value only if its quote appears in the source text and the value appears inside the quote. Numbers are never converted.
 
-Stack: TypeScript, Node, Hono, Vite, Anthropic API, Azure App Service. Tests: Vitest.
+Stack: TypeScript, Node, Hono, Vite, Claude API, Azure App Service. Tests: Vitest.
 
 ## Use of Super Intelligence (SI)
-- **In the product**: values in `data/investigations.json` and in live rows are extracted by Anthropic Claude (model set by `LLM_MODEL`, used: `claude-opus-5-5`) and then verified by code against the source; the file's `meta.generatedBy` says so. The Objectives column is an AI-written summary; every other value is copied from its quote.
-- **In development**: source files marked "Written with Claude (Anthropic) as an SI coding assistant" were written with Claude Code and reviewed by the team. The idea, the challenge choice and the design decisions are the team's.
+- **In the product**: values in `data/investigations.json` and in live rows are extracted by Claude (model set by `LLM_MODEL`, used: `claude-opus-5-5`) and then verified by code against the source; the file's `meta.generatedBy` says so. The Objectives column is an AI-written summary; every other value is copied from its quote.
+- **In development**: source files marked "Written with Claude as an SI coding assistant" were written with Claude Code and reviewed by the team. The idea, the challenge choice and the design decisions are the team's.
 - No SI-generated images or video are used.
 
 ## NASA data
@@ -27,7 +27,7 @@ Stack: TypeScript, Node, Hono, Vite, Anthropic API, Azure App Service. Tests: Vi
 ## Run it
 ```
 npm install
-cp .env.example .env        # add your ANTHROPIC_API_KEY
+cp .env.example .env        # add your LLM_API_KEY
 npm run build               # builds the dashboard into dist/web
 npm run api                 # dashboard + API on http://localhost:8787
 npx tsx --env-file=.env scripts/ingest-batch.ts data/ids.txt --out data/investigations.json   # rebuild the data
@@ -38,4 +38,4 @@ npm test
 Team "be alone, that is when ideas are born." (Riyadh Local Event).
 
 ## References
-Anthropic TypeScript SDK, Hono, @hono/node-server, Vite, Vitest, jsdom, tsx, TypeScript; IBM Plex fonts (Google Fonts, SIL OFL). Licence: MIT (code).
+Claude API SDK for TypeScript, Hono, @hono/node-server, Vite, Vitest, jsdom, tsx, TypeScript; IBM Plex fonts (Google Fonts, SIL OFL). Licence: MIT (code).

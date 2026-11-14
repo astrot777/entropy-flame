@@ -10,11 +10,11 @@ if (!idsPath || flag !== '--out' || !outPath) {
   console.error('Usage: ingest-batch <ids.txt> --out <investigations.json>');
   process.exit(2);
 }
-const apiKey = process.env.ANTHROPIC_API_KEY;
+const apiKey = process.env.LLM_API_KEY ?? process.env.ANTHROPIC_API_KEY;
 const model = process.env.LLM_MODEL || 'claude-opus-5-5';
 const effort = (process.env.LLM_EFFORT || 'low') as Effort;
 if (!apiKey) {
-  console.error('ANTHROPIC_API_KEY is not set (put it in .env).');
+  console.error('LLM_API_KEY is not set (put it in .env).');
   process.exit(2);
 }
 const ids = readFileSync(idsPath, 'utf8').split(/\r?\n/).map((l) => l.replace(/#.*/, '').trim()).filter(Boolean);

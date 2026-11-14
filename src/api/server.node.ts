@@ -10,8 +10,8 @@ import { fetchInvestigation } from '../psi/fetch';
 import { anthropicLlm, type Effort } from '../ingest/llm';
 import type { Row } from '../shared/types';
 
-const apiKey = process.env.ANTHROPIC_API_KEY ?? '';
-if (!apiKey) console.warn('ANTHROPIC_API_KEY is not set: live Add will answer "upstream".');
+const apiKey = process.env.LLM_API_KEY ?? process.env.ANTHROPIC_API_KEY ?? '';
+if (!apiKey) console.warn('LLM_API_KEY is not set: live Add will answer "upstream".');
 const model = process.env.LLM_MODEL || 'claude-opus-5-5';
 const effort = (process.env.LLM_EFFORT || 'low') as Effort;
 const dailyLimit = Number(process.env.DAILY_LIMIT || 200);
