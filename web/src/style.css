@@ -225,3 +225,41 @@ td .cab { display: table; }
 .cabin-box { margin: 8px 0 18px; padding: 14px 16px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
 .cabin-box .cab-verdict { margin: 4px 0 8px; font-size: 18px; font-weight: 700; color: var(--navy); }
 .cabin-box a { font-size: 13px; }
+
+/* Atmosphere map */
+.atmap:empty { display: none; }
+.atmap { margin-top: 24px; padding: 28px 32px; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 1px 3px rgba(11,19,43,0.05); }
+.atmap-kicker { margin: 0 0 6px; font: 600 11px var(--space); letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-ink); }
+.atmap-head h2 { margin: 0 0 8px; font: 700 26px/1.2 var(--sans); color: var(--navy); }
+.atmap-lead { margin: 0 0 20px; max-width: 75ch; color: var(--muted); }
+.atmap-body { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 32px; align-items: start; }
+.atmap-plot { position: relative; }
+.atmap-plot svg { width: 100%; height: auto; display: block; }
+.atmap-plot .grid { stroke: #e6e9f0; stroke-width: 1; }
+.atmap-plot .tick { font: 12px var(--mono); fill: var(--muted); }
+.atmap-plot .axis-title { font: 600 12px var(--sans); fill: var(--muted); }
+.atmap-plot .zone { fill: rgba(11,19,43,0.05); stroke: rgba(11,19,43,0.35); stroke-dasharray: 3 3; }
+.atmap-plot .dot { stroke: #fff; stroke-width: 1; opacity: 0.85; cursor: pointer; }
+.atmap-plot .dot:hover { opacity: 1; stroke: var(--navy); stroke-width: 2; }
+.atmap-plot .crew { fill: var(--navy); stroke: var(--gold); stroke-width: 2; cursor: pointer; }
+.atmap-plot .crew-label { font: 700 12px var(--sans); fill: var(--navy); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+.atmap-tip { position: absolute; z-index: 5; max-width: 260px; padding: 10px 12px; border-radius: 8px; background: var(--navy); color: #fff; font-size: 12px; line-height: 1.45; pointer-events: none; box-shadow: 0 10px 15px rgba(11,19,43,0.2); }
+.atmap-tip b, .atmap-tip span { display: block; }
+.atmap-tip span { color: #c9cfde; font-family: var(--mono); font-size: 11px; overflow-wrap: anywhere; }
+.atmap-tip[hidden] { display: none; }
+.atmap-stat { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.atmap-stat b { font: 700 30px var(--space); color: var(--navy); }
+.atmap-stat.gap b { color: var(--flame); }
+.atmap-stat span { font-weight: 600; color: var(--text); }
+.atmap-stat small { display: block; margin-top: 4px; font: 400 12px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+.atmap-note { margin: 14px 0 16px; font-size: 13px; color: var(--muted); }
+.atmap-legend { display: grid; gap: 6px; font-size: 13px; }
+.atmap-key { display: flex; align-items: center; gap: 8px; }
+.atmap-key i { width: 10px; height: 10px; border-radius: 50%; border: 1px solid #fff; box-shadow: 0 0 0 1px #d9deea; flex: none; }
+.atmap-key i.diamond { border-radius: 0; transform: rotate(45deg); background: var(--navy); box-shadow: 0 0 0 2px var(--gold); }
+.atmap-table { margin-top: 18px; }
+.atmap-table summary { cursor: pointer; font-weight: 600; color: var(--cool); }
+.atmap-table table { min-width: 0; margin-top: 10px; }
+.atmap-table th { position: static; }
+@media (max-width: 960px) { .atmap-body { grid-template-columns: 1fr; } .atmap { padding: 20px 16px; } }
+

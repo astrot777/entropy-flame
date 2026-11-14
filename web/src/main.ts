@@ -7,6 +7,7 @@ import { renderCompare } from './compare';
 import { mountAdd } from './add';
 import { mountAbout } from './about';
 import { openExperiment } from './experiment';
+import { mountAtmosphereMap } from './atmap';
 
 interface DataFile { meta: { generatedAt: string; generatedBy: string; source: string }; rows: Row[] }
 
@@ -146,6 +147,8 @@ async function load() {
     buildFooter(data.meta);
     render();
     void mountAbout($('about'), data.meta.generatedAt.slice(0, 10));
+    const names = Object.fromEntries(data.rows.map((r) => [r.psiId.value ?? '', r.name.value ?? '']));
+    void mountAtmosphereMap($('atmap'), data.rows.map((r) => r.psiId.value ?? ''), names);
   } catch {
     status.className = 'status error';
     setText(status, 'The investigation data could not be loaded. Refresh the page; if this persists, the data file is missing from this deployment.');
