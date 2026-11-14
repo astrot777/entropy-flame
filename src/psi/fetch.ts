@@ -75,8 +75,11 @@ export async function fetchInvestigation(id: string, fetchImpl: typeof fetch = f
   return { psiId, url: `${PAGE}/${psiId}`, text, fetchedAt: new Date().toISOString() };
 }
 
-/** Two-step download: NASA returns a short-lived signed link, which is followed only on the PSI S3 host and never stored. */
-async function downloadCsvSummary(fetchImpl: typeof fetch, psiId: string, fileName: string): Promise<string | null> {
+/**
+ * Asks NASA for a short-lived signed download link to one PSI file. The link is accepted only on the PSI S3 host,
+ * and it is never stored or logged. Returns null when NASA has no such file.
+ */
+export async function signedLink(fetchImpl: typeof fetch, psiId: string, fileName: string): Promise<string | null> {
   const q = new URLSearchParams({ file: fileName, version: '1', redirect: 'false' });
   const linkRes = await get(fetchImpl, `${API}/studies/${psiId}/download?${q}`);
   if (!linkRes.ok) return null;
@@ -90,6 +93,13 @@ async function downloadCsvSummary(fetchImpl: typeof fetch, psiId: string, fileNa
   if (parsed.protocol !== 'https:' || parsed.hostname !== S3_HOST) {
     throw new PsiError('upstream', 'PSI returned a download link on an unexpected host');
   }
+  return link;
+}
+
+/** Downloads one experimental-table CSV through a signed link and summarizes it. */
+async function downloadCsvSummary(fetchImpl: typeof fetch, psiId: string, fileName: string): Promise<string | null> {
+  const link = await signedLink(fetchImpl, psiId, fileName);
+  if (!link) return null;
   const csvRes = await get(fetchImpl, link);
   if (!csvRes.ok) return null;
   const csv = await csvRes.text();
