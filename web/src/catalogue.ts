@@ -1,6 +1,7 @@
 import { FIELDS, type FieldKey, type Row } from '../../src/shared/types';
 import { el, setText } from './dom';
 import { LABELS } from './labels';
+import { unitFromQuote } from './units';
 
 const NUMERIC: FieldKey[] = ['oxygen', 'pressure', 'airflow'];
 
@@ -19,6 +20,8 @@ export function renderCell(td: HTMLTableCellElement, row: Row, field: FieldKey):
   const text = c.value ?? '';
   if (text.length > 90) td.append(el('span', 'clamp', text));
   else setText(td, text);
+  const unit = NUMERIC.includes(field) || field === 'sample' ? unitFromQuote(text, c.quote ?? '') : null;
+  if (unit) td.append(el('span', 'unit', ` ${unit}`));
   if (field === 'psiId' && row.unreviewed) td.append(el('span', 'badge', 'Unreviewed'));
 }
 
