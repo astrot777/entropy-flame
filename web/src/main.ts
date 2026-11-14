@@ -100,6 +100,15 @@ function buildControls() {
   hw.setAttribute('aria-label', 'Hardware');
   hw.addEventListener('input', () => { filters.hardware = hw.value || undefined; render(); });
 
+  const cabin = el('select');
+  cabin.setAttribute('aria-label', 'Oxygen compared with ISS cabin air');
+  for (const [v, t] of [['', 'Oxygen vs ISS cabin: any'], ['above', 'More oxygen than ISS cabin'], ['like', 'Oxygen like ISS cabin']]) {
+    const o = el('option', '', t);
+    o.value = v;
+    cabin.append(o);
+  }
+  cabin.addEventListener('change', () => { filters.cabinOxygen = (cabin.value || undefined) as Filters['cabinOxygen']; render(); });
+
   compareBtn = el('button', 'primary', 'Compare');
   compareBtn.disabled = true;
   compareBtn.addEventListener('click', () => {
@@ -107,7 +116,7 @@ function buildControls() {
     renderCompare(compareBox, rows);
     compareBox.scrollIntoView({ behavior: 'smooth' });
   });
-  c.append(search, pillar, fuel, hw, compareBtn, el('span', 'hint', 'Tick 2 to 4 rows to compare'));
+  c.append(search, pillar, cabin, fuel, hw, compareBtn, el('span', 'hint', 'Tick 2 to 4 rows to compare'));
 }
 
 function buildFooter(meta: DataFile['meta']) {

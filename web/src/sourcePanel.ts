@@ -2,6 +2,7 @@ import type { Cell, FieldKey, Row } from '../../src/shared/types';
 import { el, setText } from './dom';
 import { LABELS } from './labels';
 import { cellText, oddValueNote, sourceHeading } from './source';
+import { cabinCheck, CABIN } from './cabin';
 
 export function openPanel(panel: HTMLElement, row: Row, field: FieldKey): void {
   const cell: Cell = row[field];
@@ -20,6 +21,16 @@ export function openPanel(panel: HTMLElement, row: Row, field: FieldKey): void {
     panel.append(el('blockquote', '', cell.quote ?? ''));
     const odd = oddValueNote(field, cell);
     if (odd) panel.append(el('p', 'note warn', odd));
+    const cab = cabinCheck(field, cell);
+    if (cab) {
+      const box = el('div', `cabin-box ${cab.verdict}`);
+      const ref = el('a', '', 'NASA source for ISS cabin air');
+      ref.href = CABIN.source;
+      ref.target = '_blank';
+      ref.rel = 'noopener noreferrer';
+      box.append(el('h2', '', 'Compared with ISS cabin air'), el('p', 'cab-verdict', cab.label), el('p', 'note', cab.detail), el('p', 'note', 'A comparison of conditions, not a fire-risk score. Units are converted only for this comparison; the value above stays as NASA wrote it.'), ref);
+      panel.append(box);
+    }
   }
   const link = el('a');
   link.href = cell.source;

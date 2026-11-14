@@ -30,3 +30,16 @@ describe('applyFilters', () => {
     expect(applyFilters(rows, { oxygenMax: 1 }).map(r => r.psiId.value)).toEqual(['PSI-2']);
   });
 });
+
+describe('applyFilters: compared with ISS cabin air', () => {
+  const air = [
+    row({ psiId: 'A', oxygen: '~30% O2' }),
+    row({ psiId: 'B', oxygen: '21.5 to 21.7' }),
+    row({ psiId: 'C', oxygen: '0.1 to 0.4 mole fraction' }),
+    row({ psiId: 'D', oxygen: null }),
+  ];
+  it('keeps rows whose oxygen reaches above cabin air', () =>
+    expect(applyFilters(air, { cabinOxygen: 'above' }).map((r) => r.psiId.value)).toEqual(['A', 'C']));
+  it('keeps rows whose oxygen is like cabin air', () =>
+    expect(applyFilters(air, { cabinOxygen: 'like' }).map((r) => r.psiId.value)).toEqual(['B']));
+});

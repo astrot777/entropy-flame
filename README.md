@@ -4,7 +4,7 @@
 
 Entropy is for researchers and spacecraft fire-safety engineers who need to compare NASA microgravity combustion experiments side by side. It reads NASA Physical Sciences Informatics (PSI) combustion investigations and turns each one into a row of 12 facts, such as fuel, oxygen, pressure, airflow, hardware, and sensors. Every value links to the exact sentence or test-table line it came from, and anything the record doesn't support reads "Not stated". You can add any other PSI investigation live, in about 10 to 15 seconds.
 
-Entropy doesn't score fire risk, convert units, or replace reading the original records.
+Entropy doesn't score fire risk, change NASA's numbers, or replace reading the original records.
 
 **Live site:** [entropy-flame.vercel.app](https://entropy-flame.vercel.app) - opens without a login. **Demo deck:** [7 slides (PDF)](docs/Entropy-NASA-Space-Apps-2026.pdf).
 
@@ -14,6 +14,7 @@ The dashboard has four parts:
 
 - **Catalogue**: the 19 combustion investigations named in the challenge, with search and filters. Click any value to see its source quote and a link to the PSI record.
 - **Compare**: select 2 to 4 investigations to see which facts are the same, different, or not stated.
+- **Compared with ISS cabin air**: every stated oxygen and pressure value carries a tag that places it against the air on the International Space Station, 21% oxygen at 14.7 psia, as given in [a NASA technical brief on habitable atmospheres](https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-003-habitable-atmosphere.pdf). A filter shows the experiments with more oxygen than the station. Units are converted only for this comparison, and it compares conditions; it isn't a fire-risk score.
 - **Experiment view**: select **3D** on any row to see a schematic of the experiment built only from that row's stated values: the sample's shape and proportions, the airflow speed, the enclosure, and the sensors. Parts NASA doesn't state stay grey, and selecting a part shows its source quote. Moving lines show the stated airflow speed. The schematic isn't to scale and isn't a physical simulation: shapes, layout, and surface textures are illustrative, and no flame is drawn.
 - **Add live**: enter any PSI investigation ID. A large language model (LLM) reads the record, and each value appears after code checks its quote against the source. Live rows are marked **Unreviewed** and disappear when you reload the page.
 

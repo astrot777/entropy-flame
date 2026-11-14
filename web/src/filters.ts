@@ -1,6 +1,7 @@
 import type { Row } from '../../src/shared/types';
+import { cabinCheck, CABIN, oxygenPercent } from './cabin';
 
-export interface Filters { pillar?: string; fuel?: string; hardware?: string; oxygenMin?: number; oxygenMax?: number; text?: string }
+export interface Filters { pillar?: string; fuel?: string; hardware?: string; oxygenMin?: number; oxygenMax?: number; text?: string; cabinOxygen?: 'above' | 'like' }
 
 const has = (v: string | null, q: string) => v !== null && v.toLowerCase().includes(q.toLowerCase());
 
@@ -19,6 +20,11 @@ export function applyFilters(rows: Row[], f: Filters): Row[] {
       if (f.oxygenMin !== undefined && Math.max(...n) < f.oxygenMin) return false;
       if (f.oxygenMax !== undefined && Math.min(...n) > f.oxygenMax) return false;
     }
+    if (f.cabinOxygen === 'above') {
+      const o = oxygenPercent(r.oxygen);
+      if (!o || o.hi <= CABIN.oxygenPercent + 2.5) return false;
+    }
+    if (f.cabinOxygen === 'like' && cabinCheck('oxygen', r.oxygen)?.verdict !== 'like') return false;
     if (f.text) {
       const q = f.text.trim().toLowerCase();
       if (q && !Object.values(r).some((c) => typeof c === 'object' && c !== null && 'value' in c && has(c.value, q))) return false;

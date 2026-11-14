@@ -3,6 +3,7 @@ import { el, setText } from './dom';
 import { LABELS } from './labels';
 import { unitFromQuote } from './units';
 import { oddValueNote } from './source';
+import { cabinCheck } from './cabin';
 
 const NUMERIC: FieldKey[] = ['oxygen', 'pressure', 'airflow'];
 
@@ -25,6 +26,8 @@ export function renderCell(td: HTMLTableCellElement, row: Row, field: FieldKey):
   const unit = NUMERIC.includes(field) || field === 'sample' ? unitFromQuote(text, c.quote ?? '') : null;
   if (unit) td.append(el('span', 'unit', ` ${unit}`));
   if (oddValueNote(field, c)) td.append(el('span', 'badge', 'Check source'));
+  const cab = cabinCheck(field, c);
+  if (cab) td.append(el('span', `cab ${cab.verdict}`, cab.label));
   if (field === 'psiId' && row.unreviewed) td.append(el('span', 'badge', 'Unreviewed'));
 }
 
