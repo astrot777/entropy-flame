@@ -6,6 +6,7 @@ import { el, setText } from './dom';
 import { renderCompare } from './compare';
 import { mountAdd } from './add';
 import { mountAbout } from './about';
+import { openExperiment } from './experiment';
 
 interface DataFile { meta: { generatedAt: string; generatedBy: string; source: string }; rows: Row[] }
 
@@ -36,6 +37,7 @@ const handlers = {
     updateCompareButton();
   },
   isSelected: (id: string) => selected.has(id),
+  onView: (row: Row) => { void openExperiment(row); },
 };
 
 function updateCompareButton() {

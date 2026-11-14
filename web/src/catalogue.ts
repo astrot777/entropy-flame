@@ -9,6 +9,7 @@ export interface CatalogueHandlers {
   onCell: (row: Row, field: FieldKey, td: HTMLTableCellElement) => void;
   onSelect: (psiId: string, selected: boolean) => void;
   isSelected: (psiId: string) => boolean;
+  onView: (row: Row) => void;
 }
 
 export function renderCell(td: HTMLTableCellElement, row: Row, field: FieldKey): void {
@@ -35,7 +36,13 @@ export function renderRow(row: Row, h: CatalogueHandlers): HTMLTableRowElement {
   box.checked = h.isSelected(id);
   box.setAttribute('aria-label', `Select ${id} to compare`);
   box.addEventListener('change', () => h.onSelect(id, box.checked));
-  pick.append(box);
+  const view = el('button', 'view3d', '3D');
+  view.type = 'button';
+  view.title = 'Experiment view: a 3D schematic built from this row';
+  view.setAttribute('aria-label', `Open the 3D experiment view for ${id}`);
+  view.addEventListener('click', () => h.onView(row));
+  pick.className = 'pick';
+  pick.append(box, view);
   tr.append(pick);
   for (const f of FIELDS) {
     const td = el('td');

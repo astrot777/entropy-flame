@@ -10,10 +10,11 @@ Entropy doesn't score fire risk, convert units, or replace reading the original 
 
 ## What it does
 
-The dashboard has three parts:
+The dashboard has four parts:
 
 - **Catalogue**: the 19 combustion investigations named in the challenge, with search and filters. Click any value to see its source quote and a link to the PSI record.
 - **Compare**: select 2 to 4 investigations to see which facts are the same, different, or not stated.
+- **Experiment view**: select **3D** on any row to see a schematic of the experiment built only from that row's stated values: the sample's shape and proportions, the airflow speed, the enclosure, and the sensors. Parts NASA doesn't state stay grey, and selecting a part shows its source quote. The schematic isn't to scale and isn't a physical simulation.
 - **Add live**: enter any PSI investigation ID. A large language model (LLM) reads the record, and each value appears after code checks its quote against the source. Live rows are marked **Unreviewed** and disappear when you reload the page.
 
 ## How it works
@@ -91,6 +92,7 @@ Entropy uses the following open-source code and resources:
 - [@anthropic-ai/sdk](https://www.npmjs.com/package/@anthropic-ai/sdk) (Apache-2.0): LLM API client
 - [Hono](https://hono.dev/) and [@hono/node-server](https://www.npmjs.com/package/@hono/node-server) (MIT): API server
 - [Vite](https://vite.dev/) (MIT): dashboard build
+- [three.js](https://threejs.org/) (MIT): the 3D experiment view
 - [Vercel](https://vercel.com/) (Hobby plan): hosting
 - [Vitest](https://vitest.dev/) and [jsdom](https://www.npmjs.com/package/jsdom) (MIT): tests
 - [tsx](https://www.npmjs.com/package/tsx) (MIT) and [TypeScript](https://www.typescriptlang.org/) (Apache-2.0): runtime and language
