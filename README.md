@@ -18,6 +18,7 @@ The dashboard has four parts:
 - **Tested atmospheres**: a chart of every test in NASA's experimental tables that records both oxygen and pressure (747 tests in 4 investigations), against the three crew atmospheres NASA names in the PSI-20 record: 14.7 psia with 21% oxygen, 10.2 psia with 26.5%, and 8.2 psia with 34%. It counts the tests inside a zone around each one and names the closest test when a zone is empty. Hover over a dot to see its table, row, and cells as written.
 - **Compared with ISS cabin air**: every stated oxygen and pressure value carries a tag that places it against the air on the International Space Station, 21% oxygen at 14.7 psia, as given in [a NASA technical brief on habitable atmospheres](https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-003-habitable-atmosphere.pdf). A filter shows the experiments with more oxygen than the station. Units are converted only for this comparison, and it compares conditions; it isn't a fire-risk score.
 - **Experiment view**: select **3D** on any row to see a schematic of the experiment built only from that row's stated values: the sample's shape and proportions, the airflow speed, the enclosure, and the sensors. Parts NASA doesn't state stay grey, and selecting a part shows its source quote. Moving lines show the stated airflow speed. The schematic isn't to scale and isn't a physical simulation: shapes, layout, and surface textures are illustrative, and no flame is drawn.
+- **Ask Entropy**: ask a question about the catalogue. Each answer includes a button that opens the source for its field.
 - **Add live**: enter any PSI investigation ID. A large language model (LLM) reads the record, and each value appears after code checks its quote against the source. Live rows are marked **Unreviewed** and disappear when you reload the page.
 
 ## How it works
@@ -43,6 +44,7 @@ The project is written in TypeScript and runs on Node.js, with Hono for the API,
 ## Use of Super Intelligence (SI)
 
 - **In the product**: an LLM, chosen by the `LLM_MODEL` setting, extracts the values in `data/investigations.json` and in live rows, and code then verifies each value against its source. The data file's `meta.generatedBy` field records this. The **Objectives** column is an LLM-written summary and the **Pillar** column is an LLM classification; every other value is copied from its quote.
+- **Ask Entropy** uses an LLM to select relevant catalogue entries. Code checks each sentence against the stated value in its cited cell.
 - **In development**: an LLM coding assistant helped write the code. The idea, the challenge choice, and every design decision are the team's, including the 3D experiment view. The team checked 55 extracted values by hand against NASA's records, directed the fixes, and tested the live site.
 - Entropy uses no SI-generated images, video, or audio.
 

@@ -1,3 +1,4 @@
+import { askCatalogue } from './ask.js';
 import { Hono } from 'hono';
 import { streamSSE } from 'hono/streaming';
 import type { Row } from '../shared/types.js';
@@ -110,6 +111,18 @@ export function createApp(deps: AppDeps): Hono {
         await s.writeSSE({ event: 'error', data: JSON.stringify({ code: e instanceof PsiError ? e.code : 'upstream' }) });
       }
     });
+  });
+
+  app.post('/ask', async (c) => {
+    const body: unknown = await c.req.json().catch(() => null);
+    const question = body && typeof body === 'object' && 'question' in body ? body.question : null;
+    if (typeof question !== 'string' || !question.trim() || question.length > 300) return c.json({ code: 'bad_question' }, 400);
+    try {
+      if (!(await deps.limiter.allow(clientIp((n) => c.req.header(n))))) return c.json({ code: 'limit' }, 429);
+      return c.json(await askCatalogue(question.trim(), deps.reviewed, deps.ingest.llm));
+    } catch {
+      return c.json({ code: 'upstream' }, 502);
+    }
   });
 
   return app;
