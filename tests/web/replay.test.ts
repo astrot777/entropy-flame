@@ -57,3 +57,18 @@ describe('rowForStep', () => {
     expect(buildSceneSpec(rowForStep(r, replay, replay.steps[2])).airflow).toMatchObject({ min: 5, max: 5 });
   });
 });
+
+describe('buildReplay: what happens during each test', () => {
+  const S = 'PSI-98_Experimental table_SAFFIRE-1.csv';
+  const saffire: TestTables = { psiId: 'PSI-98', tables: [{ file: S, columns: ['Sample Length (cm)', 'Ignition Time (s)', 'Burn Time (s)', 'Flow Direction'],
+    rows: [['40.6', '8', '420', 'Concurrent'], ['40.6', '8', '70', 'Opposed'], ['', '', '', '']] }] };
+  it('attaches the ignition and burn time of each test', () => {
+    const replay = buildReplay(row({ fuel: cell('Sibal', 'a composite fabric called Sibal') }), saffire)!;
+    expect(replay.file).toBe(S);
+    expect(replay.steps).toHaveLength(2);
+    expect(replay.steps[1].time).toMatchObject({ ignitionS: 8, burnS: 70 });
+    expect(replay.steps[1].label).toBe('Row 2');
+  });
+  it('has no time for a test whose row gives none', () =>
+    expect(buildReplay(r, tables)!.steps[0].time).toBeNull());
+});

@@ -7,6 +7,7 @@ import { el, setText } from './dom';
 import { LABELS } from './labels';
 import { buildSceneSpec, PARTS, type PartKey, type SceneSpec } from './scene/spec';
 import { buildReplay, rowForStep, type Replay } from './scene/replay';
+import { momentAt, type Moment, type TestTime } from './scene/timeline';
 import type { SceneHandle } from './scene/view';
 
 let closeCurrent: (() => void) | null = null;
@@ -42,7 +43,7 @@ export async function openExperiment(row: Row): Promise<void> {
   stage.append(loading);
   const bar = el('div', 'xp-replay');
   bar.hidden = true;
-  const note = el('p', 'xp-note', 'Coloured parts come from a stated value; grey parts are Not stated. Not to scale and not a physical simulation: no flame is drawn, because the record gives no flame geometry. Drag to rotate, scroll to zoom, click a part for its source.');
+  const note = el('p', 'xp-note', 'Solid parts come from a stated value; grey wireframe parts are Not stated. Not to scale and not a physical simulation. Surface textures are illustrative; a glow marks when a test was burning, not the shape of the flame. Drag to rotate, scroll to zoom, click a part for its source.');
 
   const side = el('aside', 'xp-side');
   side.append(el('h3', '', 'Every part and its source'));
@@ -110,47 +111,111 @@ export async function openExperiment(row: Row): Promise<void> {
   status.setAttribute('role', 'status');
   bar.append(play, prev, slider, next, overview, status);
 
-  function stop() {
-    window.clearInterval(timer);
+  // Playback. Each test plays in about two and a half seconds whatever its real length; the caption shows
+  // the real seconds NASA recorded. Start, end and duration are NASA's; values in between move in a straight line.
+  const PLAY_MS = 2600;
+  const HOLD_MS = 650;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let playing = false;
+  let raf = 0;
+  let maxSize = 0;
+  let maxFrom = 0;
+  const fmt = (v: number, like: number[]) => v.toFixed(Math.min(3, Math.max(...like.map((n) => (String(n).split('.')[1] ?? '').length))));
+  const secs = (v: number) => (v >= 10 ? v.toFixed(0) : v.toFixed(1));
+
+  function halt() {
+    window.clearTimeout(timer);
+    cancelAnimationFrame(raf);
     timer = 0;
+    raf = 0;
+  }
+  function stop() {
+    playing = false;
+    halt();
     setText(play, step >= 0 ? 'Play' : 'Replay the tests');
+  }
+  function caption(m: Moment, t: TestTime): string {
+    if (m.phase === 'igniting') return `Igniting · ${secs(m.seconds)} s of ${secs(m.total)} s`;
+    if (m.phase === 'burning') return `Burning · ${secs(m.seconds)} s of ${secs(m.total)} s`;
+    if (m.phase === 'running') return 'During the test';
+    if (t.burnS) return `Flame out at ${secs(m.total)} s${t.ending ? ` · ${t.ending}` : ''}`;
+    return t.ignitionS !== null ? 'Igniter off · no burn time recorded' : 'After the test';
+  }
+  function apply(m: Moment, t: TestTime) {
+    const state = caption(m, t);
+    handle?.moment({
+      glow: m.phase === 'burning' ? 1 : m.phase === 'igniting' ? 0.4 : 0,
+      scale: m.size !== undefined && maxFrom ? Math.min(1, Math.max(0.12, m.size / maxFrom)) : undefined,
+      burned: m.burned,
+      state,
+    });
+    if (m.size !== undefined && t.size) {
+      const text = `${fmt(m.size, [t.size.from, t.size.to])} ${t.size.unit}`.trim();
+      handle?.setLabel('sample', text);
+      setText(buttons.get('sample')!.value, text);
+    }
+    if (m.oxygen !== undefined && t.oxygen) {
+      const text = fmt(m.oxygen, [t.oxygen.from, t.oxygen.to]);
+      handle?.setLabel('oxygen', text);
+      setText(buttons.get('oxygen')!.value, text);
+    }
+    if (replay) setText(status, `${replay.steps[step].label} · ${state} · test ${step + 1} of ${replay.steps.length} · ${replay.file}`);
   }
   function show(i: number) {
     if (!replay) return;
     step = i;
     const cur = shown();
     handle?.replay(i >= 0 ? cur : null, maxSize);
-    for (const part of Object.keys(replay.columns) as PartKey[]) {
+    handle?.moment(null);
+    for (const part of ['fuel', 'sample', 'oxygen', 'pressure', 'airflow'] as PartKey[]) {
       const b = buttons.get(part)!;
       setText(b.value, cur.parts[part].text);
       b.button.classList.toggle('ns', !cur.parts[part].stated);
     }
     slider.value = String(Math.max(i, 0));
+    if (!playing) setText(play, i >= 0 ? 'Play' : 'Replay the tests');
     prev.disabled = i <= 0;
     next.disabled = i >= replay.steps.length - 1;
     overview.disabled = i < 0;
     setText(status, i >= 0
       ? `${replay.steps[i].label} · test ${i + 1} of ${replay.steps.length} · ${replay.file}`
-      : `${replay.steps.length} tests in ${replay.file}. Replays the stated conditions of each test, not the flame.`);
-    if (!timer) setText(play, i >= 0 ? 'Play' : 'Replay the tests');
+      : `${replay.steps.length} tests in ${replay.file}. Start, end and duration come from NASA's table; values in between move in a straight line. The glow marks the stated burn time, not the flame's shape.`);
     select(selected);
   }
-  let maxSize = 0;
+  /** Shows one test and plays what happened during it, then calls done. */
+  function run(i: number, done?: () => void) {
+    halt();
+    show(i);
+    const t = replay?.steps[i]?.time ?? null;
+    const finish = () => { timer = window.setTimeout(() => done?.(), HOLD_MS); };
+    if (!t) { finish(); return; }
+    if (reduceMotion) { apply(momentAt(t, 1), t); finish(); return; }
+    const start = performance.now();
+    const frame = (now: number) => {
+      const f = Math.min(1, (now - start) / PLAY_MS);
+      apply(momentAt(t, f), t);
+      if (f < 1) raf = requestAnimationFrame(frame);
+      else finish();
+    };
+    apply(momentAt(t, 0), t);
+    raf = requestAnimationFrame(frame);
+  }
+  function playFrom(i: number) {
+    if (!replay) return;
+    if (i >= replay.steps.length) { stop(); return; }
+    run(i, () => { if (playing) playFrom(i + 1); });
+  }
   play.addEventListener('click', () => {
     if (!replay) return;
-    if (timer) { stop(); return; }
-    if (step >= replay.steps.length - 1) show(-1);
-    show(step + 1);
+    if (playing) { stop(); return; }
+    playing = true;
     setText(play, 'Pause');
-    timer = window.setInterval(() => {
-      if (!replay || step >= replay.steps.length - 1) { stop(); return; }
-      show(step + 1);
-    }, 1100);
+    playFrom(step >= replay.steps.length - 1 ? 0 : step + 1);
   });
-  prev.addEventListener('click', () => { stop(); show(Math.max(step - 1, 0)); });
-  next.addEventListener('click', () => { stop(); show(step + 1); });
+  prev.addEventListener('click', () => { stop(); run(Math.max(step - 1, 0)); });
+  next.addEventListener('click', () => { stop(); run(step + 1); });
   overview.addEventListener('click', () => { stop(); show(-1); });
-  slider.addEventListener('input', () => { stop(); show(Number(slider.value)); });
+  slider.addEventListener('input', () => { stop(); run(Number(slider.value)); });
 
   const main = el('div', 'xp-main');
   main.append(stage, bar, note);
@@ -162,7 +227,7 @@ export async function openExperiment(row: Row): Promise<void> {
 
   const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') shut(); };
   function shut() {
-    window.clearInterval(timer);
+    halt();
     handle?.dispose();
     overlay.remove();
     document.body.classList.remove('xp-open');
@@ -182,6 +247,7 @@ export async function openExperiment(row: Row): Promise<void> {
     if (!replay) return;
     stepSpecs = replay.steps.map((s) => buildSceneSpec(rowForStep(row, replay!, s)));
     maxSize = Math.max(0, ...stepSpecs.flatMap((s) => s.sample.sizes));
+    maxFrom = Math.max(0, ...replay.steps.map((s) => s.time?.size?.from ?? 0));
     slider.max = String(replay.steps.length - 1);
     bar.hidden = false;
     show(-1);

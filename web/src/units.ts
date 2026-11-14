@@ -12,6 +12,6 @@ export function unitFromQuote(value: string, quote: string): string | null {
   const paren = /\(([^()]+)\)\s*$/.exec(name);
   const semi = /;\s*([^;]+)$/.exec(name);
   const unit = (paren?.[1] ?? semi?.[1] ?? '').trim();
-  if (!unit) return null;
+  if (!unit || /^note\b/i.test(unit)) return null; // "(Note 1)" is a footnote, not a unit
   return /^percent$/i.test(unit) ? '%' : unit;
 }

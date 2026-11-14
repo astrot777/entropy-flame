@@ -67,3 +67,19 @@ describe('buildSceneSpec: sensors, gravity and part labels', () => {
     expect(s.parts.oxygen).toEqual({ stated: false, text: 'Not stated' });
   });
 });
+
+describe('buildSceneSpec: sample surface (which texture the stated material gets)', () => {
+  const surface = (sample: string, fuel: string | null, quote?: string) =>
+    buildSceneSpec(row({ sample: cell(sample, quote), fuel: cell(fuel) })).sample.surface;
+  it('fabric for a cotton fabric sample', () =>
+    expect(surface('approximately 0.94 meters long and 0.4 meters wide', 'Sibal consisting of cotton on a fiberglass substrate')).toBe('fabric'));
+  it('polymer for PMMA, preferring the sample text over the fuel text', () =>
+    expect(surface('PMMA sphere 2 cm', '75% cotton and 25% fiberglass')).toBe('polymer'));
+  it('liquid for a fuel droplet', () =>
+    expect(surface('1.5 to 5', 'Methanol; Heptane', 'Column "Initial Droplet Diameter (mm)" (a.csv): 1.5 to 5 across 8 rows')).toBe('liquid'));
+  it('metal for a burner, even a spherical one', () => {
+    expect(surface('spherical porous burner', 'hydrogen, methane, and ethylene')).toBe('metal');
+    expect(surface('burner diameters of 0.41 mm, 0.76 mm, and 1.6 mm', 'methane')).toBe('metal');
+  });
+  it('plain when the material is not recognisable', () => expect(surface('spherical diffusion flame', 'C2H4; C3H8')).toBe('plain'));
+});

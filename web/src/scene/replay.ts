@@ -4,9 +4,10 @@
 import type { Row } from '../../../src/shared/types';
 import type { TestTables } from '../../../src/psi/tables';
 import { PARTS, type PartKey } from './spec';
+import { testTime, type TestTime } from './timeline';
 
 /** values holds the raw table cell for each mapped part; an empty string means the row leaves it blank. */
-export interface ReplayStep { label: string; row: number; values: Partial<Record<PartKey, string>> }
+export interface ReplayStep { label: string; row: number; values: Partial<Record<PartKey, string>>; time: TestTime | null }
 export interface Replay { file: string; columns: Partial<Record<PartKey, string>>; steps: ReplayStep[] }
 
 const TABLE_QUOTE = /^Column "(.+?)" \((.+?\.csv)\):/i;
@@ -19,6 +20,8 @@ export function buildReplay(row: Row, tables: TestTables): Replay | null {
     if (m) byFile.set(m[2], { ...byFile.get(m[2]), [part]: m[1] });
   }
   const ranked = [...byFile.entries()].sort((a, b) => Object.keys(b[1]).length - Object.keys(a[1]).length);
+  // Tables no cell was quoted from can still be replayed when they say what happened during each test.
+  for (const t of tables.tables) if (!byFile.has(t.file)) ranked.push([t.file, {}]);
   for (const [file, wanted] of ranked) {
     const table = tables.tables.find((t) => t.file === file);
     if (!table) continue;
@@ -28,18 +31,19 @@ export function buildReplay(row: Row, tables: TestTables): Replay | null {
       const i = table.columns.indexOf(name);
       if (i >= 0) { index.push([part, i]); columns[part] = name; }
     }
-    if (!index.length) continue;
     const labelFromFirst = !index.some(([, i]) => i === 0);
     const steps: ReplayStep[] = [];
     table.rows.forEach((cells, r) => {
       const values: Partial<Record<PartKey, string>> = {};
       for (const [part, i] of index) values[part] = cells[i] ?? '';
-      if (!Object.values(values).some(Boolean)) return;
+      const time = testTime(table.columns, cells);
+      if (!time && !Object.values(values).some(Boolean)) return;
       const first = cells[0] ?? '';
-      const label = labelFromFirst && first && first.length <= 28 ? `${table.columns[0]} ${first}` : `Row ${r + 1}`;
-      steps.push({ label, row: r + 1, values });
+      const named = labelFromFirst && /test|run|#|id|no/i.test(table.columns[0]) && first && first.length <= 28;
+      const label = named ? `${table.columns[0]} ${first}` : `Row ${r + 1}`;
+      steps.push({ label, row: r + 1, values, time });
     });
-    if (steps.length) return { file, columns, steps };
+    if (steps.length && (index.length || steps.some((st) => st.time))) return { file, columns, steps };
   }
   return null;
 }

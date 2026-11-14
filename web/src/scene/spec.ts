@@ -6,13 +6,15 @@ import { unitFromQuote } from '../units';
 export const PARTS = ['type', 'fuel', 'sample', 'oxygen', 'pressure', 'airflow', 'hardware', 'sensors'] as const;
 export type PartKey = typeof PARTS[number];
 export type Shape = 'sphere' | 'sheet' | 'rod' | 'burner' | 'particles' | 'generic';
+/** The kind of material the stated words name; it picks the surface texture. 'plain' when the words name none. */
+export type Surface = 'fabric' | 'polymer' | 'liquid' | 'metal' | 'plain';
 
 export interface SceneSpec {
   psiId: string;
   name: string;
   gravity: 'micro' | 'ground' | null;
   /** sizes are in metres and used for proportions only; labels keep NASA's own text and units. */
-  sample: { stated: boolean; shape: Shape; sizes: number[] };
+  sample: { stated: boolean; shape: Shape; sizes: number[]; surface: Surface };
   /** min and max are in cm/s and drive the animation speed only. */
   airflow: { stated: boolean; quiescent: boolean; min: number | null; max: number | null };
   sensors: string[];
@@ -44,6 +46,22 @@ function shapeOf(c: Cell & { value: string }): Shape {
     if (at >= 0 && (!best || at < best.at)) best = { shape, at };
   }
   return best?.shape ?? 'generic';
+}
+
+const SURFACES: [Surface, RegExp][] = [
+  ['metal', /burner|tubes?/i],
+  ['fabric', /fabric|cotton|sibal|nomex|cloth|wick|fiberglass/i],
+  ['polymer', /pmma|acrylic|plastic|kapton|teflon|silicone|polymer|film/i],
+  ['liquid', /droplet|octane|heptane|methanol|decane|ethanol|dodecane|farnesane|liquid/i],
+];
+
+/** The sample's own words decide first; the fuel words decide only when the sample's name no material. */
+function surfaceOf(sample: Cell & { value: string }, fuel: Cell): Surface {
+  for (const text of [`${sample.value} ${columnName(sample)}`, fuel.value ?? '']) {
+    const hit = SURFACES.find(([, re]) => re.test(text));
+    if (hit) return hit[0];
+  }
+  return 'plain';
 }
 
 function sizesOf(c: Cell & { value: string }): number[] {
@@ -89,8 +107,8 @@ export function buildSceneSpec(row: Row): SceneSpec {
     name: row.name.value ?? '',
     gravity: /microgravity/i.test(type) ? 'micro' : /ground/i.test(type) ? 'ground' : null,
     sample: stated(row.sample)
-      ? { stated: true, shape: shapeOf(row.sample), sizes: sizesOf(row.sample) }
-      : { stated: false, shape: 'generic', sizes: [] },
+      ? { stated: true, shape: shapeOf(row.sample), sizes: sizesOf(row.sample), surface: surfaceOf(row.sample, row.fuel) }
+      : { stated: false, shape: 'generic', sizes: [], surface: 'plain' },
     airflow: airflowOf(row.airflow),
     sensors: sensorsOf(row.sensors),
     parts,

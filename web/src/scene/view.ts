@@ -4,6 +4,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { charMaterial, glowTexture, probeMaterial, sampleMaterial, sensorMaterial } from './materials';
 import type { PartKey, SceneSpec } from './spec';
 
 export interface SceneHandle {
@@ -11,6 +13,9 @@ export interface SceneHandle {
   highlight(part: PartKey | null): void;
   /** Shows one test's values (labels, airflow speed, sample size), or restores the overview when step is null. */
   replay(step: SceneSpec | null, maxSampleSize?: number): void;
+  /** One instant of a test: how strongly it glows (0 to 1), the sample scale, the burned share of a sheet, a state caption. */
+  moment(m: { glow: number; scale?: number; burned?: number; state?: string } | null): void;
+  setLabel(part: PartKey, text: string, stated?: boolean): void;
 }
 
 const FLAME = 0xff8a3d;
@@ -43,10 +48,16 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
   controls.minDistance = 4;
   controls.maxDistance = 16;
   controls.autoRotate = !reduceMotion;
-  controls.autoRotateSpeed = 0.7;
+  controls.autoRotateSpeed = 1.5;
   controls.addEventListener('start', () => { controls.autoRotate = false; });
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+  // A neutral studio environment gives the glass, liquid and metal surfaces something to reflect.
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environment = envMap;
+  scene.environmentIntensity = 0.55;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  scene.add(new THREE.AmbientLight(0xffffff, 0.45));
   const sun = new THREE.DirectionalLight(0xffffff, 1.4);
   sun.position.set(3, 5, 4);
   scene.add(sun);
@@ -58,6 +69,8 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
   const labelEls = new Map<PartKey, HTMLElement[]>();
   const tick: ((t: number, dt: number) => void)[] = [];
   let replaying = false;
+  let scaleTarget = 1;
+  const burn = { glow: 0, frontX: 0, sheetLen: 0, char: null as THREE.Mesh | null };
   const flow = { lo: spec.airflow.min ?? 10, hi: spec.airflow.max ?? spec.airflow.min ?? 10, streaks: null as THREE.LineSegments | null };
 
   function tag(obj: THREE.Object3D, part: PartKey) {
@@ -100,7 +113,7 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
   // Oxygen and pressure: the stated atmosphere, shown as two probes on the enclosure.
   for (const [part, x] of [['oxygen', -BOX.x], ['pressure', BOX.x]] as [PartKey, number][]) {
     const on = spec.parts[part].stated;
-    const probe = new THREE.Mesh(new THREE.OctahedronGeometry(0.13), on ? solid(COOL) : ghost());
+    const probe = new THREE.Mesh(new THREE.OctahedronGeometry(0.13), on ? probeMaterial() : ghost());
     probe.position.set(x, BOX.y, BOX.z);
     scene.add(tag(probe, part));
     if (on && !reduceMotion) tick.push((t) => { probe.rotation.y = t * 0.9; });
@@ -116,8 +129,8 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
   function buildSample(): THREE.Object3D {
     const s = spec.sample;
     const fuelOn = spec.parts.fuel.stated;
-    const mat = () => (s.stated ? solid(fuelOn ? FLAME : 0xb9c4d0) : ghost());
     const sizes = [...s.sizes].sort((a, b) => b - a);
+    const mat = (repeat?: [number, number]) => (s.stated ? sampleMaterial(s.surface, fuelOn, repeat) : ghost());
     const group = new THREE.Group();
     let mesh: THREE.Object3D;
     if (!s.stated) {
@@ -125,15 +138,24 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
     } else if (s.shape === 'sheet') {
       const aspect = sizes.length >= 2 ? clamp(sizes[0] / sizes[1], 1, 4.5) : 2;
       const len = 2.6;
-      mesh = new THREE.Mesh(new THREE.BoxGeometry(len, len / aspect, 0.04), mat());
+      const h = len / aspect;
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(len, h, 0.04), mat([6, 6 / aspect]));
+      // The burned part of the sheet grows from the upstream edge as a test plays.
+      const charGeo = new THREE.BoxGeometry(len, h * 1.004, 0.052);
+      charGeo.translate(len / 2, 0, 0);
+      const charred = new THREE.Mesh(charGeo, charMaterial([6, 6 / aspect]));
+      charred.position.x = -len / 2;
+      charred.visible = false;
+      group.add(charred);
+      burn.char = charred;
+      burn.sheetLen = len;
     } else if (s.shape === 'rod') {
-      mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 2.2, 24), mat());
+      mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 2.2, 32), mat([4, 1]));
       mesh.rotation.z = Math.PI / 2;
     } else if (s.shape === 'burner') {
       const g = new THREE.Group();
-      const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 1.1, 32, 1, true), mat());
-      (tube.material as THREE.Material).side = THREE.DoubleSide;
-      const top = new THREE.Mesh(new THREE.CircleGeometry(0.32, 32), mat());
+      const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 1.1, 48, 1, true), mat([2, 1]));
+      const top = new THREE.Mesh(new THREE.CircleGeometry(0.32, 48), mat([1, 1]));
       top.rotation.x = -Math.PI / 2;
       top.position.y = 0.55;
       g.add(tube, top);
@@ -151,14 +173,14 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
       mesh = new THREE.Points(geo, new THREE.PointsMaterial({ color: FLAME, size: 0.05, transparent: true, opacity: 0.9 }));
       if (!reduceMotion) tick.push((t) => { mesh.rotation.y = t * 0.25; });
     } else if (s.shape === 'sphere') {
-      mesh = new THREE.Mesh(new THREE.SphereGeometry(0.55, 48, 32), mat());
+      mesh = new THREE.Mesh(new THREE.SphereGeometry(0.55, 64, 48), mat([3, 2]));
     } else {
-      mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.5, 0), mat());
+      mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.5, 0), mat([1, 1]));
     }
     // A stated size range (for example droplet diameters 1.5 to 5 mm) sweeps between its smallest and largest value.
     if (s.stated && sizes.length >= 2 && (s.shape === 'sphere' || s.shape === 'burner') && !reduceMotion) {
       const lo = clamp(sizes[sizes.length - 1] / sizes[0], 0.3, 1);
-      tick.push((t) => { if (!replaying) group.scale.setScalar(lo + (1 - lo) * (0.5 + 0.5 * Math.sin(t * 0.9))); });
+      tick.push((t) => { if (!replaying) scaleTarget = lo + (1 - lo) * (0.5 + 0.5 * Math.sin(t * 0.9)); });
     }
     group.add(mesh);
     mesh.traverse((o) => { if ((o as THREE.Mesh).isMesh || (o as THREE.Points).isPoints) tag(o, 'sample'); });
@@ -220,7 +242,7 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
     items.forEach((name, i) => {
       const x = items.length === 1 ? -1.7 : -2.3 + (4.6 * i) / (items.length - 1);
       const at = new THREE.Vector3(x, 1.25, i % 2 ? 1.3 : -1.3);
-      const cone = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.36, 20), on ? solid(OK) : ghost());
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.36, 28), on ? sensorMaterial() : ghost());
       cone.position.copy(at);
       cone.lookAt(0, 0, 0);
       cone.rotateX(-Math.PI / 2);
@@ -245,6 +267,31 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
     }
     label('type', spec.gravity === 'ground' ? `1 g · ${short(spec.parts.type.text, 30)}` : partLabel('type'), at);
   }
+
+  // Burning: a glow and a warm light mark when a test was burning (its stated burn time). The glow says "when",
+  // not "what shape": PSI gives no flame geometry.
+  const haloMat = new THREE.SpriteMaterial({ map: glowTexture(), color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+  const halo = new THREE.Sprite(haloMat);
+  halo.scale.setScalar(2.4);
+  scene.add(halo);
+  const fire = new THREE.PointLight(FLAME, 0, 7, 1.6);
+  scene.add(fire);
+  const stateEl = document.createElement('div');
+  stateEl.className = 's3d-state';
+  stateEl.hidden = true;
+  const stateObj = new CSS2DObject(stateEl);
+  stateObj.position.set(0, -1.5, 0);
+  scene.add(stateObj);
+  tick.push((t, dt) => {
+    const k = Math.min(1, dt * 9);
+    sample.scale.setScalar(sample.scale.x + (scaleTarget - sample.scale.x) * k);
+    const flicker = 0.86 + 0.14 * Math.sin(t * 19) * Math.sin(t * 7.3);
+    haloMat.opacity += (burn.glow * flicker * 0.95 - haloMat.opacity) * k;
+    halo.position.x += (burn.frontX - halo.position.x) * k;
+    halo.scale.setScalar((1.5 + 1.3 * burn.glow) * (0.6 + 0.4 * sample.scale.x) * flicker);
+    fire.position.set(halo.position.x, 0.2, 0.6);
+    fire.intensity = haloMat.opacity * 9;
+  });
 
   // Picking: a click (not a drag) on a part selects it; the enclosure is chosen only when nothing else is hit.
   const ray = new THREE.Raycaster();
@@ -306,7 +353,25 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
       flow.hi = shown.airflow.max ?? flow.lo;
       if (flow.streaks) flow.streaks.visible = shown.airflow.stated && !shown.airflow.quiescent;
       const size = step?.sample.sizes.length ? Math.max(...step.sample.sizes) : 0;
-      sample.scale.setScalar(size && maxSampleSize ? clamp(size / maxSampleSize, 0.25, 1) : 1);
+      scaleTarget = size && maxSampleSize ? clamp(size / maxSampleSize, 0.25, 1) : 1;
+    },
+    moment(m) {
+      burn.glow = m?.glow ?? 0;
+      if (m?.scale !== undefined) scaleTarget = m.scale;
+      const burned = m?.burned;
+      if (burn.char) {
+        burn.char.visible = burned !== undefined && burned > 0.002;
+        if (burn.char.visible) burn.char.scale.x = burned!;
+      }
+      burn.frontX = burned !== undefined && burn.sheetLen ? -burn.sheetLen / 2 + burned * burn.sheetLen : 0;
+      stateEl.textContent = m?.state ?? '';
+      stateEl.hidden = !m?.state;
+    },
+    setLabel(part, text, stated = true) {
+      const e = labelEls.get(part)?.[0];
+      if (!e) return;
+      e.textContent = `${LABELS[part]} · ${short(text)}`;
+      e.classList.toggle('ns', !stated);
     },
     highlight(part) {
       for (const [p, els] of labelEls) for (const e of els) e.classList.toggle('active', p === part);
@@ -318,8 +383,13 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
       scene.traverse((o) => {
         const m = o as THREE.Mesh;
         m.geometry?.dispose?.();
-        for (const mat of ([] as THREE.Material[]).concat(m.material ?? [])) mat.dispose?.();
+        for (const mat of ([] as THREE.Material[]).concat(m.material ?? [])) {
+          (mat as THREE.MeshStandardMaterial).map?.dispose?.();
+          mat.dispose?.();
+        }
       });
+      envMap.dispose();
+      pmrem.dispose();
       renderer.dispose();
       renderer.domElement.remove();
       labels.domElement.remove();
