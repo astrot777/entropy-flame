@@ -11,8 +11,8 @@
     "test": "vitest run",
     "build": "vite build",
     "dev": "vite",
-    "start": "tsx src/api/server.node.ts",
-    "api": "tsx --env-file=.env src/api/server.node.ts",
+    "start": "node --import tsx src/api/server.node.ts",
+    "api": "node --env-file=.env --import tsx src/api/server.node.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
