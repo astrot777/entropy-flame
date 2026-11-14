@@ -24,7 +24,7 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-  camera.position.set(6.1, 3.1, 7.3);
+  camera.position.set(6.7, 3.4, 8.0);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -87,7 +87,7 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
     scene.add(edges);
     const faces = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: hw ? COOL : GREY, transparent: true, opacity: 0.035, side: THREE.BackSide, depthWrite: false }));
     scene.add(tag(faces, 'hardware'));
-    label('hardware', partLabel('hardware'), new THREE.Vector3(0, BOX.y + 0.28, 0));
+    label('hardware', partLabel('hardware'), new THREE.Vector3(0, BOX.y + 0.6, 0));
   }
 
   // Oxygen and pressure: the stated atmosphere, shown as two probes on the enclosure.
@@ -230,7 +230,7 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
 
   // Type: a ground study gets a gravity arrow; a microgravity study gets none.
   {
-    const at = new THREE.Vector3(BOX.x - 0.6, -BOX.y - 0.32, BOX.z);
+    const at = spec.gravity === 'ground' ? new THREE.Vector3(BOX.x + 0.55, 0.85, 0) : new THREE.Vector3(BOX.x, BOX.y + 0.3, -BOX.z);
     if (spec.gravity === 'ground') {
       const g = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(BOX.x + 0.55, 0.6, 0), 1.3, 0xe5b454, 0.3, 0.16);
       scene.add(g);
