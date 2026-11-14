@@ -1,0 +1,1415 @@
+{
+  "meta": {
+    "generatedAt": "2026-11-14T06:41:52.291Z",
+    "generatedBy": "Extracted by claude-opus-5-5 (Anthropic Claude, an SI model) from NASA PSI records, then every cell checked by code against its source quote. Not reviewed by a person unless marked reviewed.",
+    "source": "NASA Physical Sciences Informatics (PSI), https://psi.nasa.gov"
+  },
+  "rows": [
+    {
+      "psiId": {
+        "value": "PSI-10",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "name": {
+        "value": "ACME/Flame Design",
+        "quote": "Acronym: ACME/Flame Design",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To learn when ethylene and methane spherical diffusion flames start to form soot and when they extinguish, and how flow rate, dilution, stoichiometric mixture fraction and pressure affect this.",
+        "quote": "Obtain soot-inception limits of quasi-steady normal and inverse spherical diffusion flames as functions of flow rate, Zst, amount of inert (N2 or CO2), and pressure for C2H4 and CH4 flames.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "not stated"
+      },
+      "fuel": {
+        "value": "C2H4 and CH4",
+        "quote": "Obtain detailed measurements in quasi-steady normal and inverse spherical diffusion flames for C2H4 and CH4.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "spherical diffusion flame",
+        "quote": "Perform spherical diffusion flame tests in drop towers and aboard the International Space Station.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": "0.198048193 to 0.4",
+        "quote": "Column \"XO2 (init)\" (PSI-10_Experimental table_Flame Design_Normal Flame.csv): 0.198048193 to 0.4 across 207 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "pressure": {
+        "value": "0.931972789 to 1.29695676",
+        "quote": "Column \"pinit (atm)\" (PSI-10_Experimental table_Flame Design_Normal Flame.csv): 0.931972789 to 1.29695676 across 207 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "airflow": {
+        "value": "0.312674102 to 21.54065076",
+        "quote": "Column \"mtot (mg/s)\" (PSI-10_Experimental table_Flame Design_Normal Flame.csv): 0.312674102 to 21.54065076 across 147 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Advanced Combustion via Microgravity Experiments (ACME), Combustion Integrated Rack (CIR)",
+        "quote": "Experiment hardware: Advanced Combustion via Microgravity Experiments (ACME), Combustion Integrated Rack (CIR), Reconfiguration of Combustion Integrated Rack (CIR)",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "cameras, radiometers, photomultiplier tubes, and thermocouples",
+        "quote": "Observe the flames with a broad suite of cameras, radiometers, photomultiplier tubes, and thermocouples.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-20",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "name": {
+        "value": "ACME BRE",
+        "quote": "Acronym: ACME BRE",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To find out under which material-property conditions fuels can keep burning in still microgravity air, and where those flames go out.",
+        "quote": "The BRE flight program seeks to establish the burning conditions in a quiescent microgravity ambient in terms of material properties.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Prevention",
+        "quote": "While BRE’s results are still preliminary, they suggest that NASA may want to increase use of its alternative flammability Test 2, with the cone calorimeter, where that test can measure material properties corresponding to the microgravity flames observed with the BRE burner.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "CH4/N2 and C2H4/N2mixtures",
+        "quote": "Observe burning behavior in long-duration microgravity for CH4/N2 and C2H4/N2mixtures on porous circular burners of 25  and 50 mm diameter.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "porous circular burners of 25  and 50 mm diameter",
+        "quote": "Observe burning behavior in long-duration microgravity for CH4/N2 and C2H4/N2mixtures on porous circular burners of 25  and 50 mm diameter.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": "21 % oxygen: 10.2 psia, 26.5 %; and 8.2 psia, 34 % oxygen",
+        "quote": "NASA - considered atmosphere for human space missions will be examined: 14.7 psia, 21 % oxygen: 10.2 psia, 26.5 %; and 8.2 psia, 34 % oxygen.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "pressure": {
+        "value": "14.7 psia",
+        "quote": "NASA - considered atmosphere for human space missions will be examined: 14.7 psia, 21 % oxygen: 10.2 psia, 26.5 %; and 8.2 psia, 34 % oxygen.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "airflow": {
+        "value": "quiescent",
+        "quote": "The BRE flight program seeks to establish the burning conditions in a quiescent microgravity ambient in terms of material properties.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Combustion Integrated Rack (CIR), ACME",
+        "quote": "Experiment hardware: Combustion Integrated Rack (CIR), ACME",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "heat flux sensor",
+        "quote": "Eventually either the flame will extinguish, the surface temperature of the burner will equilibrate, or the temperature limit of the heat flux sensor will be reached.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-20",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-21",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "stated"
+      },
+      "name": {
+        "value": "ACME CLD Flame",
+        "quote": "Acronym: ACME CLD Flame",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To characterize weak coflow methane and ethylene diffusion flames and their sooting tendencies across velocity and fuel dilution, providing data to test computational models.",
+        "quote": "A) Characterize the behavior of weak coflow diffusion flames of methane and ethylene, as a function of velocity and fuel dilution, through measurement of flame shape, lift-off heights, temperatures and extinction limits.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Suppression",
+        "quote": "In addition, an understanding of those factors that affect flame extinction in diffusion flames is critical in the suppression of fires and in improving engine efficiency.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "methane and ethylene",
+        "quote": "Experimentally, we plan to study methane and ethylene diffusion flames over a wide range of test conditions.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "stated"
+      },
+      "sample": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "not stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "not stated"
+      },
+      "hardware": {
+        "value": "Combustion Integrated Rack (CIR), ACME",
+        "quote": "Experiment hardware: Combustion Integrated Rack (CIR), ACME",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "thin-filament pyrometry",
+        "quote": "Flame temperatures in non-sooting regions will be measured using thin-filament pyrometry.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-22",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "stated"
+      },
+      "name": {
+        "value": "ACME E-FIELD Flames",
+        "quote": "Acronym: ACME E-FIELD Flames",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To learn how electric fields affect laminar diffusion flames in microgravity, including ion current, flame response, soot formation and lifted flames.",
+        "quote": "The objective of this investigation is to better understand the relationship between electric field voltage and chemi-ion current, analyze the dynamic response of flames to electric field changes, evaluate soot formation, and characterize stabilized near-limit lifted flames.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "not stated"
+      },
+      "fuel": {
+        "value": "Methane and ethylene",
+        "quote": "Methane and ethylene were used as fuels and diluted with nitrogen to control flame strength.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "gas-jet burner",
+        "quote": "The gas-jet burner is used to create a small, focused flame for detailed ion-driven convection studies while the coflow burner surrounds the fuel jet with a weak synthetic air flow to enable flame stability and soot behavior analysis.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": "weak synthetic air flow",
+        "quote": "The gas-jet burner is used to create a small, focused flame for detailed ion-driven convection studies while the coflow burner surrounds the fuel jet with a weak synthetic air flow to enable flame stability and soot behavior analysis.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Combustion Integrated Rack (CIR), ACME",
+        "quote": "Experiment hardware: Combustion Integrated Rack (CIR), ACME",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "High-resolution cameras",
+        "quote": "High-resolution cameras captured flame shape, luminosity, and soot distribution.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-22",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-23",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "stated"
+      },
+      "name": {
+        "value": "ACME s-Flame",
+        "quote": "Acronym: ACME s-Flame",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To measure the structure, extinction limits and pulsating instabilities of spherical diffusion flames and compare them with detailed computer simulations of transport and chemical kinetics.",
+        "quote": "A series of experiments is proposed with the following specific objectives, in both soot-free and sooty flames, to compare with detailed computational simulation to assess transport properties and detailed chemical kinetics (including chemiluminescence):",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "not stated"
+      },
+      "fuel": {
+        "value": "hydrogen, methane, and ethylene",
+        "quote": "Conventional gaseous fuels including hydrogen, methane, and ethylene will be used.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "spherical porous burner",
+        "quote": "A series of experiments is proposed in which mixtures of various gaseous fuels and diluents will be issued into an oxidizing environment through a spherical porous burner and ignited to obtain, nominally, a spherical, one-dimensional stabilized flame.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "not stated"
+      },
+      "hardware": {
+        "value": "Combustion Integrated Rack (CIR), ACME",
+        "quote": "Experiment hardware: Combustion Integrated Rack (CIR), ACME",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "spectrally resolved images, flame and burner temperatures, radiative flux measurements",
+        "quote": "Synchronized measurements are to be made including spectrally resolved images, flame and burner temperatures, radiative flux measurements, and system operating conditions (including reactant flow rates, ambient temperatures, pressures and acceleration levels, etc.).",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-25",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      },
+      "name": {
+        "value": "BASS-II",
+        "quote": "Acronym: BASS-II",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To study how solid fuels ignite, spread flame and extinguish in low-speed forced airflow in microgravity.",
+        "quote": "1) Study the ignition, flame growth, flame spread, and extinction limits for solid fuels burning in low-velocity forced flows in microgravity.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Prevention",
+        "quote": "BASS-II helps engineers select the safest materials and improve firefighting methods on future space missions.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "not stated"
+      },
+      "sample": {
+        "value": "rods, spherical section, slabs, films, and fabric sheets",
+        "quote": "• Sample geometry (rods, spherical section, slabs, films, and fabric sheets",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": "13.6 to 22.2",
+        "quote": "Column \"Calibrated  initial O2 % by vol\" (PSI-25_Experimental table_BASS-II.csv): 13.6 to 22.2 across 129 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": "up to 40 cm/s",
+        "quote": "Fuel samples were mounted inside a small wind tunnel which could impose airflow speeds up to 40 cm/s.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Microgravity Science Glovebox (MSG)",
+        "quote": "Experiment hardware: Microgravity Science Glovebox (MSG)",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "Radiometer",
+        "quote": "Column \"Radiometer gain   (1000   250   50   10)\" (PSI-25_Experimental table_BASS-II.csv): 10 to 1000 across 110 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-26",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "stated"
+      },
+      "name": {
+        "value": "BASS",
+        "quote": "Acronym: BASS",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To see how realistic, thicker materials burn during long-duration microgravity flames compared with ground tests, and how well an inert gas extinguishing agent puts those flames out.",
+        "quote": "Assess the effectiveness of an inert, gaseous extinguishing agent (similar to that used on ISS) in putting out flames over different materials, geometries, preheating, and flow.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Prevention",
+        "quote": "Current NASA spacecraft materials selection is based on a standard test method (NASA–STD–6001 Test 1) that segregates material based on 1-g behavior without consideration of low gravity effects.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "75% cotton and 25% fiberglass",
+        "quote": "Custom-made fabric samples consisting of 75% cotton and 25% fiberglass (by mass) measuring were used as a fuel source as well as Nomex fabric and Ultem.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "spheres and cylinders",
+        "quote": "Other sample shapes were utilized as well including spheres and cylinders.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": "as high as 40 cm/s",
+        "quote": "Airflow was controlled using a variable speed fan, with airflow speeds reaching as high as 40 cm/s.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Microgravity Science Glovebox",
+        "quote": "Experiment hardware: Microgravity Science Glovebox",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+        "status": "not stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-39",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "name": {
+        "value": "Cool Flames Investigation",
+        "quote": "Title: Cool Flames Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To study how n-dodecane and n-dodecane/iso-dodecane fuel droplets burn as cool flames across a range of pressures.",
+        "quote": "1) Examine the combustion behavior of n-dodecane and mixtures of n-dodecane/iso-dodecane at pressures ranging from 0.25 atm to 5 atm.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Prevention",
+        "quote": "Cool Flames Investigation (CFI) will provide critical validation for complex chemical kinetic mechanisms, advance the understanding of flame dynamics and instabilities in low-temperature combustion, and support the design of safer spacecraft systems by refining knowledge of combustion in microgravity environments.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "n-dodecane, farnesane, and mixtures of n-dodecane/iso-dodecane",
+        "quote": "Fuels observed include n-dodecane, farnesane, and mixtures of n-dodecane/iso-dodecane.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "Droplets of fuel",
+        "quote": "Droplets of fuel are dispensed and suspended between hypodermic needles or tethered using silicon-carbide fibers.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": "0.17 to 0.21",
+        "quote": "Column \"Oxygen\" (PSI-39_Experimental table_CFI.csv): 0.17 to 0.21 across 87 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "pressure": {
+        "value": "0.25 to 0.5 atm",
+        "quote": "A system of gas bottles and fuel syringes delivers the desired gas mixture to the combustion chamber ranging from 0.25 to 0.5 atm.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "airflow": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "not stated"
+      },
+      "hardware": {
+        "value": "Multi-User Droplet Combustion Apparatus (MDCA), Combustion Integrated Rack (CIR)",
+        "quote": "Experiment hardware: Multi-User Droplet Combustion Apparatus (MDCA), Combustion Integrated Rack (CIR)",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "black-and-white camera",
+        "quote": "Flames were observed with a black-and-white camera for droplet size measurements.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-47",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "stated"
+      },
+      "name": {
+        "value": "DAFT / DAFT-2",
+        "quote": "Acronym: DAFT / DAFT-2",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To test whether a modified P-Trak particle counter gives accurate aerosol counts in microgravity.",
+        "quote": "DAFT / DAFT-2 tests that a modified P-Trak particulate counter would be accurate in microgravity.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Detection",
+        "quote": "This research will impact the development of novel fire and smoke detection systems for the International Space Station and future spacecrafts.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "not stated"
+      },
+      "sample": {
+        "value": "15-liter Mylar bags",
+        "quote": "The aerosol was contained within 15-liter Mylar bags.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "not stated"
+      },
+      "hardware": {
+        "value": "TSI P-Trak",
+        "quote": "Experiment hardware: TSI P-Trak",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "DustTrak CNC",
+        "quote": "3) On-Orbit Testing: The modified P-Trak gathered data from counting aerosol particles and these data were compared to the DustTrak CNC specifically designed to work in microgravity.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-68",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "name": {
+        "value": "FLEX-2",
+        "quote": "Acronym: FLEX-2",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To gather benchmark data on how two-component fuel droplets burn and go out across many conditions, so that numerical simulations can be validated and new theoretical models developed.",
+        "quote": "The primary goal of the flight experiments is to provide benchmark experimental data on bi-component droplet combustion over a wide range of initial conditions that could be used to validate numerical simulations and to develop new theoretical models.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Suppression",
+        "quote": "Study flame extinction mechanisms and their boundaries.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "not stated"
+      },
+      "sample": {
+        "value": "1.5 to 5",
+        "quote": "Column \"Initial Droplet Diameter (mm)\" (PSI-68_Experimental table_Flex2.csv): 1.5 to 5 across 8 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": "between 0.1 to 0.4 mole fraction",
+        "quote": "The chamber was filled with the appropriate atmosphere, which was varied in pressure between 0.5 atm to 3.0 atm and O2 concentration between 0.1 to 0.4 mole fraction with the diluent gas making up the balance.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "pressure": {
+        "value": "between 0.5 atm to 3.0 atm",
+        "quote": "The chamber was filled with the appropriate atmosphere, which was varied in pressure between 0.5 atm to 3.0 atm and O2 concentration between 0.1 to 0.4 mole fraction with the diluent gas making up the balance.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "airflow": {
+        "value": "0.1 to 5",
+        "quote": "Column \"Flow Velocity (cm/s)\" (PSI-68_Experimental table_Flex2.csv): 0.1 to 5 across 8 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Combustion Integrated Rack (CIR), Multi-user Droplet Combustion Appartatus (MDCA)",
+        "quote": "Experiment hardware: Combustion Integrated Rack (CIR), Multi-user Droplet Combustion Appartatus (MDCA)",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "color camera video",
+        "quote": "A near real-time download of the color camera video was employed in order to verify successful droplet deployment, ignition, and overall progress of the experiment.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-69",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "name": {
+        "value": "FLEX",
+        "quote": "Acronym: FLEX",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To map the flammability limits of liquid fuel droplets in microgravity, measure how well gaseous suppressants such as CO2, He and SF6 work, and build predictive models of combustion limits.",
+        "quote": "The FLEX (Flame Extinguishment Experiment) investigation aims to map the flammability limits of liquid fuels in microgravity environments, measure the effectiveness of various gaseous fire suppressants such as CO2, He, and SF6, and develop reliable predictive models for combustion limits under reduced gravity conditions.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Suppression",
+        "quote": "A primary objective of the experiments is to determine the Limiting Oxygen Index (LOI) as a function of ambient pressure and determine how the presence of a suppressant influences the LOI .",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "liquid fuels",
+        "quote": "The FLEX (Flame Extinguishment Experiment) investigation aims to map the flammability limits of liquid fuels in microgravity environments, measure the effectiveness of various gaseous fire suppressants such as CO2, He, and SF6, and develop reliable predictive models for combustion limits under reduced gravity conditions.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "1.1 to 4.67",
+        "quote": "Column \"Droplet initial diameter; mm\" (PSI-69_Experimental table_FLEX.csv): 1.1 to 4.67 across 262 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": "0.12 to 0.34",
+        "quote": "Column \"O initial ambient composition; mole fraction\" (PSI-69_Experimental table_FLEX.csv): 0.12 to 0.34 across 274 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "pressure": {
+        "value": "0 to 2319.9",
+        "quote": "Column \"Ambient pressure; mmHg\" (PSI-69_Experimental table_FLEX.csv): 0 to 2319.9 across 274 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "airflow": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "not stated"
+      },
+      "hardware": {
+        "value": "Combustion Integrated Rack (CIR)-Fluids and Combustion Facility (FCF), Multi-user Droplet Combustion Appartatus (MDCA)",
+        "quote": "Experiment hardware: Combustion Integrated Rack (CIR)-Fluids and Combustion Facility (FCF), Multi-user Droplet Combustion Appartatus (MDCA)",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+        "status": "not stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-98",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "name": {
+        "value": "SAFFIRE-I",
+        "quote": "Acronym: SAFFIRE-I",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To learn how fast a large fire grows in low gravity and how low-gravity flammability limits compare with NASA's normal-gravity material screening test.",
+        "quote": "(1) determine how rapidly a large scale fire grows in low-gravity and (2) investigate the low-g flammability limits compared to those obtained in NASA’s normal",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Prevention",
+        "quote": "Results determine microgravity flammability limits for several spacecraft materials, help to validate NASA’s material selection criteria, and how microgravity and limited oxygen affect flame size.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "Sibal consisting of cotton on a fiberglass substrate",
+        "quote": "The sample material for Saffire-I is a composite fabric called Sibal consisting of cotton on a fiberglass substrate (75% cotton, 25% fiberglass by weight).",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "approximately 0.94 meters long and 0.4 meters wide",
+        "quote": "The sample was approximately 0.94 meters long and 0.4 meters wide, simulating a large piece of flammable fabric.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": "21.5 to 21.7",
+        "quote": "Column \"Percent O2\" (PSI-98_Experimental table_SAFFIRE-1.csv): 21.5 to 21.7 across 2 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": "20 cm/s",
+        "quote": "Saffire-I was conducted at an air flow velocity of 20 cm/s.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Saffire 1 enclosure in Cygnus",
+        "quote": "Experiment hardware: Saffire 1 enclosure in Cygnus",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "thermocouples provided flow, flame, and plume temperatures, two radiometers recorded flame radiation, solid state sensors were used to measure pressure, CO2 and O2 mole faction, and two anemometer tracked flow velocity",
+        "quote": "In addition, thermocouples provided flow, flame, and plume temperatures, two radiometers recorded flame radiation, solid state sensors were used to measure pressure, CO2 and O2 mole faction, and two anemometer tracked flow velocity.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-99",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "name": {
+        "value": "SAFFIRE-II",
+        "quote": "Acronym: SAFFIRE-II",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To learn how fast a large fire grows in low gravity and how low-gravity flammability limits compare with NASA's normal-gravity material screening test.",
+        "quote": "The objectives of SAFFIRE-II are to determine how rapidly a large scale fire grows in low-gravity and to investigate the low-g flammability limits compared to those obtained in NASA’s normal gravity material flammability screening test.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Prevention",
+        "quote": "Results determine microgravity flammability limits for several spacecraft materials, help to validate NASA’s material selection criteria, and how microgravity and limited oxygen affect flame size.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "SIBAL, silicone, structure PMMA, flat PMMA, and PMMA with Nomex",
+        "quote": "As a follow on to the Saffire-I investigation, the Saffire-II investigation added more samples including SIBAL, silicone, structure PMMA, flat PMMA, and PMMA with Nomex.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "9 samples, each 5 cm x 29 cm",
+        "quote": "Saffire-II has a sample card that contains 9 samples, each 5 cm x 29 cm.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": "21.5 to 22.1",
+        "quote": "Column \"Percent O2 (Note 1)\" (PSI-99_Experimental table_SAFFIRE-2.csv): 21.5 to 22.1 across 9 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": "either 20 or 30 cm/s",
+        "quote": "Depending on the sample material, the Saffire-II was conducted at an air flow velocity of either 20 or 30 cm/s, the flow being either concurrent or opposed.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Cygnus Pressurized Cargo Module, SAFFIRE",
+        "quote": "Experiment hardware: Cygnus Pressurized Cargo Module, SAFFIRE",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+        "status": "not stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-100",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "stated"
+      },
+      "name": {
+        "value": "SAFFIRE-III",
+        "quote": "Acronym: SAFFIRE-III",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "Measure how fast a large fire grows in low gravity and compare low-gravity flammability limits with those from NASA's normal-gravity screening test.",
+        "quote": "(1) determine how rapidly a large scale fire grows in low-gravity and (2) investigate the low-g flammability limits compared to those obtained in NASA’s normal gravity material flammability screening test.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Prevention",
+        "quote": "Results determine microgravity flammability limits for several spacecraft materials, help to validate NASA’s material selection criteria, and how microgravity and limited oxygen affect flame size.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "SIBAL",
+        "quote": "As a follow on to the Saffire 1 investigation, the Saffire III investigation also used SIBAL as the sample material.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "stated"
+      },
+      "sample": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "not stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": "30 cm/s",
+        "quote": "However, the experiments were conducted at a flow velocity of 30 cm/s compared to 20 cm/s during Saffire I.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Saffire III enclosure in Cygnus",
+        "quote": "Experiment hardware: Saffire III enclosure in Cygnus",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "thermocouples provided flow, flame, and plume temperatures, two radiometers recorded flame radiation, solid state sensors were used to measure pressure, CO2 and O2 mole faction, and two anemometer tracked flow velocity",
+        "quote": "In addition, thermocouples provided flow, flame, and plume temperatures, two radiometers recorded flame radiation, solid state sensors were used to measure pressure, CO2 and O2 mole faction, and two anemometer tracked flow velocity.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-101",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "stated"
+      },
+      "name": {
+        "value": "SAME-R",
+        "quote": "Acronym: SAME-R",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To measure how large liquid smoke particles grow in low gravity and relate their size distribution to smoke generation and transport conditions.",
+        "quote": "Similar to the original SAME investigation, the primary objective of the SAME-R investigation was to quantify the sizes that the liquid smoke particulate achieves in low gravity and to relate the droplet size distribution to the smoke generation and smoke transport conditions in the experiment.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Detection",
+        "quote": "Along with the results from the original SAME investigation, the results from SAME-R can lead to technology for an advanced fire detector for future spacecraft that will be used for long duration missions.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "Pyrell®, an intumescent fire-retardant foam",
+        "quote": "Pyrell®, an intumescent fire-retardant foam by Foamex, was introduced to replace DBP samples, 2) test conditions were broadened including higher heating temperatures and no-flow during sample heating time, and 3) a new instrument, M-pass, developed in-house GRC, was used to replace one of the two Commercial Diagnostic Enclosures that includes a DustTrak and an ionization detector used in SAME.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "stated"
+      },
+      "sample": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "not stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": "0 to 8.1",
+        "quote": "Column \"Inlet velocity (cm/s)\" (PSI-101_Experimental table_SAME-R.csv): 0 to 8.1 across 109 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Comparitive Soot Diagnostic Hardware",
+        "quote": "Experiment hardware: Comparitive Soot Diagnostic Hardware; Refer to final report",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "M-pass",
+        "quote": "Pyrell®, an intumescent fire-retardant foam by Foamex, was introduced to replace DBP samples, 2) test conditions were broadened including higher heating temperatures and no-flow during sample heating time, and 3) a new instrument, M-pass, developed in-house GRC, was used to replace one of the two Commercial Diagnostic Enclosures that includes a DustTrak and an ionization detector used in SAME.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-102",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "stated"
+      },
+      "name": {
+        "value": "SAME",
+        "quote": "Acronym: SAME",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To measure how large liquid smoke particles grow in low gravity and link their size distribution to how the smoke is generated and transported.",
+        "quote": "One of the major goals of this investigation was to quantify the sizes that the liquid smoke particulate achieves in low gravity and to relate the droplet size distribution to the smoke generation and smoke transport conditions in the experiment.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Detection",
+        "quote": "The SAME experiment will provide technology for an advanced fire detector for future spacecraft that will be used for long duration missions.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "overheated  spacecraft materials",
+        "quote": "The measurements were made using smoke generated by overheated  spacecraft materials where variables such as the sample temperature, flow field, and particle aging time were more rigorously controlled.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "stated"
+      },
+      "sample": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "not stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": "5 to 10",
+        "quote": "Column \"Air Flow (cm/s)\" (PSI-102_Experimental table_SAME.csv): 5 to 10 across 4 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Comparitive Soot Diagnostic Hardware",
+        "quote": "Experiment hardware: Comparitive Soot Diagnostic Hardware",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "two smoke detectors",
+        "quote": "The operator then ran the self diagnostic procedures on the two smoke detectors and activated the video cameras, turned on the igniter for a predefined period of time (15 to 60 seconds), and initiated the thermophoretic soot samplers to sample the smoke.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-106",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "stated"
+      },
+      "name": {
+        "value": "SLICE",
+        "quote": "Acronym: SLICE",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "To better understand how laminar diffusion flames are structured and stay stable in microgravity.",
+        "quote": "Objective: The objective of this investigation is to better understand the structure and stability of laminar diffusion flames in microgravity.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Prevention",
+        "quote": "3. Insights into flame stability and behavior to enhance fire safety.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "methane, ethylene, and nitrogen-diluted mixtures",
+        "quote": "This setup used several fuels such as methane, ethylene, and nitrogen-diluted mixtures.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "exchangeable burner tubes",
+        "quote": "The SLICE apparatus consisted of a fan-driven flow duct, exchangeable burner tubes, and integrated sensors to measure flow rates and temperature.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "not stated"
+      },
+      "hardware": {
+        "value": "fan-driven flow duct",
+        "quote": "The SLICE apparatus consisted of a fan-driven flow duct, exchangeable burner tubes, and integrated sensors to measure flow rates and temperature.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "A high resolution camera",
+        "quote": "A high resolution camera captured still images while sensor data was overlaid on these images.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-107",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      },
+      "name": {
+        "value": "SPICE",
+        "quote": "Acronym: SPICE",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "Find the smoke points of non-buoyant laminar jet diffusion flames in microgravity under different co-flow conditions.",
+        "quote": "(1) Identify the laminar smoke-point properties of non-buoyant jet diffusion flames under various co-flow conditions in microgravity.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": "Prevention",
+        "quote": "(1) Will improve our understanding of soot formation mechanisms and help design safer spacecraft environments.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      },
+      "fuel": {
+        "value": "methane, ethylene, propane, propylene, and propylene mixtures",
+        "quote": "Fuels tested included methane, ethylene, propane, propylene, and propylene mixtures.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "burner diameters of 0.41 mm, 0.76 mm, and 1.6 mm",
+        "quote": "Each flame was ignited in a controlled co-flow air environment, with burner diameters of 0.41 mm, 0.76 mm, and 1.6 mm and co-flow velocities ranging from 5.4 cm/s to 65 cm/s.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "not stated"
+      },
+      "pressure": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "not stated"
+      },
+      "airflow": {
+        "value": "5.4 cm/s to 65 cm/s",
+        "quote": "Each flame was ignited in a controlled co-flow air environment, with burner diameters of 0.41 mm, 0.76 mm, and 1.6 mm and co-flow velocities ranging from 5.4 cm/s to 65 cm/s.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "Microgravity Science Glovebox (MSG)",
+        "quote": "Experiment hardware: Microgravity Science Glovebox (MSG)",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "still and video cameras",
+        "quote": "Data such as flame lengths were recorded using still and video cameras.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+        "status": "stated"
+      }
+    },
+    {
+      "psiId": {
+        "value": "PSI-159",
+        "quote": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "name": {
+        "value": "ACME CFI-G",
+        "quote": "Acronym: ACME CFI-G",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "type": {
+        "value": "Microgravity Investigation",
+        "quote": "Project type: Microgravity Investigation",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "objectives": {
+        "value": "Find the conditions under which cool diffusion flames occur for propane, n-butane and n-pentane in normal and inverse flames.",
+        "quote": "Determine the conditions for which cool diffusion flames occur for propane, n-butane, and n-pentane; normal and inverse flames; and a broad range of Zst, Tad, and fluent flow rate.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "pillar": {
+        "value": null,
+        "quote": null,
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "not stated"
+      },
+      "fuel": {
+        "value": "propane, n-butane, and n-pentane",
+        "quote": "Determine the conditions for which cool diffusion flames occur for propane, n-butane, and n-pentane; normal and inverse flames; and a broad range of Zst, Tad, and fluent flow rate.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "sample": {
+        "value": "spherical porous burners",
+        "quote": "1. Steady-state cool diffusion flames on spherical porous burners.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "oxygen": {
+        "value": "0.179685675 to 0.3997",
+        "quote": "Column \"XO2 before test\" (PSI-159_Experimental table_CFI-G_Normal Flames.csv): 0.179685675 to 0.3997 across 179 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "pressure": {
+        "value": "0.50665 to 3.0399",
+        "quote": "Column \"approx p (bar)\" (PSI-159_Experimental table_CFI-G_Normal Flames.csv): 0.50665 to 3.0399 across 179 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "airflow": {
+        "value": "0.931125707 to 9.084062394",
+        "quote": "Column \"O2 flow rate (mg/s)\" (PSI-159_Experimental table_CFI-G_Inverse Flames.csv): 0.931125707 to 9.084062394 across 154 rows",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "hardware": {
+        "value": "ACME, Combustion Integrated Rack (CIR)",
+        "quote": "Experiment hardware: ACME, Combustion Integrated Rack (CIR)",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      },
+      "sensors": {
+        "value": "cameras, radiometers, photomultiplier tubes, and thermocouples",
+        "quote": "Observe the flames with a broad suite of cameras, radiometers, photomultiplier tubes, and thermocouples.",
+        "source": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+        "status": "stated"
+      }
+    }
+  ]
+}

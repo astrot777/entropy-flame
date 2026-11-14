@@ -34,6 +34,7 @@ export function buildPrompt(doc: PsiDocument): { system: string; user: string } 
     'Rules:',
     '- quote must be copied word for word from the document: a sentence, or a line of a table summary. Never paraphrase a quote.',
     '- For every field except objectives and pillar, value must appear word for word inside its quote.',
+    '- Keep value short: the few words or the number range that answer the field (for example "21.5 to 21.7" or "20 cm/s" or "ethane"), never the whole sentence or the whole table line.',
     '- Copy numbers with their units exactly as written. Never convert units or compute new numbers.',
     '- Lines that start with Column "..." summarise the test tables; quote such a line when it is the evidence.',
     '- If the document does not say, use null for both value and quote. Do not guess.',
