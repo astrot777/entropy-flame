@@ -95,6 +95,7 @@ Entropy uses the following open-source code and resources:
 - [Vitest](https://vitest.dev/) and [jsdom](https://www.npmjs.com/package/jsdom) (MIT): tests
 - [tsx](https://www.npmjs.com/package/tsx) (MIT) and [TypeScript](https://www.typescriptlang.org/) (Apache-2.0): runtime and language
 - [IBM Plex](https://fonts.google.com/?query=IBM+Plex) fonts through Google Fonts (SIL Open Font License)
+- [Playwright](https://playwright.dev/) (Apache-2.0): screenshots of the live site for the demo deck
 
 ## License
 
