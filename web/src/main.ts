@@ -4,6 +4,7 @@ import { renderCatalogue } from './catalogue';
 import { openPanel } from './sourcePanel';
 import { el, setText } from './dom';
 import { renderCompare } from './compare';
+import { mountAsk } from './ask';
 import { mountAdd } from './add';
 import { mountAbout } from './about';
 import { openExperiment } from './experiment';
@@ -143,6 +144,7 @@ async function load() {
     if (!res.ok) throw new Error(String(res.status));
     const data = (await res.json()) as DataFile;
     reviewed = data.rows;
+    mountAsk($('ask'), reviewed, panel);
     buildFooter(data.meta);
     render();
     void mountAbout($('about'), data.meta.generatedAt.slice(0, 10));

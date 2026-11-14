@@ -1,0 +1,9 @@
+.ask { padding: .8rem clamp(1rem, 4vw, 4rem); background: white; color: #0b132b; font-family: Raleway, sans-serif; }
+.ask form { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
+.ask label { font: 600 .75rem Orbitron, sans-serif; text-transform: uppercase; }
+.ask input { flex: 1 1 14rem; min-width: 0; max-width: 36rem; padding: .55rem .75rem; border: 1px solid #d9deea; border-radius: 8px; font: inherit; }
+.ask .primary { padding: .55rem 1rem; background: #0b132b; color: white; border-radius: 8px; }
+.ask small { display: block; margin-top: .4rem; }
+.ask-answer p { margin: .45rem 0; }
+.ask-chip { background: white; color: #0b132b; border: 1px solid #d8a844; border-radius: 8px; cursor: pointer; }
+.ask :focus-visible { outline: 2px solid #0b132b; outline-offset: 2px; }
