@@ -1,4 +1,4 @@
-// Written with Claude (Anthropic) as an SI coding assistant; reviewed by the team.
+// Written with an LLM coding assistant (SI); reviewed by the team.
 // Usage: npx tsx --env-file=.env scripts/ingest-batch.ts data/ids.txt --out data/investigations.json
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fetchInvestigation } from '../src/psi/fetch';

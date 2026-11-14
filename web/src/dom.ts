@@ -1,4 +1,4 @@
-// Written with Claude (Anthropic) as an SI coding assistant; reviewed by the team.
+// Written with an LLM coding assistant (SI); reviewed by the team.
 /** All text reaches the page through textContent, never innerHTML, so PSI or model text cannot inject markup. */
 export function setText(el: Element, s: string): void {
   el.textContent = s;

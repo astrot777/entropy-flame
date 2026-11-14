@@ -1,4 +1,4 @@
-// Written with Claude (Anthropic) as an SI coding assistant; reviewed by the team.
+// Written with an LLM coding assistant (SI); reviewed by the team.
 import type { Cell, FieldKey, Row } from '../../src/shared/types';
 import { el, setText } from './dom';
 import { LABELS } from './labels';

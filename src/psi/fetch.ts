@@ -1,4 +1,4 @@
-// Written with Claude (Anthropic) as an SI coding assistant; reviewed by the team.
+// Written with an LLM coding assistant (SI); reviewed by the team.
 import { normalizePsiId } from '../shared/normalize';
 
 export interface PsiDocument { psiId: string; url: string; text: string; fetchedAt: string }

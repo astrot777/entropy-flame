@@ -1,4 +1,4 @@
-// Written with Claude (Anthropic) as an SI coding assistant; reviewed by the team.
+// Written with an LLM coding assistant (SI); reviewed by the team.
 import { FIELDS, type FieldKey } from '../shared/types';
 import type { PsiDocument } from '../psi/fetch';
 import type { Llm } from './llm';

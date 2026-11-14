@@ -1,4 +1,4 @@
-// Written with Claude (Anthropic) as an SI coding assistant; reviewed by the team.
+// Written with an LLM coding assistant (SI); reviewed by the team.
 import { Hono } from 'hono';
 import { streamSSE } from 'hono/streaming';
 import type { Row } from '../shared/types';

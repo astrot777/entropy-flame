@@ -7,18 +7,18 @@ Entropy reads NASA Physical Sciences Informatics (PSI) combustion investigations
 ## What it does
 - **Catalogue**: the 19 combustion investigations named in the challenge, with search and filters. Click any value to see its source quote and the PSI record.
 - **Compare**: pick 2 to 4 investigations and see which facts are the same, different or not stated.
-- **Add live**: type any PSI ID; Claude reads the record and each value appears once code has checked its quote against the source. Live rows are marked Unreviewed and stay in your browser session only.
+- **Add live**: type any PSI ID; an LLM reads the record and each value appears once code has checked its quote against the source. Live rows are marked Unreviewed and stay in your browser session only.
 
 ## How it works
 1. Fetch the PSI record (text fields) and its experimental-table CSVs; summarise each CSV deterministically (min and max per numeric column, units as written).
-2. Claude extracts the 12 fields as one JSON line each, with a verbatim quote.
+2. An LLM extracts the 12 fields as one JSON line each, with a verbatim quote.
 3. Code keeps a value only if its quote appears in the source text and the value appears inside the quote. Numbers are never converted.
 
-Stack: TypeScript, Node, Hono, Vite, Claude API, Azure App Service. Tests: Vitest.
+Stack: TypeScript, Node, Hono, Vite, an LLM API, Azure App Service. Tests: Vitest.
 
 ## Use of Super Intelligence (SI)
-- **In the product**: values in `data/investigations.json` and in live rows are extracted by Claude (model set by `LLM_MODEL`, used: `claude-opus-5-5`) and then verified by code against the source; the file's `meta.generatedBy` says so. The Objectives column is an AI-written summary; every other value is copied from its quote.
-- **In development**: source files marked "Written with Claude as an SI coding assistant" were written with Claude Code and reviewed by the team. The idea, the challenge choice and the design decisions are the team's.
+- **In the product**: values in `data/investigations.json` and in live rows are extracted by a large language model (LLM, chosen by the `LLM_MODEL` setting) and then verified by code against the source; the file's `meta.generatedBy` says so. The Objectives column is an AI-written summary; every other value is copied from its quote.
+- **In development**: source files marked "Written with an LLM coding assistant (SI)" were written with an LLM coding assistant and reviewed by the team. The idea, the challenge choice and the design decisions are the team's.
 - No SI-generated images or video are used.
 
 ## NASA data
@@ -38,4 +38,4 @@ npm test
 Team "be alone, that is when ideas are born." (Riyadh Local Event).
 
 ## References
-Claude API SDK for TypeScript, Hono, @hono/node-server, Vite, Vitest, jsdom, tsx, TypeScript; IBM Plex fonts (Google Fonts, SIL OFL). Licence: MIT (code).
+LLM API SDK for TypeScript, Hono, @hono/node-server, Vite, Vitest, jsdom, tsx, TypeScript; IBM Plex fonts (Google Fonts, SIL OFL). Licence: MIT (code).

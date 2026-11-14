@@ -1,4 +1,4 @@
-// Written with Claude (Anthropic) as an SI coding assistant; reviewed by the team.
+// Written with an LLM coding assistant (SI); reviewed by the team.
 // The honesty core: a cell is kept only if its quote appears in the source text.
 import { FIELDS, type Cell, type FieldKey, type Row } from '../shared/types';
 import { normalizeText } from '../shared/normalize';
