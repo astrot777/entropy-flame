@@ -6,9 +6,17 @@ import { PsiError } from '../psi/fetch.js';
 import { ingestStream, type Deps } from '../ingest/ingest.js';
 import type { Llm } from '../ingest/llm.js';
 import type { createLimiter } from './limit.js';
+import type { TestTables } from '../psi/tables.js';
 
 export interface ExplainDeps { llm: Llm }
-export interface AppDeps { ingest: Deps; reviewed: Row[]; limiter: ReturnType<typeof createLimiter>; explain?: ExplainDeps }
+export interface AppDeps {
+  ingest: Deps;
+  reviewed: Row[];
+  limiter: ReturnType<typeof createLimiter>;
+  explain?: ExplainDeps;
+  /** NASA's experimental tables, row by row, for the test replay of live-added rows. */
+  tables?: (psiId: string) => Promise<TestTables>;
+}
 
 const STATUS: Record<string, 400 | 404 | 429 | 502> = { bad_id: 400, not_found: 404, limit: 429, upstream: 502, too_long: 502 };
 
@@ -31,6 +39,23 @@ export function createApp(deps: AppDeps): Hono {
   const app = new Hono();
 
   app.get('/health', (c) => c.json({ ok: true }));
+
+  const tables = deps.tables;
+  if (tables) {
+    app.get('/tests/:id', async (c) => {
+      const psiId = normalizePsiId(c.req.param('id'));
+      if (!psiId) return c.json({ code: 'bad_id' }, 400);
+      try {
+        const body = await tables(psiId);
+        // NASA's tables change rarely: let the CDN answer repeat requests instead of calling PSI again.
+        c.header('Cache-Control', 'public, max-age=300, s-maxage=86400');
+        return c.json(body);
+      } catch (e) {
+        const code = e instanceof PsiError ? e.code : 'upstream';
+        return c.json({ code }, STATUS[code] ?? 502);
+      }
+    });
+  }
 
   app.post('/add', async (c) => {
     let body: unknown;

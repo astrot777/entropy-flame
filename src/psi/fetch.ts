@@ -60,12 +60,7 @@ export async function fetchInvestigation(id: string, fetchImpl: typeof fetch = f
     if (typeof v === 'string' && v.trim()) parts.push(`${label}: ${v.trim()}`);
   }
 
-  const tables = Array.isArray(record.experimentalTable) ? record.experimentalTable : [];
-  const csvNames = tables
-    .map((t) => (t && typeof t === 'object' ? (t as { file_name?: unknown }).file_name : undefined))
-    .filter((n): n is string => typeof n === 'string' && n.toLowerCase().endsWith('.csv'))
-    .slice(0, MAX_CSV_FILES);
-  for (const name of csvNames) {
+  for (const name of csvNamesOf(record)) {
     const summary = await downloadCsvSummary(fetchImpl, psiId, name);
     if (summary) parts.push(summary);
   }
@@ -96,18 +91,31 @@ export async function signedLink(fetchImpl: typeof fetch, psiId: string, fileNam
   return link;
 }
 
-/** Downloads one experimental-table CSV through a signed link and summarizes it. */
-async function downloadCsvSummary(fetchImpl: typeof fetch, psiId: string, fileName: string): Promise<string | null> {
+/** Downloads one experimental-table CSV through a signed link. Returns null when it is missing or too large. */
+export async function downloadCsv(fetchImpl: typeof fetch, psiId: string, fileName: string): Promise<string | null> {
   const link = await signedLink(fetchImpl, psiId, fileName);
   if (!link) return null;
   const csvRes = await get(fetchImpl, link);
   if (!csvRes.ok) return null;
   const csv = await csvRes.text();
-  if (csv.length > MAX_CSV_BYTES) return null;
-  return summarizeCsv(fileName, csv);
+  return csv.length > MAX_CSV_BYTES ? null : csv;
 }
 
-function parseCsv(csv: string): string[][] {
+async function downloadCsvSummary(fetchImpl: typeof fetch, psiId: string, fileName: string): Promise<string | null> {
+  const csv = await downloadCsv(fetchImpl, psiId, fileName);
+  return csv === null ? null : summarizeCsv(fileName, csv);
+}
+
+/** The names of the experimental-table CSV files a PSI record lists. */
+export function csvNamesOf(record: Record<string, unknown>): string[] {
+  const tables = Array.isArray(record.experimentalTable) ? record.experimentalTable : [];
+  return tables
+    .map((t) => (t && typeof t === 'object' ? (t as { file_name?: unknown }).file_name : undefined))
+    .filter((n): n is string => typeof n === 'string' && n.toLowerCase().endsWith('.csv'))
+    .slice(0, MAX_CSV_FILES);
+}
+
+export function parseCsv(csv: string): string[][] {
   const rows: string[][] = [];
   let row: string[] = [];
   let cell = '';

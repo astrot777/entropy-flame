@@ -6,7 +6,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import type { PartKey, SceneSpec } from './spec';
 
-export interface SceneHandle { dispose(): void; highlight(part: PartKey | null): void }
+export interface SceneHandle {
+  dispose(): void;
+  highlight(part: PartKey | null): void;
+  /** Shows one test's values (labels, airflow speed, sample size), or restores the overview when step is null. */
+  replay(step: SceneSpec | null, maxSampleSize?: number): void;
+}
 
 const FLAME = 0xff8a3d;
 const COOL = 0x5fb3ff;
@@ -52,6 +57,8 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
   const pickables: THREE.Object3D[] = [];
   const labelEls = new Map<PartKey, HTMLElement[]>();
   const tick: ((t: number, dt: number) => void)[] = [];
+  let replaying = false;
+  const flow = { lo: spec.airflow.min ?? 10, hi: spec.airflow.max ?? spec.airflow.min ?? 10, streaks: null as THREE.LineSegments | null };
 
   function tag(obj: THREE.Object3D, part: PartKey) {
     obj.userData.part = part;
@@ -151,7 +158,7 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
     // A stated size range (for example droplet diameters 1.5 to 5 mm) sweeps between its smallest and largest value.
     if (s.stated && sizes.length >= 2 && (s.shape === 'sphere' || s.shape === 'burner') && !reduceMotion) {
       const lo = clamp(sizes[sizes.length - 1] / sizes[0], 0.3, 1);
-      tick.push((t) => { group.scale.setScalar(lo + (1 - lo) * (0.5 + 0.5 * Math.sin(t * 0.9))); });
+      tick.push((t) => { if (!replaying) group.scale.setScalar(lo + (1 - lo) * (0.5 + 0.5 * Math.sin(t * 0.9))); });
     }
     group.add(mesh);
     mesh.traverse((o) => { if ((o as THREE.Mesh).isMesh || (o as THREE.Points).isPoints) tag(o, 'sample'); });
@@ -181,11 +188,10 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
       geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
       const streaks = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: COOL, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false }));
       scene.add(streaks);
-      const visual = (v: number) => 0.3 + 0.6 * Math.log10(1 + v);
-      const lo = a.min ?? 10;
-      const hi = a.max ?? lo;
+      flow.streaks = streaks;
+      const visual = (v: number) => (v <= 0 ? 0 : 0.3 + 0.6 * Math.log10(1 + v));
       const place = (t: number, dt: number) => {
-        const speed = visual(lo + (hi - lo) * (0.5 + 0.5 * Math.sin(t * 0.5)));
+        const speed = visual(flow.lo + (flow.hi - flow.lo) * (0.5 + 0.5 * Math.sin(t * 0.5)));
         const tail = 0.08 + speed * 0.22;
         for (let i = 0; i < n; i++) {
           let x = xs[i] + speed * dt;
@@ -202,7 +208,8 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
         geo.attributes.position.needsUpdate = true;
       };
       place(0, 0);
-      if (!reduceMotion) tick.push(place);
+      // The tracers always animate while a test is replayed, so each test's speed is visible.
+      tick.push((t, dt) => { if (!reduceMotion || replaying) place(t, dt); });
     }
   }
 
@@ -280,7 +287,27 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
   };
   loop();
 
+  const REPLAYED: PartKey[] = ['fuel', 'sample', 'oxygen', 'pressure', 'airflow'];
+  function showParts(from: SceneSpec) {
+    for (const p of REPLAYED) {
+      const elp = labelEls.get(p)?.[0];
+      if (!elp) continue;
+      elp.textContent = `${LABELS[p]} · ${short(from.parts[p].text)}`;
+      elp.classList.toggle('ns', !from.parts[p].stated);
+    }
+  }
+
   return {
+    replay(step, maxSampleSize) {
+      replaying = step !== null;
+      const shown = step ?? spec;
+      showParts(shown);
+      flow.lo = shown.airflow.min ?? 10;
+      flow.hi = shown.airflow.max ?? flow.lo;
+      if (flow.streaks) flow.streaks.visible = shown.airflow.stated && !shown.airflow.quiescent;
+      const size = step?.sample.sizes.length ? Math.max(...step.sample.sizes) : 0;
+      sample.scale.setScalar(size && maxSampleSize ? clamp(size / maxSampleSize, 0.25, 1) : 1);
+    },
     highlight(part) {
       for (const [p, els] of labelEls) for (const e of els) e.classList.toggle('active', p === part);
     },

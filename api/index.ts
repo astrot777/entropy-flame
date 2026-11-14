@@ -7,6 +7,7 @@ import { createApp } from '../src/api/app.js';
 import { createLimiter, memoryStore } from '../src/api/limit.js';
 import { fetchInvestigation } from '../src/psi/fetch.js';
 import { createLlm, type Effort } from '../src/ingest/llm.js';
+import { fetchTables } from '../src/psi/tables.js';
 import type { Row } from '../src/shared/types.js';
 
 const reviewed = (JSON.parse(readFileSync(join(process.cwd(), 'data/investigations.json'), 'utf8')) as { rows: Row[] }).rows;
@@ -22,6 +23,7 @@ const api = createApp({
     }),
   },
   reviewed,
+  tables: (id) => fetchTables(id),
   limiter: createLimiter({ store: memoryStore(), perIpPerDay: Math.max(5, Math.floor(dailyLimit / 10)), globalPerDay: dailyLimit }),
 });
 

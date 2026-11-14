@@ -7,6 +7,7 @@ import { createApp } from './app.js';
 import { createLimiter, memoryStore } from './limit.js';
 import { fetchInvestigation } from '../psi/fetch.js';
 import { createLlm, type Effort } from '../ingest/llm.js';
+import { fetchTables } from '../psi/tables.js';
 import type { Row } from '../shared/types.js';
 
 const apiKey = process.env.LLM_API_KEY ?? '';
@@ -23,6 +24,7 @@ const reviewed = (JSON.parse(readFileSync(dataFile, 'utf8')) as { rows: Row[] })
 const api = createApp({
   ingest: { fetchDoc: (id) => fetchInvestigation(id), llm: createLlm({ apiKey, model, effort }) },
   reviewed,
+  tables: (id) => fetchTables(id),
   limiter: createLimiter({ store: memoryStore(), perIpPerDay: Math.max(5, Math.floor(dailyLimit / 10)), globalPerDay: dailyLimit }),
 });
 

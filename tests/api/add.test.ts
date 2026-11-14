@@ -84,3 +84,19 @@ describe('addLiveRow', () => {
     expect(addLiveRow(once, row('PSI-9'))).toHaveLength(1);
   });
 });
+
+describe('GET /tests/:id', () => {
+  const tables = { psiId: 'PSI-9', tables: [{ file: 'a.csv', columns: ['Test'], rows: [['T1']] }] };
+  const withTables = (): AppDeps => ({ ...makeDeps(), tables: vi.fn(async (id: string) => { if (id === 'PSI-404') throw new PsiError('not_found', 'x'); return { ...tables, psiId: id }; }) });
+  it('returns the test tables for an investigation, cacheable', async () => {
+    const res = await createApp(withTables()).request('/tests/psi-9');
+    expect(res.status).toBe(200);
+    expect(res.headers.get('cache-control')).toContain('s-maxage');
+    expect((await res.json()).tables[0].rows).toEqual([['T1']]);
+  });
+  it('400 for a bad id and 404 for a missing investigation', async () => {
+    const app = createApp(withTables());
+    expect((await app.request('/tests/x;y')).status).toBe(400);
+    expect((await app.request('/tests/PSI-404')).status).toBe(404);
+  });
+});
