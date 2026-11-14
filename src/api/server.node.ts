@@ -3,11 +3,11 @@ import { readFileSync } from 'node:fs';
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
-import { createApp } from './app';
-import { createLimiter, memoryStore } from './limit';
-import { fetchInvestigation } from '../psi/fetch';
-import { createLlm, type Effort } from '../ingest/llm';
-import type { Row } from '../shared/types';
+import { createApp } from './app.js';
+import { createLimiter, memoryStore } from './limit.js';
+import { fetchInvestigation } from '../psi/fetch.js';
+import { createLlm, type Effort } from '../ingest/llm.js';
+import type { Row } from '../shared/types.js';
 
 const apiKey = process.env.LLM_API_KEY ?? '';
 if (!apiKey) console.warn('LLM_API_KEY is not set: live Add will answer "upstream".');

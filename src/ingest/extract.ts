@@ -1,7 +1,7 @@
-import { FIELDS, type FieldKey } from '../shared/types';
-import type { PsiDocument } from '../psi/fetch';
-import type { Llm } from './llm';
-import { PILLARS, type RawField } from './verify';
+import { FIELDS, type FieldKey } from '../shared/types.js';
+import type { PsiDocument } from '../psi/fetch.js';
+import type { Llm } from './llm.js';
+import { PILLARS, type RawField } from './verify.js';
 
 const FIELD_HELP: Record<FieldKey, string> = {
   psiId: 'the PSI ID exactly as given (for example PSI-159)',

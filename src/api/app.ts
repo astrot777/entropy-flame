@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { streamSSE } from 'hono/streaming';
-import type { Row } from '../shared/types';
-import { normalizePsiId } from '../shared/normalize';
-import { PsiError } from '../psi/fetch';
-import { ingestStream, type Deps } from '../ingest/ingest';
-import type { Llm } from '../ingest/llm';
-import type { createLimiter } from './limit';
+import type { Row } from '../shared/types.js';
+import { normalizePsiId } from '../shared/normalize.js';
+import { PsiError } from '../psi/fetch.js';
+import { ingestStream, type Deps } from '../ingest/ingest.js';
+import type { Llm } from '../ingest/llm.js';
+import type { createLimiter } from './limit.js';
 
 export interface ExplainDeps { llm: Llm }
 export interface AppDeps { ingest: Deps; reviewed: Row[]; limiter: ReturnType<typeof createLimiter>; explain?: ExplainDeps }

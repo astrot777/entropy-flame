@@ -1,4 +1,4 @@
-import { normalizePsiId } from '../shared/normalize';
+import { normalizePsiId } from '../shared/normalize.js';
 
 export interface PsiDocument { psiId: string; url: string; text: string; fetchedAt: string }
 

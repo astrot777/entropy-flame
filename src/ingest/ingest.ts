@@ -1,9 +1,9 @@
-import type { Cell, FieldKey, Row } from '../shared/types';
-import { normalizePsiId } from '../shared/normalize';
-import { PsiError, type PsiDocument } from '../psi/fetch';
-import type { Llm } from './llm';
-import { extractFields } from './extract';
-import { verifyField, verifyRow, type RawField } from './verify';
+import type { Cell, FieldKey, Row } from '../shared/types.js';
+import { normalizePsiId } from '../shared/normalize.js';
+import { PsiError, type PsiDocument } from '../psi/fetch.js';
+import type { Llm } from './llm.js';
+import { extractFields } from './extract.js';
+import { verifyField, verifyRow, type RawField } from './verify.js';
 
 export interface Deps { fetchDoc: (id: string) => Promise<PsiDocument>; llm: Llm }
 export type IngestEvent = { type: 'field'; field: FieldKey; cell: Cell } | { type: 'done'; row: Row };

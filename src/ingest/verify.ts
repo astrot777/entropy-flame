@@ -1,7 +1,7 @@
 // The honesty core: a cell is kept only if its quote appears in the source text.
-import { FIELDS, type Cell, type FieldKey, type Row } from '../shared/types';
-import { normalizeText } from '../shared/normalize';
-import type { PsiDocument } from '../psi/fetch';
+import { FIELDS, type Cell, type FieldKey, type Row } from '../shared/types.js';
+import { normalizeText } from '../shared/normalize.js';
+import type { PsiDocument } from '../psi/fetch.js';
 
 export interface RawField { field: FieldKey; value: string | null; quote: string | null }
 export const PILLARS = ['Prevention', 'Detection', 'Suppression'] as const;
