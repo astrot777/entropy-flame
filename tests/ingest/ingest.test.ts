@@ -38,6 +38,18 @@ describe('ingestStream', () => {
   });
 });
 
+describe('record fields', () => {
+  it('fills name and type from the record when the model leaves them empty', async () => {
+    const d: Deps = {
+      fetchDoc: async (id) => ({ ...docFor(id), text: 'Title: Structure and Liftoff\n\nAcronym: SLICE\n\nProject type: Microgravity Investigation' }),
+      llm: llmOf(['{"field":"name","value":null,"quote":null}']),
+    };
+    const row = await ingestOne('PSI-106', d);
+    expect(row.name).toMatchObject({ value: 'SLICE', quote: 'Acronym: SLICE', status: 'stated' });
+    expect(row.type).toMatchObject({ value: 'Microgravity Investigation', status: 'stated' });
+  });
+});
+
 describe('ingestOne', () => {
   it('rejects a bad id before fetching', async () => {
     const d = deps();

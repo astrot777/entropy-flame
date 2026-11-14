@@ -16,7 +16,7 @@ export function accuracy(marks: Marks[]): { correct: number; total: number } {
   return { correct, total };
 }
 
-if (process.argv[1]?.endsWith('accuracy.ts') && existsSync('data/review/accuracy.json')) {
-  const { correct, total } = accuracy(JSON.parse(readFileSync('data/review/accuracy.json', 'utf8')).marks);
+if (process.argv[1]?.endsWith('accuracy.ts') && existsSync(process.argv[2] ?? 'data/review/accuracy.json')) {
+  const { correct, total } = accuracy(JSON.parse(readFileSync(process.argv[2] ?? 'data/review/accuracy.json', 'utf8')).marks);
   console.log(`${correct} of ${total} cells verified by hand`);
 }

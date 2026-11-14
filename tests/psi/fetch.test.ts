@@ -62,8 +62,17 @@ describe('summarizeCsv', () => {
   it('gives min and max of a numeric column with its row count', () => {
     expect(summarizeCsv('PSI-98.csv', psi98)).toContain('Column "Percent O2" (PSI-98.csv): 21.5 to 21.7 across 2 rows');
   });
-  it('omits columns with no numbers', () => {
-    expect(summarizeCsv('PSI-98.csv', psi98)).not.toContain('"Material"');
+  it('lists the distinct values of a text column', () => {
+    expect(summarizeCsv('PSI-98.csv', psi98)).toContain('Column "Material" (PSI-98.csv): SIBAL Fabric (2 rows)');
+  });
+  it('lists at most five text values, then says how many more', () => {
+    const csv = 'Fuel\n' + ['a1', 'b2', 'c3', 'd4', 'e5', 'f6', 'g7'].join('\n') + '\n';
+    expect(summarizeCsv('x.csv', csv)).toContain('Column "Fuel" (x.csv): a1; b2; c3; d4; e5; and 2 more values (7 rows)');
+  });
+  it('skips text columns that look like IDs, dates or notes', () => {
+    const csv = 'Test,Date,Comments\nT1,2019-03-05,' + 'x'.repeat(200) + '\nT2,2019-03-06,ok\n';
+    const out = summarizeCsv('x.csv', csv);
+    expect(out).not.toContain('"Comments"');
   });
   it('strips a byte-order mark and stray header spaces', () => {
     const out = summarizeCsv('PSI-25.csv', '﻿PI , Calibrated initial O2 % by vol\n1,22.2\n2,22.4\n');

@@ -19,7 +19,23 @@ export async function* ingestStream(id: string, deps: Deps): AsyncGenerator<Inge
     raws.push(raw);
     yield { type: 'field', field: raw.field, cell: verifyField(raw, doc) };
   }
-  yield { type: 'done', row: verifyRow(raws, doc) };
+  yield { type: 'done', row: fillFromRecord(verifyRow(raws, doc), doc) };
+}
+
+const RECORD_FIELDS: [FieldKey, RegExp][] = [
+  ['name', /^Acronym: (.+)$/m],
+  ['type', /^Project type: (.+)$/m],
+];
+
+/** Name and type sit in fixed fields of the PSI record; when the model leaves them empty, take them from there. */
+export function fillFromRecord(row: Row, doc: PsiDocument): Row {
+  const out = { ...row };
+  for (const [field, re] of RECORD_FIELDS) {
+    if (out[field].status === 'stated') continue;
+    const m = re.exec(doc.text);
+    if (m) out[field] = verifyField({ field, value: m[1].trim(), quote: m[0].trim() }, doc);
+  }
+  return out;
 }
 
 export async function ingestOne(id: string, deps: Deps): Promise<Row> {

@@ -13,7 +13,7 @@ const FIELD_HELP: Record<FieldKey, string> = {
   sample: 'the sample or burner form (shape, size, thickness)',
   oxygen: 'the oxygen level, with the units written in the source',
   pressure: 'the ambient pressure, with the units written in the source',
-  airflow: 'the airflow or flow velocity, with the units written in the source',
+  airflow: 'the speed of the ambient air or oxidizer flowing past the sample or flame (for example "20 cm/s" or "quiescent"), with the units written in the source; not a fuel or oxygen mass flow rate fed into a burner',
   hardware: 'the experiment hardware or facility',
   sensors: 'the sensors, cameras or diagnostics used',
 };

@@ -144,7 +144,27 @@ export function summarizeCsv(fileName: string, csv: string): string {
         if (!max || n > max.n) max = { n, s };
       }
     }
-    if (count && min && max) lines.push(`Column "${name}" (${fileName}): ${min.s} to ${max.s} across ${count} rows`);
+    if (count && min && max) {
+      lines.push(`Column "${name}" (${fileName}): ${min.s} to ${max.s} across ${count} rows`);
+      return;
+    }
+    const text = textSummary(name, body.map((r) => (r[col] ?? '').trim()).filter(Boolean));
+    if (text) lines.push(`Column "${name}" (${fileName}): ${text}`);
   });
   return lines.join('\n');
+}
+
+const NOT_DESCRIPTIVE = /^(test|test id|run|id|no\.?|#|date|time|day|comments?|notes?|file|filename|remarks?)$/i;
+const MAX_TEXT_VALUE = 80;
+const MAX_LISTED = 5;
+
+/** Distinct values of a short-text column (for example the material burned), or null for ID, date and note columns. */
+function textSummary(name: string, values: string[]): string | null {
+  if (!values.length || NOT_DESCRIPTIVE.test(name)) return null;
+  if (values.some((v) => v.length > MAX_TEXT_VALUE)) return null;
+  const distinct = [...new Set(values)];
+  if (distinct.length === values.length && values.length > 20) return null;
+  const listed = distinct.slice(0, MAX_LISTED).join('; ');
+  const more = distinct.length > MAX_LISTED ? `; and ${distinct.length - MAX_LISTED} more values` : '';
+  return `${listed}${more} (${values.length} rows)`;
 }

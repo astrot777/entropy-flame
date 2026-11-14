@@ -69,3 +69,10 @@ footer a { color: var(--cool); }
 .add input { min-width: 260px; }
 .compare-head { display: flex; justify-content: space-between; align-items: center; }
 .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.top-right { display: flex; align-items: flex-end; gap: 24px; }
+.about-link { color: var(--cool); font-size: 13px; }
+.about { margin-top: 32px; max-width: 900px; }
+.about h2 { font-size: 18px; }
+.facts dt { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 12px; }
+.facts dd { margin: 2px 0 0; }
+.accuracy { margin-top: 18px; padding: 10px 14px; border-left: 3px solid var(--ok); background: var(--surface); }

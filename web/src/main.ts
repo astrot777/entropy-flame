@@ -5,6 +5,7 @@ import { openPanel } from './sourcePanel';
 import { el, setText } from './dom';
 import { renderCompare } from './compare';
 import { mountAdd } from './add';
+import { mountAbout } from './about';
 
 interface DataFile { meta: { generatedAt: string; generatedBy: string; source: string }; rows: Row[] }
 
@@ -115,7 +116,7 @@ function buildFooter(meta: DataFile['meta']) {
   a.href = 'https://psi.nasa.gov/';
   a.target = '_blank';
   a.rel = 'noopener noreferrer';
-  src.append(document.createTextNode('Data: '), a, document.createTextNode(`. Pulled ${meta.generatedAt.slice(0, 10)}. Rows reviewed by a person: 0.`));
+  src.append(document.createTextNode('Data: '), a, document.createTextNode(`. Pulled ${meta.generatedAt.slice(0, 10)}. See About for the hand-checked accuracy.`));
   f.append(
     src,
     el('p', '', meta.generatedBy),
@@ -133,6 +134,7 @@ async function load() {
     reviewed = data.rows;
     buildFooter(data.meta);
     render();
+    void mountAbout($('about'), data.meta.generatedAt.slice(0, 10));
   } catch {
     status.className = 'status error';
     setText(status, 'The investigation data could not be loaded. Refresh the page; if this persists, the data file is missing from this deployment.');
