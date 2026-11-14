@@ -4,6 +4,8 @@ import { momentAt, testTime, timeColumns } from '../../web/src/scene/timeline';
 const FLEX = ['FLEX Test #', 'Fuel', 'Droplet initial diameter; mm', 'Visible flame extinction diameter; mm', 'Burning rate; mm', 'Burn time; s', 'Test end'];
 const SAFFIRE2 = ['Sample Length', 'Ignition Power (W)', 'Ignition Time (s)', 'Burn Time (s)', '?-g Burn Length', '?-g Spread Length', '1-g Burn Length'];
 const BASS = ['Test #', 'Calibrated  initial O2 % by vol', 'Calibrated final O2 % by vol'];
+const DESIGN = ['Flame Type', 'Day', 'Fuel', 'Test', 'Xfuel', 'mfuel (mg/s)', 'XO2 (init)', 'XO2 (final)', 'pinit (atm)', 'pfinal (atm)', 'pmean (atm)'];
+const SAMER = ['Sample Type', 'SAME Test #', 'Inlet velocity (cm/s)', 'Duration (sec)', 'Primary aging time (sec)'];
 const CFI = ['Fuel', 'Test', ' XO2 before test', 'XO2  after test', 'Hot ignition', 'burn time (sec)'];
 
 describe('timeColumns', () => {
@@ -15,6 +17,9 @@ describe('timeColumns', () => {
     expect(timeColumns(BASS)).toMatchObject({ o2From: 1, o2To: 2 });
     expect(timeColumns(CFI)).toMatchObject({ o2From: 2, o2To: 3, burn: 5 });
   });
+  it('finds oxygen and pressure at the start and the end of a Flame Design test', () =>
+    expect(timeColumns(DESIGN)).toMatchObject({ o2From: 6, o2To: 7, pFrom: 8, pTo: 9 }));
+  it('finds the test duration of SAME-R, and not its aging time', () => expect(timeColumns(SAMER).duration).toBe(3));
   it('does not mistake a burning rate for a burn time', () => expect(timeColumns(['Burning rate; mm']).burn).toBeUndefined());
 });
 
@@ -47,6 +52,12 @@ describe('testTime', () => {
   });
   it('reads oxygen before and after with no burn time', () =>
     expect(testTime(BASS, ['B2', '22.2', '1.6'])!.oxygen).toMatchObject({ from: 22.2, to: 1.6 }));
+  it('reads oxygen and pressure from start to end, with the pressure unit', () => {
+    const t = testTime(DESIGN, ['Normal', '1', 'C2H4', '3', '0.25', '1.5', '0.387', '0.352', '1.01', '1.29', '1.15'])!;
+    expect(t.oxygen).toMatchObject({ from: 0.387, to: 0.352 });
+    expect(t.pressure).toMatchObject({ from: 1.01, to: 1.29, unit: 'atm' });
+  });
+  it('reads a stated test duration', () => expect(testTime(SAMER, ['Kapton', '12', '10', '60', '720'])!.durationS).toBe(60));
   it('returns null for a row with nothing that changes over the test', () => {
     expect(testTime(BASS, ['B9', '', ''])).toBeNull();
     expect(testTime(['Test', 'Material'], ['S1', 'SIBAL'])).toBeNull();
@@ -64,6 +75,13 @@ describe('momentAt', () => {
     expect(m.phase).toBe('burning');
     expect(m.seconds).toBeCloseTo(55);
     expect(m.burned).toBeCloseTo(0.25);
+  });
+  it('runs a clock over a stated duration and moves pressure in a straight line', () => {
+    const same = testTime(SAMER, ['Kapton', '12', '10', '60', '720'])!;
+    expect(momentAt(same, 0.5)).toMatchObject({ phase: 'running', seconds: 30, total: 60 });
+    const d = testTime(DESIGN, ['Normal', '1', 'C2H4', '3', '0.25', '1.5', '0.4', '0.3', '1', '2', '1.5'])!;
+    expect(momentAt(d, 0.5).pressure).toBeCloseTo(1.5);
+    expect(momentAt(d, 1).phase).toBe('out');
   });
   it('moves size and oxygen in a straight line between the two values NASA gives', () => {
     const flex = testTime(FLEX, ['2', 'Methanol', '2', '1', '0.6', '5', 'Extinction'])!;

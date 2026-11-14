@@ -6,7 +6,7 @@ import type { TestTables } from '../../src/psi/tables';
 import { el, setText } from './dom';
 import { LABELS } from './labels';
 import { buildSceneSpec, PARTS, type PartKey, type SceneSpec } from './scene/spec';
-import { buildReplay, rowForStep, type Replay } from './scene/replay';
+import { buildReplay, pickTests, rowForStep, type Replay } from './scene/replay';
 import { momentAt, type Moment, type TestTime } from './scene/timeline';
 import type { SceneHandle } from './scene/view';
 
@@ -111,10 +111,14 @@ export async function openExperiment(row: Row): Promise<void> {
   status.setAttribute('role', 'status');
   bar.append(play, prev, slider, next, overview, status);
 
-  // Playback. Each test plays in about two and a half seconds whatever its real length; the caption shows
-  // the real seconds NASA recorded. Start, end and duration are NASA's; values in between move in a straight line.
-  const PLAY_MS = 2600;
-  const HOLD_MS = 650;
+  // Playback. One press plays a handful of tests spread over the table, each in about two seconds whatever its
+  // real length; the caption shows the real seconds NASA recorded. Start, end and duration are NASA's; values in
+  // between move in a straight line. Every other test stays one click away with Next and the slider.
+  const PLAY_MS = 2200;
+  const HOLD_MS = 600;
+  const PLAY_TESTS = 5;
+  const NO_TIMES = 'No times or before/after values in NASA’s table for this test';
+  let playlist: number[] = [];
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let playing = false;
   let raf = 0;
@@ -137,17 +141,25 @@ export async function openExperiment(row: Row): Promise<void> {
   function caption(m: Moment, t: TestTime): string {
     if (m.phase === 'igniting') return `Igniting · ${secs(m.seconds)} s of ${secs(m.total)} s`;
     if (m.phase === 'burning') return `Burning · ${secs(m.seconds)} s of ${secs(m.total)} s`;
-    if (m.phase === 'running') return 'During the test';
+    if (m.phase === 'running') return m.total ? `During the test · ${secs(m.seconds)} s of ${secs(m.total)} s` : 'During the test';
+    if (t.durationS && !t.burnS) return `Test ended at ${secs(m.total)} s`;
     if (t.burnS) return `Flame out at ${secs(m.total)} s${t.ending ? ` · ${t.ending}` : ''}`;
     return t.ignitionS !== null ? 'Igniter off · no burn time recorded' : 'After the test';
   }
   function apply(m: Moment, t: TestTime) {
     const state = caption(m, t);
+    const moving = m.phase !== 'out';
+    const active: PartKey[] = [];
+    if (moving && t.size && t.size.from !== t.size.to) active.push('sample');
+    if (moving && t.oxygen && t.oxygen.from !== t.oxygen.to) active.push('oxygen');
+    if (moving && t.pressure && t.pressure.from !== t.pressure.to) active.push('pressure');
+    for (const [p, b] of buttons) b.button.classList.toggle('changing', active.includes(p));
     handle?.moment({
       glow: m.phase === 'burning' ? 1 : m.phase === 'igniting' ? 0.4 : 0,
       scale: m.size !== undefined && maxFrom ? Math.min(1, Math.max(0.12, m.size / maxFrom)) : undefined,
       burned: m.burned,
       state,
+      active,
     });
     if (m.size !== undefined && t.size) {
       const text = `${fmt(m.size, [t.size.from, t.size.to])} ${t.size.unit}`.trim();
@@ -159,6 +171,11 @@ export async function openExperiment(row: Row): Promise<void> {
       handle?.setLabel('oxygen', text);
       setText(buttons.get('oxygen')!.value, text);
     }
+    if (m.pressure !== undefined && t.pressure) {
+      const text = `${fmt(m.pressure, [t.pressure.from, t.pressure.to])} ${t.pressure.unit}`.trim();
+      handle?.setLabel('pressure', text);
+      setText(buttons.get('pressure')!.value, text);
+    }
     if (replay) setText(status, `${replay.steps[step].label} · ${state} · test ${step + 1} of ${replay.steps.length} · ${replay.file}`);
   }
   function show(i: number) {
@@ -167,6 +184,7 @@ export async function openExperiment(row: Row): Promise<void> {
     const cur = shown();
     handle?.replay(i >= 0 ? cur : null, maxSize);
     handle?.moment(null);
+    for (const b of buttons.values()) b.button.classList.remove('changing');
     for (const part of ['fuel', 'sample', 'oxygen', 'pressure', 'airflow'] as PartKey[]) {
       const b = buttons.get(part)!;
       setText(b.value, cur.parts[part].text);
@@ -179,7 +197,7 @@ export async function openExperiment(row: Row): Promise<void> {
     overview.disabled = i < 0;
     setText(status, i >= 0
       ? `${replay.steps[i].label} · test ${i + 1} of ${replay.steps.length} · ${replay.file}`
-      : `${replay.steps.length} tests in ${replay.file}. Start, end and duration come from NASA's table; values in between move in a straight line. The glow marks the stated burn time, not the flame's shape.`);
+      : `${replay.steps.length} tests in ${replay.file}. Replay plays ${playlist.length} of them in a few seconds; Next and the slider open any test. Start, end and duration come from NASA's table; values in between move in a straight line.`);
     select(selected);
   }
   /** Shows one test and plays what happened during it, then calls done. */
@@ -188,7 +206,11 @@ export async function openExperiment(row: Row): Promise<void> {
     show(i);
     const t = replay?.steps[i]?.time ?? null;
     const finish = () => { timer = window.setTimeout(() => done?.(), HOLD_MS); };
-    if (!t) { finish(); return; }
+    if (!t) {
+      handle?.moment({ glow: 0, state: NO_TIMES });
+      timer = window.setTimeout(() => done?.(), HOLD_MS + 500);
+      return;
+    }
     if (reduceMotion) { apply(momentAt(t, 1), t); finish(); return; }
     const start = performance.now();
     const frame = (now: number) => {
@@ -200,17 +222,22 @@ export async function openExperiment(row: Row): Promise<void> {
     apply(momentAt(t, 0), t);
     raf = requestAnimationFrame(frame);
   }
-  function playFrom(i: number) {
+  function playFrom(k: number) {
     if (!replay) return;
-    if (i >= replay.steps.length) { stop(); return; }
-    run(i, () => { if (playing) playFrom(i + 1); });
+    if (k >= playlist.length) {
+      stop();
+      setText(status, `Played ${playlist.length} of ${replay.steps.length} tests. Next and the slider open any other test. · ${replay.file}`);
+      return;
+    }
+    run(playlist[k], () => { if (playing) playFrom(k + 1); });
   }
   play.addEventListener('click', () => {
     if (!replay) return;
     if (playing) { stop(); return; }
     playing = true;
     setText(play, 'Pause');
-    playFrom(step >= replay.steps.length - 1 ? 0 : step + 1);
+    const k = playlist.findIndex((i) => i > step);
+    playFrom(k < 0 ? 0 : k);
   });
   prev.addEventListener('click', () => { stop(); run(Math.max(step - 1, 0)); });
   next.addEventListener('click', () => { stop(); run(step + 1); });
@@ -248,6 +275,7 @@ export async function openExperiment(row: Row): Promise<void> {
     stepSpecs = replay.steps.map((s) => buildSceneSpec(rowForStep(row, replay!, s)));
     maxSize = Math.max(0, ...stepSpecs.flatMap((s) => s.sample.sizes));
     maxFrom = Math.max(0, ...replay.steps.map((s) => s.time?.size?.from ?? 0));
+    playlist = pickTests(replay.steps, PLAY_TESTS);
     slider.max = String(replay.steps.length - 1);
     bar.hidden = false;
     show(-1);

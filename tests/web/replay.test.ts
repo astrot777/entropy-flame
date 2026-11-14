@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildReplay, rowForStep } from '../../web/src/scene/replay';
+import { pickTests, buildReplay, rowForStep } from '../../web/src/scene/replay';
 import { buildSceneSpec } from '../../web/src/scene/spec';
 import { FIELDS, type Cell, type Row } from '../../src/shared/types';
 import type { TestTables } from '../../src/psi/tables';
@@ -71,4 +71,13 @@ describe('buildReplay: what happens during each test', () => {
   });
   it('has no time for a test whose row gives none', () =>
     expect(buildReplay(r, tables)!.steps[0].time).toBeNull());
+});
+
+describe('pickTests: which tests one press of Replay plays', () => {
+  const steps = (timed: number[], n: number) => Array.from({ length: n }, (_, i) => ({ time: timed.includes(i) ? {} : null }));
+  it('plays every test when there are few', () => expect(pickTests(steps([], 3), 5)).toEqual([0, 1, 2]));
+  it('spreads five tests evenly over a long table, first and last included', () =>
+    expect(pickTests(steps(Array.from({ length: 201 }, (_, i) => i), 201), 5)).toEqual([0, 50, 100, 150, 200]));
+  it('prefers tests that say what happened over time', () => expect(pickTests(steps([4, 9], 12), 5)).toEqual([4, 9]));
+  it('returns nothing for an empty table', () => expect(pickTests([], 5)).toEqual([]));
 });

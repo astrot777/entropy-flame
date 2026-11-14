@@ -96,6 +96,8 @@ body.xp-open { overflow: hidden; }
 .s3d-label { font: 500 12px var(--sans); padding: 3px 9px; border-radius: 999px; white-space: nowrap; cursor: pointer; color: var(--text); background: rgba(18,24,33,0.88); border: 1px solid var(--line); }
 .s3d-label.ns { color: var(--faint); font-style: italic; border-style: dashed; }
 .s3d-label.active { border-color: var(--flame); box-shadow: 0 0 0 3px var(--flame-soft); }
+.s3d-label.changing { border-color: var(--flame); color: var(--flame); }
+.xp-part.changing .v { color: var(--flame); }
 .xp-loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); margin: 0; padding: 24px; text-align: center; }
 .xp-note { margin: 0; padding: 10px 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
 .xp-side { border-left: 1px solid var(--line); background: var(--surface); padding: 18px; overflow-y: auto; }

@@ -59,3 +59,16 @@ export function rowForStep(row: Row, replay: Replay, step: ReplayStep): Row {
   }
   return out;
 }
+
+/**
+ * The tests one press of Replay plays: at most max, spread evenly over the table, so a table of hundreds of
+ * tests still plays in seconds. Tests that say what happened over time come first; every test stays reachable
+ * with Next and the slider.
+ */
+export function pickTests(steps: { time: unknown }[], max: number): number[] {
+  const all = steps.map((_, i) => i);
+  const timed = all.filter((i) => steps[i].time);
+  const pool = timed.length ? timed : all;
+  if (pool.length <= max) return pool;
+  return Array.from({ length: max }, (_, j) => pool[Math.round((j * (pool.length - 1)) / (max - 1))]);
+}

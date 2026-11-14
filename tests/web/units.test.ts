@@ -14,6 +14,10 @@ describe('unitFromQuote', () => {
     expect(unitFromQuote('20 cm/s', 'air flow velocity of 20 cm/s.')).toBeNull());
   it('returns null when the column name has no unit', () =>
     expect(unitFromQuote('21.5 to 21.7', 'Column "Percent O2" (PSI-98.csv): 21.5 to 21.7 across 2 rows')).toBeNull());
+  it('does not read "(init)" or "(final)" as a unit', () => {
+    expect(unitFromQuote('0.387159045', 'Column "XO2 (init)" (PSI-10.csv): 0.387159045')).toBeNull();
+    expect(unitFromQuote('0.35', 'Column "XO2 (final)" (PSI-10.csv): 0.35')).toBeNull();
+  });
   it('does not read a footnote reference as a unit', () =>
     expect(unitFromQuote('~ 21.5', 'Column "Percent O2 (Note 1)" (PSI-99.csv): ~ 21.5')).toBeNull());
 });

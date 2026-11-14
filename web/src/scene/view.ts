@@ -14,7 +14,8 @@ export interface SceneHandle {
   /** Shows one test's values (labels, airflow speed, sample size), or restores the overview when step is null. */
   replay(step: SceneSpec | null, maxSampleSize?: number): void;
   /** One instant of a test: how strongly it glows (0 to 1), the sample scale, the burned share of a sheet, a state caption. */
-  moment(m: { glow: number; scale?: number; burned?: number; state?: string } | null): void;
+  /** active lists the parts whose value is changing right now; their probe and label pulse. */
+  moment(m: { glow: number; scale?: number; burned?: number; state?: string; active?: PartKey[] } | null): void;
   setLabel(part: PartKey, text: string, stated?: boolean): void;
 }
 
@@ -71,6 +72,8 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
   let replaying = false;
   let scaleTarget = 1;
   const burn = { glow: 0, frontX: 0, sheetLen: 0, char: null as THREE.Mesh | null };
+  const probes = new Map<PartKey, THREE.Mesh>();
+  let active = new Set<PartKey>();
   const flow = { lo: spec.airflow.min ?? 10, hi: spec.airflow.max ?? spec.airflow.min ?? 10, streaks: null as THREE.LineSegments | null };
 
   function tag(obj: THREE.Object3D, part: PartKey) {
@@ -116,6 +119,7 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
     const probe = new THREE.Mesh(new THREE.OctahedronGeometry(0.13), on ? probeMaterial() : ghost());
     probe.position.set(x, BOX.y, BOX.z);
     scene.add(tag(probe, part));
+    probes.set(part, probe);
     if (on && !reduceMotion) tick.push((t) => { probe.rotation.y = t * 0.9; });
     label(part, partLabel(part), new THREE.Vector3(x, BOX.y + 0.3, BOX.z));
   }
@@ -291,6 +295,10 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
     halo.scale.setScalar((1.5 + 1.3 * burn.glow) * (0.6 + 0.4 * sample.scale.x) * flicker);
     fire.position.set(halo.position.x, 0.2, 0.6);
     fire.intensity = haloMat.opacity * 9;
+    for (const [part, probe] of probes) {
+      const target = active.has(part) ? 1.3 + 0.5 * Math.abs(Math.sin(t * 5)) : 1;
+      probe.scale.setScalar(probe.scale.x + (target - probe.scale.x) * k);
+    }
   });
 
   // Picking: a click (not a drag) on a part selects it; the enclosure is chosen only when nothing else is hit.
@@ -364,6 +372,8 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
         if (burn.char.visible) burn.char.scale.x = burned!;
       }
       burn.frontX = burned !== undefined && burn.sheetLen ? -burn.sheetLen / 2 + burned * burn.sheetLen : 0;
+      active = new Set(m?.active ?? []);
+      for (const [p, els] of labelEls) for (const e of els) e.classList.toggle('changing', active.has(p));
       stateEl.textContent = m?.state ?? '';
       stateEl.hidden = !m?.state;
     },
