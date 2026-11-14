@@ -100,3 +100,30 @@ describe('GET /tests/:id', () => {
     expect((await app.request('/tests/PSI-404')).status).toBe(404);
   });
 });
+
+describe('GET /tests/:id protection', () => {
+  const body = (id: string) => ({ psiId: id, tables: [] });
+  it('answers a repeated id from its cache without calling PSI again', async () => {
+    const tables = vi.fn(async (id: string) => body(id));
+    const app = createApp({ ...makeDeps(), tables });
+    await app.request('/tests/PSI-9');
+    expect((await app.request('/tests/psi-9')).status).toBe(200);
+    expect(tables).toHaveBeenCalledTimes(1);
+  });
+  it('remembers a missing investigation for a while', async () => {
+    const tables = vi.fn(async () => { throw new PsiError('not_found', 'x'); });
+    const app = createApp({ ...makeDeps(), tables });
+    await app.request('/tests/PSI-404');
+    expect((await app.request('/tests/PSI-404')).status).toBe(404);
+    expect(tables).toHaveBeenCalledTimes(1);
+  });
+  it('429 once a visitor passes the read limit, without calling PSI', async () => {
+    const tables = vi.fn(async (id: string) => body(id));
+    const readLimiter = createLimiter({ store: memoryStore(), perIpPerDay: 2, globalPerDay: 100 });
+    const app = createApp({ ...makeDeps(), tables, readLimiter });
+    const get = (id: string) => app.request(`/tests/${id}`, { headers: { 'x-forwarded-for': '7.7.7.7' } });
+    await get('PSI-1'); await get('PSI-2');
+    expect((await get('PSI-3')).status).toBe(429);
+    expect(tables).toHaveBeenCalledTimes(2);
+  });
+});

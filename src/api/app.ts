@@ -16,6 +16,8 @@ export interface AppDeps {
   explain?: ExplainDeps;
   /** NASA's experimental tables, row by row, for the test replay of live-added rows. */
   tables?: (psiId: string) => Promise<TestTables>;
+  /** Limit for read routes that call PSI; falls back to the main limiter. */
+  readLimiter?: ReturnType<typeof createLimiter>;
 }
 
 const STATUS: Record<string, 400 | 404 | 429 | 502> = { bad_id: 400, not_found: 404, limit: 429, upstream: 502, too_long: 502 };
@@ -42,18 +44,33 @@ export function createApp(deps: AppDeps): Hono {
 
   const tables = deps.tables;
   if (tables) {
+    // Each uncached call fetches several files from NASA PSI, so results (and failures) are remembered,
+    // and uncached calls count against a per-visitor and a global daily limit.
+    const readLimiter = deps.readLimiter ?? deps.limiter;
+    const cache = new Map<string, { until: number; body?: TestTables; code?: string }>();
+    const OK_MS = 60 * 60 * 1000;
+    const FAIL_MS = 5 * 60 * 1000;
+    const MAX_ENTRIES = 300;
+
     app.get('/tests/:id', async (c) => {
       const psiId = normalizePsiId(c.req.param('id'));
       if (!psiId) return c.json({ code: 'bad_id' }, 400);
-      try {
-        const body = await tables(psiId);
-        // NASA's tables change rarely: let the CDN answer repeat requests instead of calling PSI again.
-        c.header('Cache-Control', 'public, max-age=300, s-maxage=86400');
-        return c.json(body);
-      } catch (e) {
-        const code = e instanceof PsiError ? e.code : 'upstream';
-        return c.json({ code }, STATUS[code] ?? 502);
+      let hit = cache.get(psiId);
+      if (hit && hit.until <= Date.now()) { cache.delete(psiId); hit = undefined; }
+      if (!hit) {
+        if (!(await readLimiter.allow(clientIp((n) => c.req.header(n))))) return c.json({ code: 'limit' }, 429);
+        try {
+          hit = { until: Date.now() + OK_MS, body: await tables(psiId) };
+        } catch (e) {
+          hit = { until: Date.now() + FAIL_MS, code: e instanceof PsiError ? e.code : 'upstream' };
+        }
+        if (cache.size >= MAX_ENTRIES) cache.delete(cache.keys().next().value as string);
+        cache.set(psiId, hit);
       }
+      if (!hit.body) return c.json({ code: hit.code }, STATUS[hit.code ?? 'upstream'] ?? 502);
+      // NASA's tables change rarely: let the CDN answer repeat requests instead of calling PSI again.
+      c.header('Cache-Control', 'public, max-age=300, s-maxage=86400');
+      return c.json(hit.body);
     });
   }
 

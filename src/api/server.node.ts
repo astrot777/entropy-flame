@@ -25,6 +25,7 @@ const api = createApp({
   ingest: { fetchDoc: (id) => fetchInvestigation(id), llm: createLlm({ apiKey, model, effort }) },
   reviewed,
   tables: (id) => fetchTables(id),
+  readLimiter: createLimiter({ store: memoryStore(), perIpPerDay: 60, globalPerDay: 1500 }),
   limiter: createLimiter({ store: memoryStore(), perIpPerDay: Math.max(5, Math.floor(dailyLimit / 10)), globalPerDay: dailyLimit }),
 });
 
