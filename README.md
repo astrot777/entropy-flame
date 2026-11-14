@@ -6,7 +6,7 @@ Entropy is for researchers and spacecraft fire-safety engineers who need to comp
 
 Entropy doesn't score fire risk, convert units, or replace reading the original records.
 
-**Live site:** [entropy-flame.vercel.app](https://entropy-flame.vercel.app) — opens without a login. **Demo deck:** [7 slides (PDF)](docs/Entropy-NASA-Space-Apps-2026.pdf).
+**Live site:** [entropy-flame.vercel.app](https://entropy-flame.vercel.app) - opens without a login. **Demo deck:** [7 slides (PDF)](docs/Entropy-NASA-Space-Apps-2026.pdf).
 
 ## What it does
 
