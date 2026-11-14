@@ -1,0 +1,20 @@
+# The 19 PSI combustion investigations named in the Flame in Freefall challenge statement.
+PSI-10
+PSI-20
+PSI-21
+PSI-22
+PSI-23 # ACME
+PSI-25 # BASS-II
+PSI-26 # BASS
+PSI-39 # CFI
+PSI-47 # DAFT and DAFT-2
+PSI-68 # FLEX-2
+PSI-69 # FLEX
+PSI-98 # SAFFIRE-I
+PSI-99 # SAFFIRE-II
+PSI-100 # SAFFIRE-III
+PSI-101 # SAME-R
+PSI-102 # SAME
+PSI-106 # SLICE
+PSI-107 # SPICE
+PSI-159 # ACME CFI-G
