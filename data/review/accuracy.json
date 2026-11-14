@@ -1,0 +1,91 @@
+{
+  "reviewedAt": "2026-11-14",
+  "reviewer": "astrot777",
+  "method": "Each cell of 5 investigations compared by hand with its NASA PSI page. Not-stated cells count as correct only if the page does not state the fact. Round 2 re-checked the 13 cells that changed after the data was re-extracted; every other cell keeps its round-1 mark.",
+  "marks": [
+    {
+      "id": "PSI-98",
+      "cells": {
+        "name": true,
+        "type": true,
+        "objectives": true,
+        "pillar": true,
+        "fuel": true,
+        "sample": true,
+        "oxygen": true,
+        "pressure": true,
+        "airflow": true,
+        "hardware": true,
+        "sensors": true
+      }
+    },
+    {
+      "id": "PSI-25",
+      "cells": {
+        "name": true,
+        "type": true,
+        "objectives": true,
+        "pillar": true,
+        "fuel": true,
+        "sample": true,
+        "oxygen": true,
+        "pressure": true,
+        "airflow": true,
+        "hardware": true,
+        "sensors": true
+      }
+    },
+    {
+      "id": "PSI-159",
+      "cells": {
+        "name": true,
+        "type": true,
+        "objectives": true,
+        "pillar": false,
+        "fuel": false,
+        "sample": true,
+        "oxygen": true,
+        "pressure": true,
+        "airflow": true,
+        "hardware": true,
+        "sensors": true
+      }
+    },
+    {
+      "id": "PSI-68",
+      "cells": {
+        "name": true,
+        "type": true,
+        "objectives": true,
+        "pillar": true,
+        "fuel": true,
+        "sample": true,
+        "oxygen": true,
+        "pressure": true,
+        "airflow": true,
+        "hardware": true,
+        "sensors": true
+      }
+    },
+    {
+      "id": "PSI-106",
+      "cells": {
+        "name": true,
+        "type": true,
+        "objectives": true,
+        "pillar": true,
+        "fuel": true,
+        "sample": true,
+        "oxygen": true,
+        "pressure": true,
+        "airflow": true,
+        "hardware": true,
+        "sensors": true
+      }
+    }
+  ],
+  "findings": [
+    "Round 1: 52 of 55. Fixed: text columns of test tables (fuel) and the airflow field definition.",
+    "Round 2: PSI-159 pillar (Prevention) and fuel (from the inverse-flames table only) marked wrong."
+  ]
+}
