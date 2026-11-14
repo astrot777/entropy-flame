@@ -18,6 +18,8 @@ const MESSAGES: Record<string, string> = {
 const SUGGESTIONS = ['PSI-60', 'PSI-62', 'PSI-115', 'PSI-117', 'PSI-142'];
 
 export function mountAdd(box: HTMLElement, h: AddHooks): void {
+  const plus = el('span', 'add-plus', '+');
+  plus.setAttribute('aria-hidden', 'true');
   const label = el('label', '', 'Add any PSI investigation live');
   const input = el('input');
   input.id = 'add-id';
@@ -34,7 +36,7 @@ export function mountAdd(box: HTMLElement, h: AddHooks): void {
     b.addEventListener('click', () => { input.value = s; void go(); });
     chips.append(b);
   }
-  box.append(label, input, btn, chips, msg);
+  box.append(plus, label, input, btn, chips, msg);
 
   let busy = false;
   let dead = false;
@@ -63,7 +65,7 @@ export function mountAdd(box: HTMLElement, h: AddHooks): void {
         if (event === 'field' && d.field && d.cell) {
           if (!added) { h.onRow(row); added = true; h.reveal(id); setText(msg, `The LLM is reading ${id}; each value appears once its quote is checked...`); }
           row[d.field] = d.cell;
-          const td = document.querySelector<HTMLTableCellElement>(`tr[data-id="${id}"] td[data-field="${d.field}"]`);
+          const td = document.querySelector<HTMLElement>(`[data-id="${id}"] [data-field="${d.field}"]`);
           if (td) { renderCell(td, row, d.field); td.classList.add('arrive'); }
         } else if ((event === 'done' || event === 'exists') && d.row) {
           for (const f of FIELDS) row[f] = d.row[f];

@@ -11,29 +11,36 @@
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
-  <header class="top">
+  <header class="hero">
+    <div class="hero-scene" id="hero-scene" aria-hidden="true"></div>
     <div class="sky" aria-hidden="true"><span class="shoot s1"></span><span class="shoot s2"></span><span class="shoot s3"></span></div>
-    <svg class="orbit" viewBox="0 0 600 600" aria-hidden="true">
-      <circle cx="300" cy="300" r="290" fill="none" stroke="currentColor" stroke-width="1.2" />
-      <circle cx="300" cy="300" r="200" fill="none" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 7" />
-    </svg>
-    <svg class="star star-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z" /></svg>
-    <svg class="star star-2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z" /></svg>
-    <svg class="star star-3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z" /></svg>
-    <div class="brand">
+    <nav class="hero-nav" aria-label="Sections">
+      <a href="#experiments">Experiments</a>
+      <a href="#atmap">Tested atmospheres</a>
+      <a href="#about">About</a>
+    </nav>
+    <div class="hero-text">
       <p class="eyebrow">NASA Space Apps 2026 · Flame in Freefall</p>
       <h1>Entropy</h1>
-      <p class="tag">A fire-safety atlas of microgravity combustion research</p>
+      <p class="tag">A fire-safety atlas of microgravity combustion research. Every value traced to the NASA sentence or table it came from.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#experiments">See the experiments</a>
+        <button class="btn" id="open-map" type="button">Explore the map · الخريطة</button>
+      </div>
+      <div class="stats" id="stats"></div>
     </div>
-    <div class="top-right"><div class="stats" id="stats"></div><button class="map-open" id="open-map" type="button">Map · الخريطة</button><a class="about-link" href="#about">About</a></div>
   </header>
-  <section class="add" id="add"></section>
-  <section class="controls" id="controls"></section>
   <main>
-    <div class="status" id="status" role="status"></div>
+    <section class="block" id="experiments">
+      <p class="kicker">The catalogue</p>
+      <h2>NASA fire experiments, one card each</h2>
+      <p class="lead">Select any value to see the NASA sentence or table line it came from. Tick two to four cards to compare them.</p>
+      <div class="controls" id="controls"></div>
+      <div class="status" id="status" role="status"></div>
+      <section id="compare" class="compare" hidden></section>
+      <div class="cards" id="catalogue"></div>
+    </section>
     <section class="atmap" id="atmap"></section>
-    <div class="table-wrap"><table id="catalogue"></table></div>
-    <section id="compare" class="compare" hidden></section>
     <section id="about" class="about"></section>
   </main>
   <aside class="panel" id="panel" hidden aria-live="polite"></aside>

@@ -4,7 +4,7 @@ import { el } from './dom';
 import { closestTest, CREW_ATMOSPHERES, PSIA_PER_ATM, testPoints, testsNear } from './atmosphere';
 
 const SVG = 'http://www.w3.org/2000/svg';
-const COLORS = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#6250d6'];
+const COLORS = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#9085e9']; // the palette's steps for a dark surface
 const W = 820, H = 380, M = { l: 60, r: 20, t: 16, b: 50 };
 const X = { lo: 0, hi: 5.25 }, Y = { lo: 10, hi: 42 };
 const sx = (v: number) => M.l + ((v - X.lo) / (X.hi - X.lo)) * (W - M.l - M.r);

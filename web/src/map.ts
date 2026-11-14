@@ -34,7 +34,7 @@ export async function openMap(rows: Row[]): Promise<void> {
   const tabsBar = el('div', 'map-tabs');
   tabsBar.setAttribute('role', 'tablist');
   stage.append(loading, tabsBar);
-  const note = el('p', 'xp-note', 'Marker positions are a layout, not locations. Earth and Moon imagery: NASA. Drag to orbit, right-drag to pan, scroll to zoom, click a marker for its data, R resets the view, Esc closes a panel.');
+  const note = el('p', 'xp-note', 'These experiments flew in low Earth orbit, so the markers sit on an orbit at the inclination of the space station; where each marker sits along it is a layout. Earth and Moon imagery: NASA. Drag to orbit, right-drag to pan, scroll to zoom, click a marker for its data, R resets the view, Esc closes a panel.');
   overlay.append(head, stage, note);
   document.body.append(overlay);
   document.body.classList.add('xp-open');

@@ -1,6 +1,7 @@
 // The markers of the space map. Every value is read from the project's own data files and carries the file it
 // came from; a value the files do not hold is the literal string NA. Nothing here is invented.
-// Marker positions are a layout over the globe, not locations: these experiments have no place on Earth.
+// Markers sit on one orbit at the inclination of the space station's orbit, because these experiments flew in
+// low Earth orbit. The place of each marker along that orbit is a layout, not a recorded position.
 import type { FieldKey, Row } from '../../../src/shared/types';
 import type { TestTables } from '../../../src/psi/tables';
 import { cellText } from '../source';
@@ -22,11 +23,13 @@ const SHOWN: [FieldKey, string][] = [
   ['pressure', 'Pressure'], ['airflow', 'Airflow'], ['hardware', 'Hardware'], ['sensors', 'Sensors'],
 ];
 
-/** An even spread over the sphere (a golden-angle spiral), kept away from the poles. */
+const ORBIT_TILT = (51.6 * Math.PI) / 180;
+
+/** Evenly spaced points along one orbit inclined 51.6 degrees, as the ground point under each marker. */
 export function layout(n: number, i: number): { lat: number; lon: number } {
-  const y = n === 1 ? 0 : 0.8 - (1.6 * i) / (n - 1);
-  const lat = (Math.asin(y) * 180) / Math.PI;
-  const lon = ((((i * 137.50776405) % 360) + 540) % 360) - 180;
+  const a = (2 * Math.PI * (i + 0.5)) / n;
+  const lat = (Math.asin(Math.sin(ORBIT_TILT) * Math.sin(a)) * 180) / Math.PI;
+  const lon = (Math.atan2(Math.cos(ORBIT_TILT) * Math.sin(a), Math.cos(a)) * 180) / Math.PI;
   return { lat, lon };
 }
 

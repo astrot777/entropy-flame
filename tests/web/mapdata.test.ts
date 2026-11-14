@@ -62,8 +62,11 @@ describe('buildMarkers: the map shows only what the project files hold', () => {
     expect(markers.some((m) => m.kind === 'moon')).toBe(false));
 });
 
-describe('layout: marker positions are a layout, not locations', () => {
-  it('spreads markers over the globe within valid latitude and longitude', () => {
+describe('layout: markers along one orbit at the space station inclination', () => {
+  it('never goes above 51.6 degrees of latitude', () => {
+    for (let i = 0; i < 19; i++) expect(Math.abs(layout(19, i).lat)).toBeLessThanOrEqual(51.6 + 1e-9);
+  });
+  it('gives every marker its own valid latitude and longitude', () => {
     const pts = Array.from({ length: 19 }, (_, i) => layout(19, i));
     for (const p of pts) { expect(Math.abs(p.lat)).toBeLessThanOrEqual(90); expect(Math.abs(p.lon)).toBeLessThanOrEqual(180); }
     expect(new Set(pts.map((p) => `${p.lat.toFixed(2)},${p.lon.toFixed(2)}`)).size).toBe(19);

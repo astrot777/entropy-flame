@@ -16,6 +16,8 @@ export interface SpaceHandle {
   resetView(): void;
   /** Moves the camera out to look at the Moon. */
   viewMoon(): void;
+  /** Stops drawing while the scene is off screen. */
+  setPaused(paused: boolean): void;
   /** Read-only state for checks: what exists in the scene right now. */
   state(): { tab: string; markers: number; panel: boolean; cameraDistance: number; fps: number; flying: boolean };
   scene: THREE.Scene;
@@ -28,6 +30,8 @@ const EARTH_R = 100;
 const MOON = { position: new THREE.Vector3(-1400, 520, -1800), radius: 27 };
 const MARKER = 0x16c784;
 const HOME = new THREE.Vector3(0, 110, 300);
+const AMBIENT_HOME = new THREE.Vector3(40, 70, 300);
+const ORBIT_TILT = (51.6 * Math.PI) / 180; // the inclination of the International Space Station's orbit
 const FLIGHT_MS = 1400;
 const FADE_MS = 250;
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -84,10 +88,13 @@ function drawPanel(marker: MapMarker): THREE.CanvasTexture {
   return tex;
 }
 
-export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTab: string, onTab?: (tab: string) => void): SpaceHandle {
+/** ambient: a backdrop that only turns. It takes no mouse or keyboard input, so the page scrolls over it. */
+export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTab: string, onTab?: (tab: string) => void, opts: { ambient?: boolean } = {}): SpaceHandle {
+  const ambient = !!opts.ambient;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, 1, 30000);
-  camera.position.copy(HOME);
+  camera.position.copy(ambient ? AMBIENT_HOME : HOME);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -110,6 +117,11 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   controls.minDistance = 130;
   controls.maxDistance = 3000;
   let dragging = false;
+  if (ambient) {
+    controls.enabled = false;
+    labels.domElement.style.pointerEvents = 'none';
+    renderer.domElement.style.pointerEvents = 'none';
+  }
   controls.addEventListener('start', () => { dragging = true; });
   controls.addEventListener('end', () => { dragging = false; });
 
@@ -137,6 +149,16 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   earth.receiveShadow = true;
   earthGroup.add(earth);
   scene.add(earthGroup);
+
+  // The orbit the markers sit on: a ring at the inclination of the space station's orbit.
+  const ringPts: THREE.Vector3[] = [];
+  for (let i = 0; i <= 180; i++) {
+    const a = (i / 180) * Math.PI * 2;
+    ringPts.push(new THREE.Vector3(Math.cos(a), Math.sin(a) * Math.sin(ORBIT_TILT), Math.sin(a) * Math.cos(ORBIT_TILT)).multiplyScalar(EARTH_R + 26));
+  }
+  const ring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), new THREE.LineBasicMaterial({ color: 0xd8a844, transparent: true, opacity: 0.55 }));
+  ring.name = 'orbit';
+  earthGroup.add(ring);
 
   // Atmosphere: a Fresnel rim.
   const rim = new THREE.Mesh(new THREE.SphereGeometry(EARTH_R * 1.035, 96, 72), new THREE.ShaderMaterial({
@@ -288,7 +310,7 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
     camera.up.set(0, 1, 0);
   }
   const onKey = (e: KeyboardEvent) => {
-    if ((e.key === 'r' || e.key === 'R') && !(e.target as HTMLElement).closest?.('input, textarea')) resetView();
+    if (!ambient && (e.key === 'r' || e.key === 'R') && !(e.target as HTMLElement).closest?.('input, textarea')) resetView();
   };
   window.addEventListener('keydown', onKey);
 
@@ -297,7 +319,8 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
     const h = container.clientHeight || 1;
     camera.aspect = w / h;
     // The picture is shifted down so the globe sits low in the frame, like ground beneath the viewer.
-    camera.setViewOffset(w, h, 0, -Math.round(h * 0.2), w, h);
+    if (ambient) camera.setViewOffset(w, h, -Math.round(w * 0.2), -Math.round(h * 0.06), w, h);
+    else camera.setViewOffset(w, h, 0, -Math.round(h * 0.2), w, h);
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
     labels.setSize(w, h);
@@ -310,15 +333,17 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   const clock = new THREE.Clock();
   let frame = 0;
   let fps = 60;
+  let paused = false;
   const loop = () => {
     frame = requestAnimationFrame(loop);
+    if (paused) { clock.getDelta(); return; }
     const raw = clock.getDelta();
     const dt = Math.min(raw, 0.05);
     if (raw > 0) fps += (1 / raw - fps) * 0.05;
     const now = performance.now();
 
     // Earth turns at 0.05 rad/s; it holds still while the user drags, a panel is open or the camera flies.
-    if (!dragging && !panel && !flight) earthGroup.rotation.y += 0.05 * dt;
+    if (!dragging && !panel && !flight && !(ambient && reduceMotion)) earthGroup.rotation.y += 0.05 * dt;
 
     if (flight) {
       const t = Math.min(1, (now - flight.start) / FLIGHT_MS);
@@ -342,7 +367,7 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
       if (fade === 1) fadeIn = 0;
     }
 
-    const over = flight || fadeFrom ? null : under();
+    const over = ambient || flight || fadeFrom ? null : under();
     if (over !== hovered) {
       if (hovered) hovered.label.element.hidden = true;
       hovered = over;
@@ -380,6 +405,7 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
     },
     closePanel,
     resetView,
+    setPaused(p) { paused = p; },
     viewMoon() {
       closePanel();
       flight = null;

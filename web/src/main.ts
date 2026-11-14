@@ -13,7 +13,9 @@ import { openMap } from './map';
 interface DataFile { meta: { generatedAt: string; generatedBy: string; source: string }; rows: Row[] }
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
-const table = $<HTMLTableElement>('catalogue');
+const grid = $('catalogue');
+const addCard = el('section', 'card add-card');
+addCard.id = 'add';
 const panel = $('panel');
 const status = $('status');
 const compareBox = $('compare');
@@ -28,7 +30,7 @@ let lastCell: HTMLElement | null = null;
 export const allRows = () => [...reviewed, ...live];
 
 const handlers = {
-  onCell: (row: Row, field: FieldKey, td: HTMLTableCellElement) => {
+  onCell: (row: Row, field: FieldKey, td: HTMLElement) => {
     lastCell?.classList.remove('sel');
     td.classList.add('sel');
     lastCell = td;
@@ -70,7 +72,7 @@ function renderStats() {
 
 export function render() {
   const rows = applyFilters(allRows(), filters);
-  renderCatalogue(table, rows, handlers);
+  renderCatalogue(grid, rows, handlers, addCard);
   if (!status.classList.contains('error')) setText(status, rows.length ? '' : 'No investigation matches these filters.');
   renderStats();
 }
@@ -116,9 +118,9 @@ function buildControls() {
   compareBtn.addEventListener('click', () => {
     const rows = allRows().filter((r) => selected.has(r.psiId.value ?? ''));
     renderCompare(compareBox, rows);
-    compareBox.scrollIntoView({ behavior: 'smooth' });
+    compareBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
-  c.append(search, pillar, cabin, fuel, hw, compareBtn, el('span', 'hint', 'Tick 2 to 4 rows to compare'));
+  c.append(search, pillar, cabin, fuel, hw, compareBtn, el('span', 'hint', 'Tick 2 to 4 cards to compare'));
 }
 
 function buildFooter(meta: DataFile['meta']) {
@@ -137,6 +139,19 @@ function buildFooter(meta: DataFile['meta']) {
   );
 }
 
+// The hero: the same space scene as the map, turning slowly behind the title. It never takes the mouse.
+async function mountHero(rows: Row[]) {
+  const box = $('hero-scene');
+  try {
+    const [{ mountSpace }, { buildMarkers }] = await Promise.all([import('./scene/space'), import('./scene/mapdata')]);
+    const handle = mountSpace(box, buildMarkers(rows, [], null), 'Investigations', undefined, { ambient: true });
+    new IntersectionObserver(([entry]) => handle.setPaused(!entry.isIntersecting)).observe(box);
+    document.addEventListener('visibilitychange', () => handle.setPaused(document.hidden));
+  } catch {
+    box.classList.add('no-webgl');
+  }
+}
+
 async function load() {
   buildControls();
   setText(status, 'Loading investigations...');
@@ -149,17 +164,18 @@ async function load() {
     render();
     void mountAbout($('about'), data.meta.generatedAt.slice(0, 10));
     $('open-map').addEventListener('click', () => { void openMap(data.rows); });
+    void mountHero(data.rows);
     const names = Object.fromEntries(data.rows.map((r) => [r.psiId.value ?? '', r.name.value ?? '']));
     void mountAtmosphereMap($('atmap'), data.rows.map((r) => r.psiId.value ?? ''), names);
   } catch {
     status.className = 'status error';
     setText(status, 'The investigation data could not be loaded. Refresh the page; if this persists, the data file is missing from this deployment.');
   }
-  mountAdd($('add'), {
+  mountAdd(addCard, {
     has: (id: string) => allRows().some((r) => r.psiId.value === id),
     onRow: (row: Row) => { live.push(row); render(); },
     refresh: () => render(),
-    reveal: (id: string) => document.querySelector(`tr[data-id="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+    reveal: (id: string) => document.querySelector(`[data-id="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
   });
 }
 
