@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import LlmClient from '@anthropic-ai/sdk';
 
 /** A model that streams plain text for one system + user prompt. */
 export interface Llm { stream(system: string, user: string): AsyncIterable<string> }
@@ -6,11 +6,11 @@ export interface Llm { stream(system: string, user: string): AsyncIterable<strin
 export type Effort = 'low' | 'medium' | 'high';
 
 /**
- * Claude via the Anthropic SDK. The model comes from configuration (LLM_MODEL), never hardcoded.
+ * LLM client. The model comes from configuration (LLM_MODEL), never hardcoded.
  * Server-side refusal fallback is on ("default" routing) so a safety decline is retried on another model.
  */
-export function anthropicLlm(opts: { apiKey: string; model: string; effort?: Effort; maxTokens?: number }): Llm {
-  const client = new Anthropic({ apiKey: opts.apiKey });
+export function createLlm(opts: { apiKey: string; model: string; effort?: Effort; maxTokens?: number }): Llm {
+  const client = new LlmClient({ apiKey: opts.apiKey });
   return {
     async *stream(system: string, user: string) {
       const stream = client.beta.messages.stream({

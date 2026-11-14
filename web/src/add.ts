@@ -61,7 +61,7 @@ export function mountAdd(box: HTMLElement, h: AddHooks): void {
       const feed = sseParser((event, data) => {
         const d = data as { field?: FieldKey; cell?: Cell; row?: Row; code?: string };
         if (event === 'field' && d.field && d.cell) {
-          if (!added) { h.onRow(row); added = true; h.reveal(id); setText(msg, `Claude is reading ${id}; each value appears once its quote is checked...`); }
+          if (!added) { h.onRow(row); added = true; h.reveal(id); setText(msg, `The LLM is reading ${id}; each value appears once its quote is checked...`); }
           row[d.field] = d.cell;
           const td = document.querySelector<HTMLTableCellElement>(`tr[data-id="${id}"] td[data-field="${d.field}"]`);
           if (td) { renderCell(td, row, d.field); td.classList.add('arrive'); }

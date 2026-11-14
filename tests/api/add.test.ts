@@ -67,7 +67,7 @@ describe('POST /add', () => {
     expect((await app.request('/add', spoof('5.6.7.8'))).status).toBe(429);
   });
   it('never leaks the key', async () => {
-    process.env.ANTHROPIC_API_KEY = 'sk-test-secret';
+    process.env.LLM_API_KEY = 'sk-test-secret';
     const app = createApp(makeDeps());
     expect(await (await app.request('/add', post({ id: 'PSI-9' }))).text()).not.toContain('sk-test-secret');
   });
