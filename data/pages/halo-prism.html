@@ -1,0 +1,1631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Entropy: one NASA record, read into twelve fields</title>
+<meta name="description" content="Entropy reads one NASA record into twelve fields, each traced to its source.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Orbitron:wght@500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000000; --bg-2:#1b1b1e; --ink:#ededed; --muted:#a1a1a1; --dim:#6e6e73;
+  --line:rgba(255,255,255,.12); --chip:rgba(255,255,255,.04);
+  --gutter:clamp(16px,2.6vw,28px);
+  --sans:"Raleway",ui-sans-serif,system-ui,sans-serif;
+  --display:"Orbitron","Raleway",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:6px}
+
+.hero{position:relative;height:100vh;height:100svh;isolation:isolate;overflow:hidden;background:var(--bg)}
+.stage{position:absolute;inset:0;z-index:-1;touch-action:pan-y}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#fx{mix-blend-mode:screen}
+
+.nav{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:14px var(--gutter);height:64px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-mark{display:flex}
+.brand-slash{color:var(--dim);font-size:22px;font-weight:300;transform:translateY(-1px)}
+.brand-name{font-family:var(--sans);font-size:24px;font-weight:700;letter-spacing:-.01em;line-height:1}
+.links{display:flex;gap:20px;margin-left:12px}
+.links a{font-size:14px;color:var(--muted);transition:color .2s}
+.links a:hover{color:var(--ink)}
+.right{display:flex;align-items:center;gap:8px}
+.search{display:flex;align-items:center;justify-content:space-between;gap:28px;height:36px;padding:0 6px 0 12px;min-width:172px;border:1px solid var(--line);border-radius:8px;background:var(--chip);font-size:14px;color:var(--muted)}
+.search:hover{border-color:rgba(255,255,255,.22);color:var(--ink)}
+a.ask{display:inline-flex;align-items:center}
+kbd{font-family:var(--display);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:2px 5px;background:rgba(255,255,255,.03)}
+.ask{height:36px;padding:0 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-weight:500;background:var(--chip)}
+.ask:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22)}
+.icon-btn{width:36px;height:36px;display:grid;place-items:center;border-radius:8px}
+.icon-btn:hover{background:rgba(255,255,255,.06)}
+.menu{display:none}
+
+.copy{position:relative;z-index:1;min-height:calc(100vh - 64px);min-height:calc(100svh - 64px);display:flex;flex-direction:column;justify-content:center;padding:0 var(--gutter) 64px;max-width:560px;pointer-events:none}
+.copy > *{pointer-events:auto}
+.wordmark{font-family:var(--sans);font-weight:700;font-size:clamp(72px,8.6vw,124px);line-height:1;letter-spacing:-.02em;margin-bottom:clamp(14px,1.8vw,22px)}
+.lede{font-size:clamp(28px,3.05vw,44px);line-height:1.2;font-weight:500;letter-spacing:-.025em;margin-bottom:clamp(24px,2.6vw,36px)}
+.lede span{display:block}
+.tabs{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
+.tab{color:var(--muted);padding:2px 0;text-transform:uppercase;letter-spacing:.1em}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink)}
+.dot{color:var(--dim);font-size:11px;letter-spacing:0}
+.cmd{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:440px;padding-top:14px;font-size:15px;line-height:1.5}
+.cmd::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.28),rgba(255,255,255,.08) 70%,transparent)}
+.cmd-text{min-width:0;font-family:var(--mono);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .18s,transform .18s}
+.cmd-text.swap{opacity:0;transform:translateY(3px)}
+.copy-btn{flex:none;width:30px;height:30px;display:grid;place-items:center;border-radius:7px;color:var(--dim)}
+.copy-btn:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+.copy-btn .ok{display:none}
+.copy-btn.done .cp{display:none}
+.copy-btn.done .ok{display:block}
+
+.rise{opacity:0;transform:translateY(12px);animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
+.copy > .rise:nth-child(2){animation-delay:.08s}
+.copy > .rise:nth-child(3){animation-delay:.16s}
+.copy > .rise:nth-child(4){animation-delay:.24s}
+@keyframes rise{to{opacity:1;transform:none}}
+.stage{opacity:0;animation:fade 1.6s .2s ease forwards}
+@keyframes fade{to{opacity:1}}
+
+@media (max-width:960px){
+  .search{min-width:0;gap:14px}
+}
+@media (max-width:820px){
+  .links,.search,.ask{display:none}
+  .menu{display:grid}
+  .copy{justify-content:flex-start;min-height:0;padding-top:clamp(28px,7svh,64px);padding-bottom:0;max-width:100%}
+}
+@media (max-width:420px){
+  .tabs{gap:6px}
+  .cmd{font-size:14px}
+  .cmd-text{font-size:12.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  .rise{opacity:1;transform:none;animation:none}
+  .stage{opacity:1;animation:none}
+}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<section class="hero" aria-label="How a NASA record becomes twelve fields">
+  <div class="stage" aria-hidden="true"><canvas id="gl"></canvas><canvas id="fx"></canvas></div>
+
+  <header class="nav">
+    <div class="brand">
+      <a class="brand-mark" href="/#top" target="_top" aria-label="Entropy, top of the page"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 3 22 20H2z"/></svg></a>
+      <span class="brand-slash" aria-hidden="true">/</span>
+      <a class="brand-name" href="/#top" target="_top">Entropy</a>
+      <nav class="links" aria-label="Primary">
+        <a href="/#table" target="_top">Experiments</a>
+        <a href="/#about" target="_top">About</a>
+      </nav>
+    </div>
+    <div class="right">
+      <a class="search" href="/#table" target="_top"><span>Search the catalogue</span></a>
+      <a class="ask" href="/#ask" target="_top">Ask Entropy</a>
+      <a class="icon-btn" href="https://github.com/astrot777/entropy-flame" target="_blank" rel="noopener noreferrer" aria-label="The Entropy code on GitHub"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+      <button class="icon-btn menu" type="button" aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
+    </div>
+  </header>
+
+  <div class="copy">
+    <h1 class="wordmark rise">Traced</h1>
+    <p class="lede rise"><span>One NASA record,</span><span>read into twelve fields.</span></p>
+    <div class="tabs rise" role="tablist" aria-label="How a value is made">
+      <button class="tab" type="button" role="tab" aria-selected="true" data-cmd="A value and a quote for each field">Read</button>
+      <span class="dot" aria-hidden="true">·</span>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-cmd="Kept only if the quote is in the record">Check</button>
+      <span class="dot" aria-hidden="true">·</span>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-cmd="Table quotes come from one column">Tables</button>
+      <span class="dot" aria-hidden="true">·</span>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-cmd="Not stated: no supporting text was found">Limits</button>
+    </div>
+    <div class="cmd rise">
+      <span class="cmd-text" id="cmd">A value and a quote for each field</span>
+      <button class="copy-btn" id="copy" type="button" aria-label="Copy command">
+        <svg class="cp" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg>
+        <svg class="ok" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var cmd = document.getElementById('cmd');
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var swapTimer = 0;
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (other) {
+        other.setAttribute('aria-selected', other === tab ? 'true' : 'false');
+      });
+      cmd.classList.add('swap');
+      clearTimeout(swapTimer);
+      swapTimer = setTimeout(function () {
+        cmd.textContent = tab.getAttribute('data-cmd');
+        cmd.classList.remove('swap');
+      }, 160);
+    });
+  });
+
+  var copy = document.getElementById('copy');
+  var doneTimer = 0;
+  copy.addEventListener('click', function () {
+    try {
+      var written = navigator.clipboard.writeText(cmd.textContent);
+      if (written && written.catch) written.catch(function () {});
+    } catch (error) {}
+    copy.classList.add('done');
+    clearTimeout(doneTimer);
+    doneTimer = setTimeout(function () { copy.classList.remove('done'); }, 1400);
+  });
+})();
+</script>
+
+<script type="module">
+/*
+ * Prism + light engine.
+ *
+ * The glass (rounded prism mesh, studio environment, back-face and front-face
+ * shading, lamp and pointer interaction) is ported from vercel-labs/vgpu
+ * (MIT License, Copyright (c) Vercel, Inc.),
+ * apps/docs/app/[lang]/(home)/components/prism-background.
+ */
+
+let THREE = null;
+try { THREE = await import('three'); } catch (error) { THREE = null; }
+
+const TAU = Math.PI * 2;
+const RAD = Math.PI / 180;
+const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
+
+const heroEl = document.querySelector('.hero');
+const stage = document.querySelector('.stage');
+const copyEl = document.querySelector('.copy');
+const cmdEl = document.querySelector('.cmd');
+const glCanvas = document.getElementById('gl');
+const fxCanvas = document.getElementById('fx');
+const fx = fxCanvas.getContext('2d');
+const base = document.createElement('canvas'); // beam, bands and glints: redrawn only when they change
+const bc = base.getContext('2d');
+const off = document.createElement('canvas');  // base + dust, the bloom source
+const oc = off.getContext('2d');
+const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+const hasFilter = typeof fx.filter === 'string';
+
+/* ------------------------------------------------------------------ */
+/* Spectrum                                                            */
+/* ------------------------------------------------------------------ */
+
+const NW = 72;
+const MID = NW >> 1;
+const IOR = new Float64Array(NW);
+const VIVID = new Array(NW);
+const CORE = new Array(NW);
+const CORE_WEIGHT = new Float64Array(NW);
+
+// Look of the dispersed light: pastel fills, gentle alphas.
+const PASTEL = 0.28;        // how far the vivid fills are pulled toward white
+const FILL_INSIDE = 0.39;   // band alpha inside the glass, x energy
+const FILL_OUTSIDE = 0.6;   // band alpha of the outgoing fan, x energy
+const CORE_GAIN = 1.7;      // core line alpha = weight x energy x this
+const FAN_REACH = 0.28;     // share of an outgoing ray over which the fan fades to nothing,
+                            // so it is only a faint wash by the time it reaches the copy
+
+/** Piecewise approximation of the visible spectrum, each channel in 0..1. */
+function spectralColor(nm) {
+  let r = 0, g = 0, b = 0;
+  if (nm < 440) { r = (440 - nm) / 60; b = 1; }
+  else if (nm < 490) { g = (nm - 440) / 50; b = 1; }
+  else if (nm < 510) { g = 1; b = (510 - nm) / 20; }
+  else if (nm < 580) { r = (nm - 510) / 70; g = 1; }
+  else if (nm < 645) { r = 1; g = (645 - nm) / 65; }
+  else { r = 1; }
+  const falloff = nm < 420 ? 0.3 + 0.7 * (nm - 380) / 40 : 1;
+  return [r * falloff, g * falloff, b * falloff];
+}
+
+(function buildSpectrum() {
+  const raw = [];
+  const sum = [0, 0, 0];
+  for (let i = 0; i < NW; i++) {
+    const nm = 410 + (695 - 410) * i / (NW - 1);
+    const um = nm * 1e-3;
+    IOR[i] = 1.2 + 0.1 / (um * um); // Cauchy
+    const color = spectralColor(nm);
+    raw.push(color);
+    sum[0] += color[0]; sum[1] += color[1]; sum[2] += color[2];
+    VIVID[i] = color.map((channel) => {
+      const vivid = Math.pow(channel, 0.8);
+      return Math.round(255 * (vivid + (1 - vivid) * PASTEL));
+    }).join(',');
+  }
+  for (let i = 0; i < NW; i++) {
+    // White balanced: every channel sums to one over the whole spectrum.
+    const balanced = [raw[i][0] / sum[0], raw[i][1] / sum[1], raw[i][2] / sum[2]];
+    const weight = Math.max(balanced[0], balanced[1], balanced[2], 1e-6);
+    CORE_WEIGHT[i] = weight;
+    CORE[i] = balanced.map((channel) => Math.round(255 * channel / weight)).join(',');
+  }
+})();
+
+/* ------------------------------------------------------------------ */
+/* Layout                                                              */
+/* ------------------------------------------------------------------ */
+
+// The light is always blurred by at least 3.2 CSS px, so its canvases are
+// capped at one canvas pixel per CSS pixel. These multipliers step that down
+// further, and only when the measured frame rate stays low.
+const LIGHT_QUALITY = [1, 0.75, 0.5];
+let lightQuality = 0;
+
+const L = {
+  W: 0, H: 0, dpr: 1, ldpr: 1, mobile: false,
+  S: 0, cx: 0, cy: 0, far: 0, D: 1,
+  tri: [[0, 0], [0, 0], [0, 0]],
+  nrm: [[0, 0], [0, 0], [0, 0]],
+};
+
+function computeLayout() {
+  const W = stage.clientWidth;
+  const H = stage.clientHeight;
+  if (!W || !H) return false;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const mobile = W < 820;
+  let S, cx, cy;
+  if (!mobile) {
+    S = Math.min(W * 0.36, H * 0.62);
+    cx = W * 0.66;
+    cy = H * 0.53;
+  } else {
+    const top = copyEl.offsetTop + cmdEl.offsetTop + cmdEl.offsetHeight + 30;
+    const room = H - top - 12;
+    S = Math.min(W * 0.72, H * 0.40, 400);
+    if (room >= 110) {
+      // The hero cannot grow inside an iframe: keep the whole prism under the copy.
+      S = Math.min(S, room / 0.95);
+      cx = W / 2;
+      cy = Math.max(top + S * 0.62, (top + H) / 2);
+    } else {
+      // No room below the copy (a short, wide phone): sit beside it instead.
+      S = Math.min(W * 0.3, H * 0.5);
+      cx = W * 0.74;
+      cy = H * 0.56;
+    }
+  }
+  const R = S / Math.sqrt(3);
+  L.W = W; L.H = H; L.dpr = dpr; L.mobile = mobile;
+  L.ldpr = Math.min(dpr, 1) * LIGHT_QUALITY[lightQuality];
+  L.S = S; L.cx = cx; L.cy = cy;
+  L.far = 1.5 * Math.hypot(W, H);
+  L.D = (H / 2) / Math.tan(24 * RAD);
+  // y down. Edges: 0 = right face (top -> right), 1 = base, 2 = left face.
+  L.tri = [[cx, cy - R], [cx + S / 2, cy + R / 2], [cx - S / 2, cy + R / 2]];
+  L.nrm = L.tri.map((start, index) => {
+    const end = L.tri[(index + 1) % 3];
+    const ex = end[0] - start[0], ey = end[1] - start[1];
+    const length = Math.hypot(ex, ey) || 1;
+    return [ey / length, -ex / length]; // outward
+  });
+  const pw = Math.max(1, Math.round(W * L.ldpr));
+  const ph = Math.max(1, Math.round(H * L.ldpr));
+  if (off.width !== pw || off.height !== ph) {
+    off.width = pw; off.height = ph;
+    base.width = pw; base.height = ph;
+    fxCanvas.width = pw; fxCanvas.height = ph;
+  }
+  return true;
+}
+
+/* ------------------------------------------------------------------ */
+/* Optics: 2D spectral ray tracing in the plane through the glass      */
+/* ------------------------------------------------------------------ */
+
+const groups = new Map();
+const glints = [];
+const lamp = { ex: 0, ey: 0, dx: -1, dy: 0, sx: 0, sy: 0 };
+
+function addSegment(key, wi, x0, y0, x1, y1, energy, inside) {
+  let group = groups.get(key);
+  if (!group) {
+    group = { inside, segs: new Array(NW).fill(null) };
+    groups.set(key, group);
+  }
+  group.segs[wi] = { x0, y0, x1, y1, e: energy, ax: 0, ay: 0, bx: 0, by: 0 };
+}
+
+/** Nearest face a ray inside the triangle reaches, skipping the one it left. */
+function nextFace(px, py, dx, dy, skip) {
+  let bestT = Infinity, bestEdge = -1;
+  for (let index = 0; index < 3; index++) {
+    if (index === skip) continue;
+    const a = L.tri[index], b = L.tri[(index + 1) % 3];
+    const ex = b[0] - a[0], ey = b[1] - a[1];
+    const denominator = dx * ey - dy * ex;
+    if (Math.abs(denominator) < 1e-9) continue;
+    const ox = a[0] - px, oy = a[1] - py;
+    const t = (ox * ey - oy * ex) / denominator;
+    const s = (ox * dy - oy * dx) / denominator;
+    if (t <= 1e-6 || s < -1e-6 || s > 1 + 1e-6) continue;
+    if (t < bestT) { bestT = t; bestEdge = index; }
+  }
+  return bestEdge < 0 ? null : { t: bestT, edge: bestEdge };
+}
+
+/** A ray leaves (px,py) on `face`, either through the glass or out into the air. */
+function travel(px, py, dx, dy, face, inside, n, energy, key, depth, wi) {
+  if (inside) {
+    const hit = nextFace(px, py, dx, dy, face);
+    if (!hit) return;
+    const qx = px + dx * hit.t, qy = py + dy * hit.t;
+    addSegment(key, wi, px, py, qx, qy, energy, true);
+    strike(qx, qy, dx, dy, hit.edge, true, n, energy, key, depth, wi);
+  } else {
+    addSegment(key, wi, px, py, px + dx * L.far, py + dy * L.far, energy, false);
+  }
+}
+
+/** A ray arrives at (px,py) on `face`: vector Snell, unpolarised Fresnel, TIR. */
+function strike(px, py, dx, dy, face, inside, n, energy, key, depth, wi) {
+  if (wi === MID && energy > 0.12) glints.push({ x: px, y: py, face, e: energy });
+  const outward = L.nrm[face];
+  // Normal facing the side the ray comes from.
+  const nx = inside ? -outward[0] : outward[0];
+  const ny = inside ? -outward[1] : outward[1];
+  const n1 = inside ? n : 1, n2 = inside ? 1 : n;
+  const eta = n1 / n2;
+  const cosI = clamp(-(dx * nx + dy * ny), 0, 1);
+  const sin2 = eta * eta * (1 - cosI * cosI);
+  let T = 0, tx = 0, ty = 0;
+  if (sin2 < 1) {
+    const cosT = Math.sqrt(1 - sin2);
+    const k = eta * cosI - cosT;
+    tx = dx * eta + nx * k;
+    ty = dy * eta + ny * k;
+    const rs = (n1 * cosI - n2 * cosT) / (n1 * cosI + n2 * cosT);
+    const rp = (n1 * cosT - n2 * cosI) / (n1 * cosT + n2 * cosI);
+    T = 1 - 0.5 * (rs * rs + rp * rp);
+  }
+  if (depth >= 7) return;
+  if (T > 0 && energy * T > 0.08) {
+    travel(px, py, tx, ty, face, !inside, n, energy * T, key + 'T' + face, depth + 1, wi);
+  }
+  const reflected = energy * (1 - T);
+  if (reflected > 0.12) {
+    const d2 = 2 * (dx * nx + dy * ny);
+    travel(px, py, dx - nx * d2, dy - ny * d2, face, inside, n, reflected, key + 'R' + face, depth + 1, wi);
+  }
+}
+
+/** aim[0] = pointer height -> incidence, aim[1] = pointer width -> entry point. */
+function trace(aimY, aimX) {
+  const incidence = (aimY < 0.5
+    ? -35 + 95 * (aimY / 0.5)
+    : 60 + 15 * ((aimY - 0.5) / 0.5)) * RAD;
+  const outward = L.nrm[0];
+  const ix = -outward[0], iy = -outward[1];
+  const c = Math.cos(incidence), s = Math.sin(incidence);
+  const dx = ix * c - iy * s, dy = ix * s + iy * c;
+  const along = 0.08 + 0.84 * aimX;
+  const top = L.tri[0], right = L.tri[1];
+  lamp.ex = top[0] + (right[0] - top[0]) * along;
+  lamp.ey = top[1] + (right[1] - top[1]) * along;
+  lamp.dx = dx; lamp.dy = dy;
+  lamp.sx = lamp.ex - dx * L.far;
+  lamp.sy = lamp.ey - dy * L.far;
+  groups.clear();
+  glints.length = 0;
+  for (let wi = 0; wi < NW; wi++) {
+    strike(lamp.ex, lamp.ey, dx, dy, 0, false, IOR[wi], 1, '', 0, wi);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Plane -> screen (through the 3D camera when there is one)           */
+/* ------------------------------------------------------------------ */
+
+let PM = null; // view-projection elements, column major
+const P = [0, 0];
+
+function project(x, y) {
+  if (!PM) { P[0] = x; P[1] = y; return P; }
+  const wx = x - L.cx, wy = L.cy - y;
+  const w = PM[3] * wx + PM[7] * wy + PM[15];
+  P[0] = ((PM[0] * wx + PM[4] * wy + PM[12]) / w * 0.5 + 0.5) * L.W;
+  P[1] = (0.5 - (PM[1] * wx + PM[5] * wy + PM[13]) / w * 0.5) * L.H;
+  return P;
+}
+
+/* ------------------------------------------------------------------ */
+/* Drawing the light                                                   */
+/* ------------------------------------------------------------------ */
+
+let seed = 48271;
+const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const MOTES = Array.from({ length: 70 }, () => ({
+  u: random(),
+  side: random() * 2 - 1,
+  radius: 0.5 + random() * 1.1,
+  speed: 0.012 + random() * 0.03,
+  rate: 0.8 + random() * 2.4,
+  phase: random() * TAU,
+}));
+
+/** How far back from the entry point the incoming beam stays on the stage. */
+function beamLength() {
+  const margin = 60;
+  const dx = -lamp.dx, dy = -lamp.dy;
+  let t = L.far;
+  if (dx > 1e-6) t = Math.min(t, (L.W + margin - lamp.ex) / dx);
+  else if (dx < -1e-6) t = Math.min(t, (-margin - lamp.ex) / dx);
+  if (dy > 1e-6) t = Math.min(t, (L.H + margin - lamp.ey) / dy);
+  else if (dy < -1e-6) t = Math.min(t, (-margin - lamp.ey) / dy);
+  return Math.max(t, 0);
+}
+
+/** Beam, bands and glints. Redrawn only when the lamp, the camera or the layout changes. */
+function drawBase() {
+  const g = bc;
+  const { W, H, S, ldpr, mobile } = L;
+  const k = mobile ? 0.8 : 1;
+  g.setTransform(ldpr, 0, 0, ldpr, 0, 0);
+  g.globalCompositeOperation = 'source-over';
+  g.clearRect(0, 0, W, H);
+  g.globalCompositeOperation = 'lighter';
+  g.lineCap = 'round';
+  g.lineJoin = 'round';
+
+  // Incoming beam.
+  let p = project(lamp.sx, lamp.sy);
+  const sx = p[0], sy = p[1];
+  p = project(lamp.ex, lamp.ey);
+  const ex = p[0], ey = p[1];
+  g.beginPath(); g.moveTo(sx, sy); g.lineTo(ex, ey);
+  g.strokeStyle = 'rgba(255,255,255,0.3)'; g.lineWidth = 12 * k; g.stroke();
+  g.strokeStyle = 'rgba(255,255,255,1)'; g.lineWidth = 4.5 * k; g.stroke();
+
+  // Refracted and reflected bands, one group per optical path.
+  for (const group of groups.values()) {
+    const segs = group.segs;
+    for (let i = 0; i < NW; i++) {
+      const seg = segs[i];
+      if (!seg) continue;
+      p = project(seg.x0, seg.y0); seg.ax = p[0]; seg.ay = p[1];
+      p = project(seg.x1, seg.y1); seg.bx = p[0]; seg.by = p[1];
+    }
+    for (let i = 0; i < NW - 1; i++) {
+      const a = segs[i], b = segs[i + 1];
+      if (!a || !b) continue;
+      const energy = (a.e + b.e) * 0.5;
+      const rgb = VIVID[i];
+      if (group.inside) {
+        g.fillStyle = 'rgba(' + rgb + ',' + (energy * FILL_INSIDE).toFixed(3) + ')';
+      } else {
+        const alpha = energy * FILL_OUTSIDE;
+        const x0 = (a.ax + b.ax) * 0.5, y0 = (a.ay + b.ay) * 0.5;
+        const gradient = g.createLinearGradient(
+          x0, y0,
+          x0 + ((a.bx + b.bx) * 0.5 - x0) * FAN_REACH,
+          y0 + ((a.by + b.by) * 0.5 - y0) * FAN_REACH
+        );
+        gradient.addColorStop(0, 'rgba(' + rgb + ',' + alpha.toFixed(3) + ')');
+        gradient.addColorStop(0.3, 'rgba(' + rgb + ',' + (alpha * 0.75).toFixed(3) + ')');
+        gradient.addColorStop(0.7, 'rgba(' + rgb + ',' + (alpha * 0.25).toFixed(3) + ')');
+        gradient.addColorStop(1, 'rgba(' + rgb + ',0)');
+        g.fillStyle = gradient;
+      }
+      g.beginPath();
+      g.moveTo(a.ax, a.ay); g.lineTo(a.bx, a.by);
+      g.lineTo(b.bx, b.by); g.lineTo(b.ax, b.ay);
+      g.closePath(); g.fill();
+    }
+    // Core lines, drawn as thin filled quads (far cheaper to rasterise than
+    // 72 long strokes per path, which was the largest cost of a frame).
+    const half = (group.inside ? 4 : 3.4) * 0.5;
+    for (let i = 0; i < NW; i++) {
+      const seg = segs[i];
+      if (!seg) continue;
+      const alpha = Math.min(1, CORE_WEIGHT[i] * seg.e * CORE_GAIN);
+      let ex = seg.bx, ey = seg.by;
+      if (group.inside) {
+        g.fillStyle = 'rgba(' + CORE[i] + ',' + alpha.toFixed(4) + ')';
+      } else {
+        // Outgoing cores fade over the same reach as the fan they sit in.
+        ex = seg.ax + (seg.bx - seg.ax) * FAN_REACH;
+        ey = seg.ay + (seg.by - seg.ay) * FAN_REACH;
+        const gradient = g.createLinearGradient(seg.ax, seg.ay, ex, ey);
+        gradient.addColorStop(0, 'rgba(' + CORE[i] + ',' + alpha.toFixed(4) + ')');
+        gradient.addColorStop(0.3, 'rgba(' + CORE[i] + ',' + (alpha * 0.75).toFixed(4) + ')');
+        gradient.addColorStop(0.7, 'rgba(' + CORE[i] + ',' + (alpha * 0.25).toFixed(4) + ')');
+        gradient.addColorStop(1, 'rgba(' + CORE[i] + ',0)');
+        g.fillStyle = gradient;
+      }
+      const lx = ex - seg.ax, ly = ey - seg.ay;
+      const length = Math.hypot(lx, ly);
+      if (length < 1e-3) continue;
+      const nx = -ly / length * half, ny = lx / length * half;
+      g.beginPath();
+      g.moveTo(seg.ax + nx, seg.ay + ny); g.lineTo(ex + nx, ey + ny);
+      g.lineTo(ex - nx, ey - ny); g.lineTo(seg.ax - nx, seg.ay - ny);
+      g.closePath(); g.fill();
+    }
+  }
+
+  // Edge glints where the beam crosses a face.
+  for (let i = 0; i < glints.length; i++) {
+    const glint = glints[i];
+    const a = L.tri[glint.face], b = L.tri[(glint.face + 1) % 3];
+    p = project(a[0], a[1]); const ax = p[0], ay = p[1];
+    p = project(b[0], b[1]); const bx = p[0], by = p[1];
+    p = project(glint.x, glint.y); const gx = p[0], gy = p[1];
+    const strength = Math.min(1, glint.e);
+    const gradient = g.createRadialGradient(gx, gy, 0, gx, gy, 0.2 * S);
+    gradient.addColorStop(0, 'rgba(255,255,255,' + strength.toFixed(3) + ')');
+    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+    g.strokeStyle = gradient; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(ax, ay); g.lineTo(bx, by); g.stroke();
+    g.fillStyle = 'rgba(255,255,255,' + strength.toFixed(3) + ')';
+    g.beginPath(); g.arc(gx, gy, 2.6, 0, TAU); g.fill();
+  }
+}
+
+/** Every frame: the cached base plus the drifting dust. */
+function drawLight(time) {
+  const { ldpr, mobile } = L;
+  const k = mobile ? 0.8 : 1;
+  let p;
+  oc.setTransform(1, 0, 0, 1, 0, 0);
+  oc.globalCompositeOperation = 'copy';
+  oc.drawImage(base, 0, 0);
+  oc.setTransform(ldpr, 0, 0, ldpr, 0, 0);
+  oc.globalCompositeOperation = 'lighter';
+
+  // Dust drifting along the incoming beam, wider away from the prism.
+  const reach = beamLength();
+  const px = -lamp.dy, py = lamp.dx;
+  for (let i = 0; i < MOTES.length; i++) {
+    const mote = MOTES[i];
+    let u = mote.u - time * mote.speed;
+    u -= Math.floor(u);
+    const distance = u * reach;
+    const lateral = mote.side * (4 + 42 * u) * k;
+    p = project(
+      lamp.ex - lamp.dx * distance + px * lateral,
+      lamp.ey - lamp.dy * distance + py * lateral
+    );
+    const twinkle = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(time * mote.rate + mote.phase));
+    const edge = Math.min(1, u / 0.06, (1 - u) / 0.06);
+    oc.fillStyle = 'rgba(255,255,255,' + (twinkle * 0.75 * edge).toFixed(3) + ')';
+    oc.beginPath(); oc.arc(p[0], p[1], mote.radius, 0, TAU); oc.fill();
+  }
+}
+
+/* Soft bloom: three blurred copies, no sharp pass. The two wide blurs run on
+   downscaled buffers. [blur px, alpha, divisor with filters, divisor without] */
+const BLOOM = [[34, 0.6, 4, 16], [12, 0.9, 2, 6], [3.2, 1, 1, 2]];
+const blurBuffers = [];
+
+function compositeBloom() {
+  const w = fxCanvas.width, h = fxCanvas.height;
+  fx.setTransform(1, 0, 0, 1, 0, 0);
+  fx.globalCompositeOperation = 'source-over';
+  fx.globalAlpha = 1;
+  if (hasFilter) fx.filter = 'none';
+  fx.clearRect(0, 0, w, h);
+  fx.imageSmoothingEnabled = true;
+  fx.imageSmoothingQuality = 'high';
+  for (let i = 0; i < BLOOM.length; i++) {
+    const blur = BLOOM[i][0], alpha = BLOOM[i][1];
+    const divisor = hasFilter ? BLOOM[i][2] : BLOOM[i][3];
+    fx.globalAlpha = alpha;
+    if (divisor === 1) {
+      fx.filter = 'blur(' + (blur * L.ldpr).toFixed(2) + 'px)';
+      fx.drawImage(off, 0, 0);
+      fx.filter = 'none';
+      continue;
+    }
+    // Shrink (blurring there when filters exist), then scale back up.
+    const buffer = blurBuffers[i] || (blurBuffers[i] = document.createElement('canvas'));
+    const bw = Math.max(1, Math.round(w / divisor));
+    const bh = Math.max(1, Math.round(h / divisor));
+    if (buffer.width !== bw || buffer.height !== bh) { buffer.width = bw; buffer.height = bh; }
+    const small = buffer.getContext('2d');
+    small.imageSmoothingEnabled = true;
+    small.imageSmoothingQuality = 'high';
+    small.clearRect(0, 0, bw, bh);
+    if (hasFilter) small.filter = 'blur(' + (blur * L.ldpr / divisor).toFixed(2) + 'px)';
+    small.drawImage(off, 0, 0, w, h, 0, 0, bw, bh);
+    fx.drawImage(buffer, 0, 0, bw, bh, 0, 0, w, h);
+  }
+  fx.globalAlpha = 1;
+}
+
+/** 2D fallback only: a thin outline where the glass would be. */
+function drawOutline() {
+  fx.setTransform(L.ldpr, 0, 0, L.ldpr, 0, 0);
+  fx.strokeStyle = 'rgba(255,255,255,0.32)';
+  fx.lineWidth = 1;
+  fx.lineJoin = 'round';
+  fx.beginPath();
+  for (let i = 0; i < 3; i++) {
+    const p = project(L.tri[i][0], L.tri[i][1]);
+    if (i === 0) fx.moveTo(p[0], p[1]); else fx.lineTo(p[0], p[1]);
+  }
+  fx.closePath();
+  fx.stroke();
+}
+
+/* ------------------------------------------------------------------ */
+/* The 3D glass                                                        */
+/* ------------------------------------------------------------------ */
+
+const PRISM_SIDE = 0.57;
+const CORNER_SEGMENTS = 4;
+const BEVEL_SEGMENTS = 4;
+const EDGE_SEGMENTS = 16;
+
+const normalize2 = (v) => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; };
+const outwardNormal = (start, end) => {
+  const ex = end[0] - start[0], ey = end[1] - start[1];
+  const l = Math.hypot(ex, ey) || 1;
+  return [ey / l, -ex / l];
+};
+
+/** Rounded triangle outline: tangent arcs at the corners, straight runs between. */
+function roundedTriangleContour(corners, radius) {
+  const arcs = corners.map((corner, index) => {
+    const previous = corners[(index + 2) % 3];
+    const next = corners[(index + 1) % 3];
+    const towardPrevious = normalize2([previous[0] - corner[0], previous[1] - corner[1]]);
+    const towardNext = normalize2([next[0] - corner[0], next[1] - corner[1]]);
+    const cosine = clamp(towardPrevious[0] * towardNext[0] + towardPrevious[1] * towardNext[1], -1, 1);
+    const halfAngle = Math.acos(cosine) / 2;
+    const tangentDistance = radius / Math.max(Math.tan(halfAngle), 1e-6);
+    const centerDistance = radius / Math.max(Math.sin(halfAngle), 1e-6);
+    const bisector = normalize2([towardPrevious[0] + towardNext[0], towardPrevious[1] + towardNext[1]]);
+    const center = [corner[0] + bisector[0] * centerDistance, corner[1] + bisector[1] * centerDistance];
+    const start = [corner[0] + towardPrevious[0] * tangentDistance, corner[1] + towardPrevious[1] * tangentDistance];
+    const end = [corner[0] + towardNext[0] * tangentDistance, corner[1] + towardNext[1] * tangentDistance];
+    const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0]);
+    let endAngle = Math.atan2(end[1] - center[1], end[0] - center[0]);
+    while (endAngle <= startAngle) endAngle += TAU;
+    const points = [];
+    for (let step = 0; step <= CORNER_SEGMENTS; step++) {
+      const angle = startAngle + (endAngle - startAngle) * step / CORNER_SEGMENTS;
+      const normal = [Math.cos(angle), Math.sin(angle)];
+      points.push({ position: [center[0] + normal[0] * radius, center[1] + normal[1] * radius], normal });
+    }
+    return points;
+  });
+  const contour = [];
+  arcs.forEach((arc, index) => {
+    const end = arc[arc.length - 1];
+    const nextStart = arcs[(index + 1) % 3][0];
+    const edgeNormal = outwardNormal(corners[index], corners[(index + 1) % 3]);
+    for (const point of arc) contour.push(point);
+    for (let step = 0; step < EDGE_SEGMENTS - 1; step++) {
+      const amount = (step + 1) / EDGE_SEGMENTS;
+      contour.push({
+        position: [
+          end.position[0] + (nextStart.position[0] - end.position[0]) * amount,
+          end.position[1] + (nextStart.position[1] - end.position[1]) * amount,
+        ],
+        normal: edgeNormal,
+      });
+    }
+  });
+  return contour;
+}
+
+/**
+ * Filleted prism, apex up, centred on the origin, y up, z towards the viewer.
+ * Interleaved position + normal, wound counter-clockwise from outside.
+ */
+function prismMeshData(S) {
+  const R = S / Math.sqrt(3);
+  const depth = S * 0.3 / PRISM_SIDE;
+  const corners = [[0, R], [-S / 2, -R / 2], [S / 2, -R / 2]];
+  const backZ = -depth / 2, frontZ = depth / 2;
+  const radius = Math.min(S * 0.008 / PRISM_SIDE, depth * 0.45);
+  const contour = roundedTriangleContour(corners, radius);
+  const vertices = [];
+  const indices = [];
+  const rings = [];
+
+  const push = (x, y, z, nx, ny, nz) => {
+    const index = vertices.length / 6;
+    vertices.push(x, y, z, nx, ny, nz);
+    return index;
+  };
+  const addRing = (theta, z, zNormal) => {
+    const inset = radius * (1 - Math.cos(theta));
+    const xyWeight = Math.cos(theta);
+    rings.push(contour.map(({ position, normal }) => push(
+      position[0] - normal[0] * inset, position[1] - normal[1] * inset, z,
+      normal[0] * xyWeight, normal[1] * xyWeight, zNormal
+    )));
+  };
+
+  // Stop a fraction short of a quarter turn so the cap corners keep some area.
+  const maxTheta = Math.PI / 2 - 0.06;
+  const maxSine = Math.sin(maxTheta);
+  for (let step = BEVEL_SEGMENTS; step >= 0; step--) {
+    const theta = maxTheta * step / BEVEL_SEGMENTS;
+    addRing(theta, backZ + radius - radius * Math.sin(theta) / maxSine, -Math.sin(theta));
+  }
+  for (let step = 0; step <= BEVEL_SEGMENTS; step++) {
+    const theta = maxTheta * step / BEVEL_SEGMENTS;
+    addRing(theta, frontZ - radius + radius * Math.sin(theta) / maxSine, Math.sin(theta));
+  }
+
+  for (let band = 0; band < rings.length - 1; band++) {
+    const current = rings[band], next = rings[band + 1];
+    for (let point = 0; point < contour.length; point++) {
+      const following = (point + 1) % contour.length;
+      indices.push(
+        current[point], current[following], next[following],
+        current[point], next[following], next[point]
+      );
+    }
+  }
+
+  const addCap = (sourceRing, nz, reverse) => {
+    const cap = sourceRing.map((source) => {
+      const base = source * 6;
+      return push(vertices[base], vertices[base + 1], vertices[base + 2], 0, 0, nz);
+    });
+    let cx = 0, cy = 0, cz = 0;
+    for (const index of cap) { cx += vertices[index * 6]; cy += vertices[index * 6 + 1]; cz += vertices[index * 6 + 2]; }
+    const center = push(cx / cap.length, cy / cap.length, cz / cap.length, 0, 0, nz);
+    for (let point = 0; point < cap.length; point++) {
+      const following = (point + 1) % cap.length;
+      if (reverse) indices.push(center, cap[following], cap[point]);
+      else indices.push(center, cap[point], cap[following]);
+    }
+  };
+  addCap(rings[0], -1, true);
+  addCap(rings[rings.length - 1], 1, false);
+
+  // The five ideal planes of the optical solid: three sides, front, back.
+  const planes = corners.map((start, edge) => {
+    const [nx, ny] = outwardNormal(start, corners[(edge + 1) % 3]);
+    return [nx, ny, 0, nx * start[0] + ny * start[1]];
+  });
+  planes.push([0, 0, 1, frontZ], [0, 0, -1, -backZ]);
+
+  return { vertices: new Float32Array(vertices), indices: new Uint16Array(indices), planes };
+}
+
+const GLSL_COMMON = /* glsl */ `
+precision highp float;
+precision highp int;
+
+uniform float uExposure;
+
+vec3 srgbToLinear(vec3 c) {
+  return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(vec3(0.04045), c));
+}
+vec3 linearToSrgb(vec3 c) {
+  c = clamp(c, 0.0, 1.0);
+  return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(vec3(0.0031308), c));
+}
+// Soft shoulder above 0.8 so bright panels roll off instead of clipping.
+vec3 softShoulder(vec3 c) {
+  vec3 over = max(c - 0.8, 0.0);
+  return min(c, vec3(0.8)) + 0.2 * (1.0 - exp(-over / 0.2));
+}
+
+// A sub-pixel step of the normal, limited so it never leaves a thin fillet strip by much.
+vec3 normalStep(vec3 dx, vec3 dy, vec2 offset) {
+  vec3 step = dx * offset.x + dy * offset.y;
+  float size = length(step);
+  return size > 0.05 ? step * (0.05 / size) : step;
+}
+
+// Rotated-grid sub-pixel offsets, in pixels.
+const vec2 SUBPIXEL[4] = vec2[4](vec2(-0.125, -0.375), vec2(0.375, -0.125), vec2(-0.375, 0.125), vec2(0.125, 0.375));
+
+float dielectricFresnel(float f0, float facing) {
+  float m = 1.0 - clamp(facing, 0.0, 1.0);
+  float m2 = m * m;
+  return f0 + (1.0 - f0) * m2 * m2 * m;
+}
+
+// Integral of clamp((t - start) / width, 0, 1) from far left up to x.
+float rampIntegral(float x, float start, float width) {
+  float t = clamp(x - start, 0.0, width);
+  return t * t / (2.0 * width) + max(x - start - width, 0.0);
+}
+
+// One axis of a studio panel. On flat glass this is the feathered edge itself;
+// where the reflection sweeps across the panel within a pixel (the fillets) it
+// becomes the panel's average over that pixel, so highlights stay continuous.
+float panelAxis(float local, float size, float feather, float footprint) {
+  float sharp = 1.0 - smoothstep(size, size + feather, abs(local));
+  float x0 = local - 0.5 * footprint;
+  float x1 = local + 0.5 * footprint;
+  float covered = (rampIntegral(x1, -size - feather, feather) - rampIntegral(x0, -size - feather, feather)
+    - rampIntegral(x1, size, feather) + rampIntegral(x0, size, feather)) / footprint;
+  return mix(sharp, clamp(covered, 0.0, 1.0), clamp(footprint / (0.5 * feather), 0.0, 1.0));
+}
+
+// A rectangle projected onto the sphere, feathered at its border.
+// angle: how far the lookup direction turns across one pixel, in radians.
+float studioPanel(vec3 direction, vec3 panelDirection, vec2 size, float feather, float angle) {
+  vec3 forward = normalize(panelDirection);
+  vec3 helper = abs(forward.y) > 0.92 ? vec3(0.0, 0.0, 1.0) : vec3(0.0, 1.0, 0.0);
+  vec3 right = normalize(cross(helper, forward));
+  vec3 up = cross(forward, right);
+  float facing = dot(direction, forward);
+  if (facing <= 0.01) return 0.0;
+  float footprint = max(angle / max(facing * facing, 0.04), 0.00001);
+  float edgeX = panelAxis(dot(direction, right) / facing, size.x, feather, footprint);
+  float edgeY = panelAxis(dot(direction, up) / facing, size.y, feather, footprint);
+  return edgeX * edgeY;
+}
+
+// The sparse studio the prism reflects: dark room, back-left wall, soft fill, cool right key.
+vec3 studioEnvironment(vec3 directionInput, float angle) {
+  vec3 direction = normalize(directionInput);
+  float floorBlend = 1.0 - smoothstep(-0.22, -0.02, direction.y);
+  vec3 room = mix(vec3(0.00025, 0.0003, 0.0004), vec3(0.006, 0.007, 0.009), floorBlend);
+  float negativeZ = 1.0 - smoothstep(-0.08, 0.08, direction.z);
+  float aboveFloor = smoothstep(-0.28, -0.08, direction.y);
+  room = mix(room, vec3(0.00002), negativeZ * aboveFloor);
+  float horizon = exp(-abs(direction.y + 0.1) * 22.0) * 0.0012;
+  vec3 color = room + vec3(horizon, horizon * 0.96, horizon * 0.9);
+  color += vec3(0.82, 0.84, 0.88) * (studioPanel(direction, vec3(-0.82, 0.08, 0.57), vec2(1.35, 1.1), 0.22, angle) * 0.011);
+  color += vec3(1.0, 0.97, 0.91) * (studioPanel(direction, vec3(0.0, -0.707, 0.707), vec2(0.38, 0.62), 0.18, angle) * 0.22);
+  color += vec3(0.76, 0.88, 1.0) * (studioPanel(direction, vec3(0.612, 0.354, 0.707), vec2(0.5, 0.16), 0.035, angle) * 20.0);
+  vec3 mapped = color / (vec3(1.0) + color);
+  return srgbToLinear(pow(max(mapped, vec3(0.0)), vec3(1.0 / 2.2))) * uExposure;
+}
+`;
+
+const QUAD_VERT = /* glsl */ `
+precision highp float;
+in vec3 position;
+out vec2 vUv;
+void main() {
+  vUv = position.xy * 0.5 + 0.5;
+  gl_Position = vec4(position.xy, 0.0, 1.0);
+}
+`;
+
+const PRISM_VERT = /* glsl */ `
+precision highp float;
+in vec3 position;
+in vec3 normal;
+uniform mat4 uViewProj;
+// Shading reads the centroid-sampled pair: on fillet strips thinner than a pixel
+// the pixel centre lies outside the triangle, and values extrapolated out there
+// are what produced dotted highlights. The smooth pair is only for derivatives.
+centroid out vec3 vWorld;
+centroid out vec3 vNormal;
+out vec3 vWorldSmooth;
+out vec3 vNormalSmooth;
+void main() {
+  vWorld = position;
+  vNormal = normal;
+  vWorldSmooth = position;
+  vNormalSmooth = normal;
+  gl_Position = uViewProj * vec4(position, 1.0);
+}
+`;
+
+// Pass 1: the space backdrop (same cover fit as the CSS background)
+// screen-blended with the light canvas, stored linear.
+const WALL_FRAG = GLSL_COMMON + /* glsl */ `
+uniform sampler2D uLight;    // premultiplied: rgb already holds rgb * a
+uniform sampler2D uBackdrop; // sRGB values, left encoded so the blend matches CSS
+uniform vec2 uCover;         // screen uv -> backdrop uv scale around the centre
+in vec2 vUv;
+out vec4 fragColor;
+void main() {
+  vec3 bg = texture(uBackdrop, (vUv - 0.5) * uCover + 0.5).rgb;
+  vec3 light = clamp(texture(uLight, vUv).rgb, 0.0, 1.0);
+  vec3 screened = 1.0 - (1.0 - bg) * (1.0 - light);
+  fragColor = vec4(srgbToLinear(screened), 1.0);
+}
+`;
+
+// Pass 3: the render target to the screen.
+const COPY_FRAG = GLSL_COMMON + /* glsl */ `
+uniform sampler2D uScene;
+in vec2 vUv;
+out vec4 fragColor;
+void main() {
+  fragColor = vec4(linearToSrgb(texture(uScene, vUv).rgb), 1.0);
+}
+`;
+
+// Pass 2: inner/back interface. Environment only, premultiplied Fresnel weight.
+const BACK_FRAG = GLSL_COMMON + /* glsl */ `
+uniform vec3 uCam;
+uniform vec4 uPlanes[5];
+uniform float uIor;
+uniform float uF0;
+uniform float uRefl;
+uniform float uMiss;
+centroid in vec3 vWorld;
+centroid in vec3 vNormal;
+in vec3 vWorldSmooth;
+in vec3 vNormalSmooth;
+out vec4 fragColor;
+
+const float NO_HIT = 1.0e9;
+const int NO_PLANE = 5;
+const int MAX_INTERNAL_BOUNCES = 3;
+
+struct ExitPath {
+  vec3 position;
+  vec3 direction;
+  vec3 incident;
+  vec3 inwardNormal;
+  bool escaped;
+  int plane;
+};
+
+float planeHitDistance(vec3 origin, vec3 direction, vec4 plane, int index, int departed) {
+  if (index == departed) return NO_HIT;
+  float denominator = dot(plane.xyz, direction);
+  if (denominator <= 0.00001) return NO_HIT;
+  float distance = (plane.w - dot(plane.xyz, origin)) / denominator;
+  if (distance >= 0.0) return distance;
+  return NO_HIT;
+}
+
+// Nearest ideal plane reached by a ray already inside the glass.
+void nextSurface(vec3 origin, vec3 direction, int departed, out float nearest, out vec3 normal, out int planeIndex) {
+  nearest = planeHitDistance(origin, direction, uPlanes[3], 3, departed);
+  planeIndex = 3;
+  normal = uPlanes[3].xyz;
+  float backDistance = planeHitDistance(origin, direction, uPlanes[4], 4, departed);
+  if (backDistance < nearest) { nearest = backDistance; normal = uPlanes[4].xyz; planeIndex = 4; }
+  for (int index = 0; index < 3; index++) {
+    float distance = planeHitDistance(origin, direction, uPlanes[index], index, departed);
+    if (distance < nearest) { nearest = distance; normal = uPlanes[index].xyz; planeIndex = index; }
+  }
+}
+
+// Glass -> air, continuing through total internal reflections.
+ExitPath traceExit(vec3 position, vec3 direction, vec3 inwardNormal, int plane) {
+  ExitPath path;
+  for (int bounce = 0; bounce <= MAX_INTERNAL_BOUNCES; bounce++) {
+    vec3 transmitted = refract(direction, inwardNormal, uIor);
+    if (dot(transmitted, transmitted) > 1.0e-10) {
+      path.position = position;
+      path.direction = transmitted;
+      path.incident = direction;
+      path.inwardNormal = inwardNormal;
+      path.escaped = true;
+      path.plane = plane;
+      return path;
+    }
+    direction = reflect(direction, inwardNormal);
+    float distance; vec3 normal; int index;
+    nextSurface(position, direction, plane, distance, normal, index);
+    if (distance >= uMiss) break;
+    position += direction * distance;
+    plane = index;
+    inwardNormal = -normal;
+  }
+  path.position = position;
+  path.direction = direction;
+  path.incident = direction;
+  path.inwardNormal = inwardNormal;
+  path.escaped = false;
+  path.plane = plane;
+  return path;
+}
+
+// The inner-face reflection stays in the solid: follow it out before sampling the studio.
+ExitPath traceReflectedExit(vec3 position, vec3 incident, vec3 inwardNormal, int departed) {
+  vec3 direction = reflect(incident, inwardNormal);
+  float distance; vec3 normal; int index;
+  nextSurface(position, direction, departed, distance, normal, index);
+  if (distance >= uMiss) {
+    ExitPath path;
+    path.position = position;
+    path.direction = direction;
+    path.incident = direction;
+    path.inwardNormal = inwardNormal;
+    path.escaped = false;
+    path.plane = departed;
+    return path;
+  }
+  return traceExit(position + direction * distance, direction, -normal, index);
+}
+
+vec4 shadeBack(vec3 world, vec3 inwardNormal, float angle) {
+  vec3 incident = normalize(world - uCam);
+  ExitPath exitPath = traceExit(world, incident, inwardNormal, NO_PLANE);
+  ExitPath reflectedExit = traceReflectedExit(exitPath.position, exitPath.incident, exitPath.inwardNormal, exitPath.plane);
+
+  float reflectedFacing = clamp(-dot(reflectedExit.incident, reflectedExit.inwardNormal), 0.0, 1.0);
+  float reflectedTransmission = 0.0;
+  if (reflectedExit.escaped) reflectedTransmission = 1.0 - dielectricFresnel(uF0, reflectedFacing);
+  vec3 reflectedEnvironment = studioEnvironment(reflectedExit.direction, angle) * uRefl * reflectedTransmission;
+
+  float facing = clamp(-dot(exitPath.incident, exitPath.inwardNormal), 0.0, 1.0);
+  float weight = 1.0;
+  if (exitPath.escaped) weight = dielectricFresnel(uF0, facing);
+  // Rolled off to display range here, per ray: averaging raw studio radiance
+  // (the key is far above white) would turn every partly covered pixel white,
+  // which is what made thin highlights on the fillets look dotted.
+  return vec4(softShoulder(reflectedEnvironment) * weight, weight);
+}
+
+void main() {
+  // Back-facing triangles expose their inward normal to the camera ray.
+  vec3 worldDx = dFdx(vWorldSmooth), worldDy = dFdy(vWorldSmooth);
+  vec3 normalDx = dFdx(vNormalSmooth), normalDy = dFdy(vNormalSmooth);
+  // How far the studio lookup turns across this pixel (a reflection doubles the normal's turn).
+  float angle = ((length(normalDx) + length(normalDy)) * 2.0
+    + (length(worldDx) + length(worldDy)) / distance(uCam, vWorld)) * uIor;
+  // Four sub-pixel rays: neighbouring pixels can take different bounce paths,
+  // and that boundary is not a triangle edge, so multisampling alone misses it.
+  vec4 sum = vec4(0.0);
+  for (int index = 0; index < 4; index++) {
+    vec2 offset = SUBPIXEL[index];
+    sum += shadeBack(
+      vWorld + worldDx * offset.x + worldDy * offset.y,
+      -normalize(vNormal + normalStep(normalDx, normalDy, offset)),
+      angle
+    );
+  }
+  fragColor = sum * 0.25;
+}
+`;
+
+// Pass 4: outer/front interface. One refracted scene lookup, one studio reflection.
+const FRONT_FRAG = GLSL_COMMON + /* glsl */ `
+uniform sampler2D uScene;
+uniform mat4 uViewProj;
+uniform vec3 uCam;
+uniform vec4 uPlanes[5];
+uniform vec3 uAbsorb;
+uniform vec2 uRes;
+uniform float uIor;
+uniform float uF0;
+uniform float uRefl;
+uniform float uMiss;
+uniform float uEps;
+centroid in vec3 vWorld;
+centroid in vec3 vNormal;
+in vec3 vWorldSmooth;
+in vec3 vNormalSmooth;
+out vec4 fragColor;
+
+const float NO_EXIT = 1.0e9;
+
+float planeExitDistance(vec3 origin, vec3 direction, vec4 plane) {
+  float denominator = dot(plane.xyz, direction);
+  if (denominator <= 0.00001) return NO_EXIT;
+  float distance = (plane.w - dot(plane.xyz, origin)) / denominator;
+  if (distance > uEps * 0.5) return distance;
+  return NO_EXIT;
+}
+
+// The prism is convex: a ray inside leaves through the nearest of its five planes.
+float nextSurface(vec3 origin, vec3 direction) {
+  float nearest = planeExitDistance(origin, direction, uPlanes[3]);
+  nearest = min(nearest, planeExitDistance(origin, direction, uPlanes[4]));
+  for (int index = 0; index < 3; index++) {
+    nearest = min(nearest, planeExitDistance(origin, direction, uPlanes[index]));
+  }
+  return nearest;
+}
+
+void main() {
+  vec3 normal = normalize(vNormal);
+  vec3 view = normalize(uCam - vWorld);
+  vec3 incident = -view;
+  float facing = clamp(dot(view, normal), 0.0, 1.0);
+  vec3 worldDx = dFdx(vWorldSmooth), worldDy = dFdy(vWorldSmooth);
+  vec3 normalDx = dFdx(vNormalSmooth), normalDy = dFdy(vNormalSmooth);
+  // How far the studio lookup turns across this pixel: large on the fillets.
+  float angle = (length(normalDx) + length(normalDy)) * 2.0
+    + (length(worldDx) + length(worldDy)) / distance(uCam, vWorld);
+  vec3 reflectedEnvironment = studioEnvironment(reflect(incident, normal), angle);
+  float fresnel = dielectricFresnel(uF0, facing);
+
+  // Four sub-pixel rays through the glass, so the edges of what is seen
+  // through it (where rays start leaving by a different face) stay clean.
+  vec2 halfTexel = 0.5 / uRes;
+  vec3 transmitted = vec3(0.0);
+  for (int index = 0; index < 4; index++) {
+    vec2 offset = SUBPIXEL[index];
+    vec3 world = vWorld + worldDx * offset.x + worldDy * offset.y;
+    vec3 subNormal = normalize(vNormal + normalStep(normalDx, normalDy, offset));
+    vec3 insideDirection = normalize(refract(normalize(world - uCam), subNormal, 1.0 / uIor));
+    vec3 origin = world + insideDirection * uEps;
+    float travelled = nextSurface(origin, insideDirection);
+    if (travelled < uMiss) {
+      vec4 clip = uViewProj * vec4(origin + insideDirection * travelled, 1.0);
+      vec2 uv = clip.xy / max(clip.w, 0.00001) * 0.5 + 0.5;
+      uv = clamp(uv, halfTexel, vec2(1.0) - halfTexel);
+      transmitted += textureLod(uScene, uv, 0.0).rgb * exp(-uAbsorb * travelled);
+    }
+  }
+  transmitted *= 0.25;
+
+  vec3 reflected = reflectedEnvironment * uRefl;
+  float grazingWeight = pow(1.0 - facing, 1.5);
+  float environmentLuminance = dot(reflectedEnvironment, vec3(0.2126, 0.7152, 0.0722));
+  float panelMask = smoothstep(0.5, 0.82, environmentLuminance);
+  vec3 physicalGlass = transmitted * (1.0 - fresnel) + reflected * fresnel;
+  float panelStrength = panelMask * clamp(uRefl * 0.4, 0.0, 0.7) * (0.65 + 0.35 * grazingWeight);
+  vec3 panelHighlight = max(reflected * panelStrength, vec3(0.0));
+  vec3 finalGlass = max(physicalGlass, vec3(0.0)) + panelHighlight;
+  fragColor = vec4(linearToSrgb(softShoulder(finalGlass)), 1.0);
+}
+`;
+
+const GLASS = {
+  ior: 1.645,
+  reflectionStrength: 2.14,
+  environmentExposure: 2.3,
+  absorption: [1, 1, 0.54], // per 0.57-unit side
+};
+const CAMERA_FOV = 48;
+const CAMERA_ORBIT_DEGREES = 3.5;
+
+let camera = null;
+let viewProj = null;
+if (THREE) {
+  camera = new THREE.PerspectiveCamera(CAMERA_FOV, 1, 1, 10);
+  viewProj = new THREE.Matrix4();
+}
+
+/** Orbit on a sphere around the prism, always looking at it. */
+function updateCamera(orbitX, orbitY) {
+  if (!camera) return;
+  const yaw = clamp(orbitX, -1, 1) * CAMERA_ORBIT_DEGREES * RAD;
+  const pitch = -clamp(orbitY, -1, 1) * CAMERA_ORBIT_DEGREES * RAD;
+  const cosPitch = Math.cos(pitch);
+  camera.position.set(
+    Math.sin(yaw) * cosPitch * L.D,
+    Math.sin(pitch) * L.D,
+    Math.cos(yaw) * cosPitch * L.D
+  );
+  camera.up.set(0, 1, 0);
+  camera.lookAt(0, 0, 0);
+  camera.updateMatrixWorld(true);
+  viewProj.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  PM = viewProj.elements;
+}
+
+function layoutCamera() {
+  if (!camera) return;
+  camera.near = L.D * 0.05;
+  camera.far = L.D * 4;
+  // Keeps the prism, which sits on the optical axis, at its layout position.
+  camera.setViewOffset(L.W, L.H, L.W / 2 - L.cx, L.H / 2 - L.cy, L.W, L.H);
+}
+
+function createGlass() {
+  if (!THREE) return null;
+  let gl = null;
+  try {
+    gl = glCanvas.getContext('webgl2', {
+      antialias: true, alpha: false, depth: false, stencil: false,
+      powerPreference: 'high-performance',
+    });
+  } catch (error) { gl = null; }
+  if (!gl) return null;
+
+  try {
+    const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, context: gl, antialias: true });
+    if (!renderer.capabilities.isWebGL2) throw new Error('WebGL2 required');
+    renderer.autoClear = false;
+    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+    renderer.toneMapping = THREE.NoToneMapping;
+
+    const glass = { renderer, failed: false, side: 0 };
+    renderer.debug.onShaderError = (context, program, vertexShader, fragmentShader) => {
+      glass.failed = true;
+      console.error(
+        'Prism shader failed:',
+        context.getProgramInfoLog(program),
+        context.getShaderInfoLog(vertexShader),
+        context.getShaderInfoLog(fragmentShader)
+      );
+    };
+
+    const floatTarget = !!(gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float'));
+    const target = new THREE.WebGLRenderTarget(4, 4, {
+      type: floatTarget ? THREE.HalfFloatType : THREE.UnsignedByteType,
+      format: THREE.RGBAFormat,
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.LinearFilter,
+      generateMipmaps: false,
+      depthBuffer: false,
+      stencilBuffer: false,
+    });
+
+    const lightTexture = new THREE.CanvasTexture(fxCanvas);
+    lightTexture.colorSpace = THREE.NoColorSpace;
+    lightTexture.generateMipmaps = false;
+    lightTexture.minFilter = THREE.LinearFilter;
+    lightTexture.magFilter = THREE.LinearFilter;
+    lightTexture.premultiplyAlpha = true;
+
+    // Until (or unless) the backdrop image loads, the wall is the flat base colour #000000.
+    const flatBackdrop = new THREE.DataTexture(new Uint8Array([0x00, 0x00, 0x00, 0xff]), 1, 1, THREE.RGBAFormat);
+    flatBackdrop.colorSpace = THREE.NoColorSpace;
+    flatBackdrop.needsUpdate = true;
+    const backdropSize = new THREE.Vector2(0, 0);
+
+    const f0 = Math.pow((GLASS.ior - 1) / (GLASS.ior + 1), 2);
+    const uniforms = {
+      uLight: { value: lightTexture },
+      uScene: { value: target.texture },
+      uBackdrop: { value: flatBackdrop },
+      uCover: { value: new THREE.Vector2(1, 1) },
+      uViewProj: { value: viewProj },
+      uCam: { value: camera.position },
+      uPlanes: { value: [0, 1, 2, 3, 4].map(() => new THREE.Vector4()) },
+      uAbsorb: { value: new THREE.Vector3() },
+      uRes: { value: new THREE.Vector2(1, 1) },
+      uIor: { value: GLASS.ior },
+      uF0: { value: f0 },
+      uRefl: { value: GLASS.reflectionStrength },
+      uExposure: { value: GLASS.environmentExposure },
+      uMiss: { value: 1 },
+      uEps: { value: 1 },
+    };
+    const material = (vertexShader, fragmentShader, extra) => new THREE.RawShaderMaterial(Object.assign({
+      glslVersion: THREE.GLSL3,
+      vertexShader,
+      fragmentShader,
+      uniforms,
+      depthTest: false,
+      depthWrite: false,
+    }, extra));
+
+    const quadGeometry = new THREE.BufferGeometry();
+    quadGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-1, -1, 0, 3, -1, 0, -1, 3, 0]), 3));
+
+    const wall = new THREE.Mesh(quadGeometry, material(QUAD_VERT, WALL_FRAG, { blending: THREE.NoBlending }));
+    const back = new THREE.Mesh(new THREE.BufferGeometry(), material(PRISM_VERT, BACK_FRAG, {
+      side: THREE.BackSide,
+      transparent: true,
+      blending: THREE.CustomBlending,
+      blendEquation: THREE.AddEquation,
+      blendSrc: THREE.OneFactor,
+      blendDst: THREE.OneMinusSrcAlphaFactor,
+      blendSrcAlpha: THREE.OneFactor,
+      blendDstAlpha: THREE.OneMinusSrcAlphaFactor,
+    }));
+    const copy = new THREE.Mesh(quadGeometry, material(QUAD_VERT, COPY_FRAG, { blending: THREE.NoBlending }));
+    const front = new THREE.Mesh(new THREE.BufferGeometry(), material(PRISM_VERT, FRONT_FRAG, {
+      side: THREE.FrontSide,
+      transparent: true,
+      blending: THREE.NoBlending,
+    }));
+    for (const mesh of [wall, back, copy, front]) mesh.frustumCulled = false;
+    wall.renderOrder = 0; back.renderOrder = 1;
+    copy.renderOrder = 0; front.renderOrder = 1;
+
+    const targetScene = new THREE.Scene();
+    targetScene.add(wall, back);
+    const screenScene = new THREE.Scene();
+    screenScene.add(copy, front);
+
+    // Same mapping as CSS `background: center / cover`, so the stars line up with the page.
+    const updateCover = () => {
+      if (!backdropSize.x || !backdropSize.y || !L.W || !L.H) { uniforms.uCover.value.set(1, 1); return; }
+      const scale = Math.max(L.W / backdropSize.x, L.H / backdropSize.y);
+      uniforms.uCover.value.set(L.W / (backdropSize.x * scale), L.H / (backdropSize.y * scale));
+    };
+    const backdropUrl = (/url\((["']?)(.*?)\1\)/.exec(getComputedStyle(heroEl).backgroundImage) || [])[2];
+    if (backdropUrl) {
+      new THREE.TextureLoader().load(backdropUrl, (texture) => {
+        texture.colorSpace = THREE.NoColorSpace; // keep sRGB values: blended like CSS, decoded in the shader
+        // Plain bilinear, no mipmaps: the same resampling the browser uses for the
+        // CSS background, so the canvas and the page match pixel for pixel.
+        texture.generateMipmaps = false;
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        backdropSize.set(texture.image.width, texture.image.height);
+        uniforms.uBackdrop.value = texture;
+        updateCover();
+        invalidate();
+      }, undefined, () => {});
+    }
+
+    const size = new THREE.Vector2();
+    const lightSize = new THREE.Vector2(fxCanvas.width, fxCanvas.height);
+    glass.resize = () => {
+      updateCover();
+      // The light texture has fixed storage: reallocate it when the canvas changes size.
+      if (lightSize.x !== fxCanvas.width || lightSize.y !== fxCanvas.height) {
+        lightSize.set(fxCanvas.width, fxCanvas.height);
+        lightTexture.dispose();
+      }
+      renderer.setPixelRatio(L.dpr);
+      renderer.setSize(L.W, L.H, false);
+      renderer.getDrawingBufferSize(size);
+      // The target is multisampled too, so the back faces seen through the glass are antialiased.
+      const samples = Math.min(size.x * size.y <= 6.5e6 ? 4 : 2, renderer.capabilities.maxSamples || 0);
+      if (target.samples !== samples) { target.samples = samples; target.dispose(); }
+      target.setSize(size.x, size.y);
+      uniforms.uRes.value.copy(size);
+      if (glass.side !== L.S) {
+        glass.side = L.S;
+        const data = prismMeshData(L.S);
+        const geometry = new THREE.BufferGeometry();
+        const interleaved = new THREE.InterleavedBuffer(data.vertices, 6);
+        geometry.setAttribute('position', new THREE.InterleavedBufferAttribute(interleaved, 3, 0));
+        geometry.setAttribute('normal', new THREE.InterleavedBufferAttribute(interleaved, 3, 3));
+        geometry.setIndex(new THREE.BufferAttribute(data.indices, 1));
+        back.geometry.dispose();
+        back.geometry = geometry;
+        front.geometry = geometry;
+        data.planes.forEach((plane, index) => uniforms.uPlanes.value[index].set(plane[0], plane[1], plane[2], plane[3]));
+        const scale = L.S / PRISM_SIDE; // px per scene unit
+        uniforms.uAbsorb.value.set(GLASS.absorption[0], GLASS.absorption[1], GLASS.absorption[2]).divideScalar(scale);
+        uniforms.uMiss.value = 10 * scale;
+        uniforms.uEps.value = 0.0002 * scale;
+      }
+    };
+    glass.render = () => {
+      lightTexture.needsUpdate = true;
+      // 1 + 2: wall with the light, then the back faces, into the linear target.
+      renderer.setRenderTarget(target);
+      renderer.render(targetScene, camera);
+      // 3 + 4: copy to the screen, then the front faces refract that target.
+      renderer.setRenderTarget(null);
+      renderer.render(screenScene, camera);
+    };
+    glass.dispose = () => {
+      try { renderer.dispose(); target.dispose(); lightTexture.dispose(); } catch (error) {}
+    };
+    return glass;
+  } catch (error) {
+    console.warn('Prism: WebGL2 glass unavailable, using the 2D light only.', error);
+    glCanvas.style.display = 'none';
+    return null;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Interaction                                                         */
+/* ------------------------------------------------------------------ */
+
+const LAMP_AIM_LERP = 0.12;
+const CAMERA_ORBIT_LERP = 0.08;
+const AUTO_POINTER_PERIOD = 18;
+const AUTO_POINTER_RADIUS = 0.34;
+const IDLE_SECONDS = 6;
+
+const aim = { cur: [0.5, 0.5], tgt: [0.5, 0.5] };       // [height -> incidence, width -> entry]
+const orbit = { cur: [0, 0], tgt: [0, 0] };
+const pointer = [0.5, 0.5];
+let lastInput = 0;
+let autoRunning = false, autoStart = 0, autoPhase = 0;
+
+function setNormalizedPointer(x, y) {
+  pointer[0] = clamp(x, 0, 1);
+  pointer[1] = clamp(y, 0, 1);
+  // Height swings the source; width chooses the point of impact.
+  aim.tgt[0] = pointer[1];
+  aim.tgt[1] = pointer[0];
+  // Hovering tilts only the camera. No orbit on mobile.
+  orbit.tgt[0] = L.mobile ? 0 : pointer[0] * 2 - 1;
+  orbit.tgt[1] = L.mobile ? 0 : pointer[1] * 2 - 1;
+}
+
+function pointerFromClient(clientX, clientY) {
+  const rect = stage.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return;
+  lastInput = performance.now();
+  autoRunning = false;
+  setNormalizedPointer((clientX - rect.left) / rect.width, (clientY - rect.top) / rect.height);
+}
+
+function onPointer(event) {
+  if (event.isPrimary === false) return;
+  pointerFromClient(event.clientX, event.clientY);
+}
+function onTouch(event) {
+  const touch = event.touches && event.touches[0];
+  if (touch) pointerFromClient(touch.clientX, touch.clientY);
+}
+function onLeave() {
+  orbit.tgt[0] = 0;
+  orbit.tgt[1] = 0;
+}
+
+window.addEventListener('pointermove', onPointer, { passive: true });
+window.addEventListener('pointerdown', onPointer, { passive: true });
+window.addEventListener('touchmove', onTouch, { passive: true });
+document.documentElement.addEventListener('pointerleave', onLeave);
+window.addEventListener('blur', onLeave);
+
+function ease(pair, amount) {
+  const dx = pair.tgt[0] - pair.cur[0];
+  const dy = pair.tgt[1] - pair.cur[1];
+  if (dx === 0 && dy === 0) return false;
+  if (Math.abs(dx) < 1e-4 && Math.abs(dy) < 1e-4) {
+    pair.cur[0] = pair.tgt[0];
+    pair.cur[1] = pair.tgt[1];
+  } else {
+    pair.cur[0] += dx * amount;
+    pair.cur[1] += dy * amount;
+  }
+  return true;
+}
+
+/* ------------------------------------------------------------------ */
+/* Frame loop                                                          */
+/* ------------------------------------------------------------------ */
+
+let glass = null;
+let ready = false;
+let dirty = true;       // something other than the eased values changed (layout, backdrop, settings)
+let traceDirty = true;  // the lamp moved: trace the rays again
+let baseDirty = true;   // lamp, camera or layout changed: redraw beam, bands and glints
+let clock = 0;
+let previous = performance.now();
+let guardWarmup = 30, guardFrames = 0, guardTime = 0;
+let running = false, rafId = 0, heroVisible = true;
+
+function invalidate() {
+  dirty = true;
+  baseDirty = true;
+}
+
+function enterFallback() {
+  if (glass) { glass.dispose(); glass = null; }
+  glCanvas.style.display = 'none';
+  fxCanvas.style.display = '';
+  stage.dataset.renderer = '2d';
+}
+
+function relayout() {
+  if (!computeLayout()) return;
+  layoutCamera();
+  updateCamera(orbit.cur[0], orbit.cur[1]);
+  if (glass) glass.resize();
+  if (L.mobile) { orbit.tgt[0] = 0; orbit.tgt[1] = 0; }
+  ready = true;
+  traceDirty = true;
+  invalidate();
+  setRunning();
+}
+
+function renderFrame() {
+  updateCamera(orbit.cur[0], orbit.cur[1]);
+  if (traceDirty) { trace(aim.cur[0], aim.cur[1]); traceDirty = false; baseDirty = true; }
+  if (baseDirty) { drawBase(); baseDirty = false; }
+  drawLight(clock);
+  compositeBloom();
+  if (glass) {
+    glass.render();
+    if (glass.failed) { enterFallback(); drawOutline(); }
+  } else {
+    drawOutline();
+  }
+  stage.frameCount = (stage.frameCount || 0) + 1; // frames actually rendered
+}
+
+function frame(now) {
+  if (!running) return;
+  rafId = requestAnimationFrame(frame);
+  const elapsed = now - previous;
+  const dt = Math.min(Math.max(elapsed / 1000, 0), 0.1);
+  previous = now;
+  const reduced = motionQuery.matches;
+
+  // Frame-rate guard: under about 40 fps, render the light at a lower resolution.
+  if (!reduced && lightQuality < LIGHT_QUALITY.length - 1) {
+    if (guardWarmup > 0) guardWarmup--;
+    else if (elapsed > 0 && elapsed < 250) {
+      guardFrames++;
+      guardTime += elapsed;
+      if (guardFrames >= 45) {
+        if (guardTime / guardFrames > 25) { lightQuality++; guardWarmup = 30; relayout(); }
+        guardFrames = 0;
+        guardTime = 0;
+      }
+    }
+  }
+
+  // Mobile, and a desktop left alone for a while: a virtual pointer circles the centre.
+  const idle = L.mobile ? now - lastInput > 1500 : now - lastInput > IDLE_SECONDS * 1000;
+  if (!reduced && idle) {
+    if (!autoRunning) {
+      autoRunning = true;
+      autoStart = now;
+      autoPhase = Math.atan2(pointer[1] - 0.5, pointer[0] - 0.5);
+    }
+    const phase = autoPhase + ((now - autoStart) / 1000 / AUTO_POINTER_PERIOD) * TAU;
+    setNormalizedPointer(
+      0.5 + Math.cos(phase) * AUTO_POINTER_RADIUS,
+      0.5 + Math.sin(phase) * AUTO_POINTER_RADIUS
+    );
+  } else {
+    autoRunning = false;
+  }
+
+  // Per-60Hz-frame lerps, made frame-rate independent.
+  const frames = dt * 60;
+  const aimMoved = ease(aim, 1 - Math.pow(1 - LAMP_AIM_LERP, frames));
+  const orbitMoved = ease(orbit, 1 - Math.pow(1 - CAMERA_ORBIT_LERP, frames));
+  if (aimMoved) traceDirty = true;
+  if (orbitMoved) baseDirty = true;
+  if (!reduced) clock += dt;
+
+  // With reduced motion nothing moves on its own: draw only when something changed.
+  if (!dirty && !aimMoved && !orbitMoved && reduced) return;
+  dirty = false;
+  renderFrame();
+}
+
+/** Run the loop only while the hero is on screen and the tab is visible. */
+function setRunning() {
+  const want = ready && heroVisible && !document.hidden;
+  if (want === running) return;
+  running = want;
+  if (running) {
+    previous = performance.now();
+    guardWarmup = 30; guardFrames = 0; guardTime = 0;
+    dirty = true;
+    rafId = requestAnimationFrame(frame);
+  } else {
+    cancelAnimationFrame(rafId);
+  }
+}
+
+glass = createGlass();
+if (glass) {
+  fxCanvas.style.display = 'none'; // now only the source of the light texture
+  stage.dataset.renderer = 'webgl2';
+} else {
+  stage.dataset.renderer = '2d';
+}
+
+relayout();
+lastInput = L.mobile ? -1e9 : performance.now();
+if (ready) { dirty = false; renderFrame(); }
+
+let resizeTimer = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(relayout, 60);
+});
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+if (motionQuery.addEventListener) motionQuery.addEventListener('change', invalidate);
+
+if ('IntersectionObserver' in window) {
+  new IntersectionObserver((entries) => {
+    heroVisible = entries[entries.length - 1].isIntersecting;
+    setRunning();
+  }, { threshold: 0 }).observe(heroEl);
+}
+document.addEventListener('visibilitychange', setRunning);
+</script>
+</body>
+</html>

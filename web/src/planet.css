@@ -1,0 +1,108 @@
+/* Page 1: one screen over a looping clip of the Earth from space. A navigation bar, a centred title with
+   one giant word, and a footer of links. The next page slides over it like a sheet. */
+.np-stack { position: relative; }
+.np { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; overflow: hidden; background: #000; color: #fff; font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+.np-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.np-content { position: relative; z-index: 10; flex: 1; display: flex; flex-direction: column; min-height: 100vh; min-height: 100svh; transform-origin: 50% 40%; }
+.np a { color: inherit; text-decoration: none; }
+
+/* Navigation */
+.np-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; }
+.np-logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; letter-spacing: 0.05em; color: #fff; }
+.np-logo svg { width: 32px; height: 32px; fill: #fff; }
+.np-links { display: none; gap: 32px; }
+.np-links a { font-size: 14px; letter-spacing: 0.025em; color: rgba(255, 255, 255, 0.8); transition: color 200ms; }
+.np-links a:hover { color: #fff; }
+.np-cta { display: none; align-items: center; gap: 8px; padding: 10px 24px; border-radius: 9999px; background: linear-gradient(to right, #34d399, #06b6d4); color: #fff; font-size: 14px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+.np-cta svg { width: 16px; height: 16px; }
+.np-burger { position: relative; z-index: 60; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 9999px; background: transparent; color: #fff; cursor: pointer; }
+.np-burger:hover:not(:disabled) { background: rgba(255, 255, 255, 0.08); border: 0; }
+.np-burger svg { position: absolute; inset: 8px; width: 24px; height: 24px; transition: opacity 300ms, transform 300ms; }
+.np-burger .i-x { opacity: 0; transform: rotate(-90deg) scale(0.75); }
+.np-burger[aria-expanded='true'] .i-menu { opacity: 0; transform: rotate(90deg) scale(0.75); }
+.np-burger[aria-expanded='true'] .i-x { opacity: 1; transform: none; }
+
+/* Phone menu: a blurred backdrop, then the links arriving one after another. */
+.np-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, 0.4); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); opacity: 0; transition: opacity 400ms; }
+.np-backdrop.on { opacity: 1; }
+.np-menu { position: absolute; left: 0; right: 0; top: 68px; z-index: 50; }
+.np-menu-blur { position: absolute; inset: 0; border-radius: 0 0 16px 16px; -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
+.np-menu-in { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 28px 24px 36px; }
+.np-menu-in > * { opacity: 0; transform: translateY(12px); transition: opacity 400ms ease-out, transform 400ms ease-out; }
+.np-menu.on .np-menu-in > * { opacity: 1; transform: none; }
+.np-menu-in a:not(.np-cta) { font-size: 18px; font-weight: 300; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.8); }
+.np-menu-in a:not(.np-cta):hover { color: #fff; }
+.np-menu-in .np-cta { display: inline-flex; }
+
+/* Title */
+.np-hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 16px; text-align: center; }
+.np-line { margin: 0 0 4px; font-size: 18px; font-weight: 300; line-height: 1.375; letter-spacing: -0.025em; color: rgba(255, 255, 255, 0.8); }
+.np-line2 { margin-bottom: 32px; }
+.np-big-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-bottom: 32px; overflow: visible; }
+.np-big { margin: 0; font: 900 clamp(64px, 19.5vw, 260px)/1 var(--sans); letter-spacing: -0.05em; color: #fff; user-select: none; white-space: nowrap;
+  text-shadow: 0 0 80px rgba(255, 255, 255, 0.3), 0 0 160px rgba(255, 255, 255, 0.1); }
+.np-big::after { content: none; }
+.np-big span { display: inline-block; }
+.np .liquid-glass { position: relative; overflow: hidden; border: none; background: rgba(255, 255, 255, 0.01); background-blend-mode: luminosity;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1); }
+.np .liquid-glass::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.4px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 20%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.15) 80%, rgba(255, 255, 255, 0.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.np-return { display: inline-block; padding: 12px 24px; border-radius: 9999px; font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: #fff; }
+
+/* Footer of links */
+.np-foot { position: relative; z-index: 10; padding: 40px 16px 32px; }
+.np-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.np-col h2 { margin: 0 0 12px; font: 700 10px/1.4 var(--sans); letter-spacing: 0.15em; text-transform: uppercase; color: #fff; }
+.np-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.np-col a { font-size: 10px; color: rgba(255, 255, 255, 0.5); transition: color 200ms; }
+.np-col a:hover { color: rgba(255, 255, 255, 0.8); }
+.np-wide { grid-column: span 2; }
+.np-form { display: flex; max-width: 24rem; }
+.np-form input { flex: 1; min-width: 0; padding: 8px 12px; border: 0; border-radius: 6px 0 0 6px; background: #fff; color: #111; font: 400 12px/1.4 var(--sans); }
+.np-form input::placeholder { color: #6b7280; }
+.np-form button { padding: 8px 16px; border: 0; border-radius: 0 6px 6px 0; background: linear-gradient(to right, #34d399, #06b6d4); color: #fff; font: 700 11px/1.4 var(--sans); letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; }
+.np-form button:hover:not(:disabled) { background: linear-gradient(to right, #34d399, #06b6d4); border: 0; filter: brightness(1.08); }
+.np-wide h2 + .np-form + h2 { margin-top: 20px; }
+.np-stats { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; font-size: 10px; color: rgba(255, 255, 255, 0.5); }
+.np-stats b { display: inline; margin-right: 4px; font: 700 10px var(--sans); letter-spacing: 0; color: #fff; }
+.np :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* Before the entrance runs, its parts wait unseen. If the script never runs they show after a moment. */
+.js-motion .np [data-in], .js-motion .np [data-in-letters] span { opacity: 0; animation: np-safety 0.01s 4s forwards; }
+@keyframes np-safety { to { opacity: 1; } }
+
+/* The hand-off: page 1 stays in place and the next page slides over it. */
+.np-pin .np { position: sticky; top: 0; height: 100vh; height: 100svh; }
+.np-pin .pg3 { z-index: 1; border-radius: 28px 28px 0 0; overflow: hidden; box-shadow: 0 -24px 80px rgba(0, 0, 0, 0.7); }
+
+@media (min-width: 640px) {
+  .np-hero { padding: 64px 24px; }
+  .np-line { margin-bottom: 8px; font-size: 30px; }
+  .np-line2 { margin-bottom: 48px; }
+  .np-big-wrap { margin-bottom: 48px; }
+  .np-return { padding: 14px 32px; font-size: 14px; letter-spacing: 0.2em; }
+  .np-foot { padding: 64px 24px 40px; }
+  .np-grid { gap: 32px; }
+  .np-col h2 { margin-bottom: 16px; font-size: 12px; }
+  .np-col ul { gap: 10px; }
+  .np-col a, .np-stats, .np-stats b { font-size: 12px; }
+  .np-wide h2 + .np-form + h2 { margin-top: 24px; }
+}
+@media (min-width: 768px) {
+  .np-nav { padding-left: 48px; padding-right: 48px; }
+  .np-hero { padding-top: 0; padding-bottom: 0; }
+  .np-line { font-size: 48px; }
+  .np-foot { padding-left: 48px; padding-right: 48px; }
+  .np-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .np-nav, .np-foot { padding-left: 64px; padding-right: 64px; }
+  .np-links { display: flex; }
+  .np-nav > .np-cta { display: inline-flex; }
+  .np-burger { display: none; }
+  .np-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-backdrop, .np-menu-in > *, .np-burger svg, .np-links a, .np-col a { transition: none; }
+}

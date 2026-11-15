@@ -4,7 +4,7 @@ import { el } from './dom';
 import { closestTest, CREW_ATMOSPHERES, PSIA_PER_ATM, testPoints, testsNear } from './atmosphere';
 
 const SVG = 'http://www.w3.org/2000/svg';
-const COLORS = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#6250d6'];
+const COLORS = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#9085e9']; // the palette's steps for a dark surface
 const W = 820, H = 380, M = { l: 60, r: 20, t: 16, b: 50 };
 const X = { lo: 0, hi: 5.25 }, Y = { lo: 10, hi: 42 };
 const sx = (v: number) => M.l + ((v - X.lo) / (X.hi - X.lo)) * (W - M.l - M.r);
@@ -55,9 +55,11 @@ export async function mountAtmosphereMap(box: HTMLElement, psiIds: string[], nam
   chart.append(svg('text', { x: 16, y: (M.t + H - M.b) / 2, class: 'axis-title', 'text-anchor': 'middle', transform: `rotate(-90 16 ${(M.t + H - M.b) / 2})` }, 'Oxygen (%)'));
 
   // Crew atmospheres: the "near" zone, then a diamond.
+  const zoneEls: SVGRectElement[] = [];
   for (const a of CREW_ATMOSPHERES) {
     const atm = a.psia / PSIA_PER_ATM;
-    chart.append(svg('rect', { x: sx(atm * 0.9), y: sy(a.o2 + 2), width: sx(atm * 1.1) - sx(atm * 0.9), height: sy(a.o2 - 2) - sy(a.o2 + 2), class: 'zone' }));
+    zoneEls.push(svg('rect', { x: sx(atm * 0.9), y: sy(a.o2 + 2), width: sx(atm * 1.1) - sx(atm * 0.9), height: sy(a.o2 - 2) - sy(a.o2 + 2), class: 'zone' }));
+    chart.append(zoneEls[zoneEls.length - 1]);
   }
 
   const tip = el('div', 'atmap-tip');
@@ -72,10 +74,13 @@ export async function mountAtmosphereMap(box: HTMLElement, psiIds: string[], nam
   const hideTip = () => { tip.hidden = true; };
 
   const dots = svg('g', { class: 'dots' });
+  const dotEls: { el: SVGCircleElement; p: (typeof points)[number] }[] = [];
   for (const p of points) {
     const c = svg('circle', { cx: sx(p.atm), cy: sy(p.o2), r: 3.5, fill: color(p.psiId), class: 'dot' });
     c.addEventListener('mouseenter', (e) => showTip(e, [`${p.psiId} ${names[p.psiId] ?? ''}`, `${p.file}, row ${p.row}`, `${p.o2Column}: ${p.o2Text}`, `${p.pColumn}: ${p.pText}`]));
     c.addEventListener('mouseleave', hideTip);
+    c.style.setProperty('--d', `${series.indexOf(p.psiId) * 120}ms`);
+    dotEls.push({ el: c, p });
     dots.append(c);
   }
   chart.append(dots);
@@ -95,48 +100,72 @@ export async function mountAtmosphereMap(box: HTMLElement, psiIds: string[], nam
   plot.append(chart, tip);
 
   // Findings: counts computed from the dots, nothing else.
-  const side = el('div', 'atmap-side');
-  side.append(el('p', 'atmap-kicker', 'Tests inside each dashed zone'));
-  for (const a of CREW_ATMOSPHERES) {
-    const n = testsNear(points, a).length;
-    const row = el('div', `atmap-stat${n === 0 ? ' gap' : ''}`);
-    const what = el('span', '', `${a.psia} psia, ${a.o2}% oxygen${a.label === 'ISS cabin air' ? ' (ISS cabin air)' : ''}`);
-    const c = n === 0 ? closestTest(points, a) : null;
-    if (c) what.append(el('small', '', `Closest: ${c.psiId}, ${c.o2Column} ${c.o2Text}, ${c.pColumn} ${c.pText}`));
-    row.append(el('b', '', String(n)), what);
-    side.append(row);
-  }
-  side.append(el('p', 'atmap-note', 'A dashed zone is within 2 oxygen points and 10% of the pressure; Entropy chose this size. PSI-20 (ACME BRE) set out to examine all three atmospheres, but its table does not record pressure per test, so its tests are not dots here. Inverse-flame tables are left out because their oxygen column is the burner stream.'));
+  // Focus: hovering a result or an investigation lights its dots and dims the rest. A click keeps it lit.
+  let locked: (() => void) | null = null;
+  const clearFocus = () => {
+    chart.classList.remove('has-focus');
+    for (const d of dotEls) d.el.classList.remove('on');
+    for (const z of zoneEls) z.classList.remove('on');
+    for (const e of box.querySelectorAll('.is-on')) e.classList.remove('is-on');
+  };
+  const focus = (pick: (pt: (typeof points)[number]) => boolean, owner: HTMLElement, zone?: number) => () => {
+    clearFocus();
+    chart.classList.add('has-focus');
+    for (const d of dotEls) d.el.classList.toggle('on', pick(d.p));
+    if (zone !== undefined) zoneEls[zone].classList.add('on');
+    owner.classList.add('is-on');
+  };
+  const wire = (owner: HTMLElement, apply: () => void) => {
+    owner.tabIndex = 0;
+    owner.setAttribute('role', 'button');
+    owner.addEventListener('mouseenter', apply);
+    owner.addEventListener('focus', apply);
+    const leave = () => { if (locked) locked(); else clearFocus(); };
+    owner.addEventListener('mouseleave', leave);
+    owner.addEventListener('blur', leave);
+    const toggle = () => { locked = locked === apply ? null : apply; if (locked) apply(); else clearFocus(); };
+    owner.addEventListener('click', toggle);
+    owner.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  };
 
-  const legend = el('div', 'atmap-legend');
+  // Results: one card per crew atmosphere, counted from the dots.
+  const stats = el('div', 'atmap-stats');
+  CREW_ATMOSPHERES.forEach((a, i) => {
+    const near = testsNear(points, a);
+    const card = el('div', `atmap-stat${near.length === 0 ? ' gap' : ''}`);
+    const what = el('span', '', `${a.psia} psia, ${a.o2}% oxygen`);
+    what.append(el('small', 'role', a.label === 'ISS cabin air' ? 'ISS cabin air' : 'A crew atmosphere NASA has considered'));
+    const c = near.length === 0 ? closestTest(points, a) : null;
+    if (c) what.append(el('small', '', `Closest test: ${c.psiId}, ${c.o2Column} ${c.o2Text}, ${c.pColumn} ${c.pText}`));
+    card.append(el('b', '', String(near.length)), el('em', '', near.length === 1 ? 'test in its zone' : 'tests in its zone'), what);
+    const set = new Set(near);
+    wire(card, focus((pt) => set.has(pt) || pt === c, card, i));
+    stats.append(card);
+  });
+
+  // The investigations behind the dots: a legend and a table in one. Each row lights its own dots.
+  const side = el('div', 'atmap-side');
+  side.append(el('p', 'atmap-kicker', 'Investigations in this chart'));
+  const list = el('div', 'atmap-series');
+  const f = (v: number) => (Math.round(v * 100) / 100).toString();
   for (const id of series) {
-    const item = el('span', 'atmap-key');
+    const ps = points.filter((pt) => pt.psiId === id);
+    const item = el('div', 'atmap-row');
     const sw = el('i');
     sw.style.background = color(id);
-    item.append(sw, document.createTextNode(`${id} ${names[id] ?? ''}`));
-    legend.append(item);
+    const name = el('span', 'n');
+    name.append(sw, document.createTextNode(`${id} ${names[id] ?? ''}`));
+    item.append(name, el('span', 'c', `${ps.length} tests`),
+      el('span', 'r', `Oxygen ${f(Math.min(...ps.map((pt) => pt.o2)))} to ${f(Math.max(...ps.map((pt) => pt.o2)))} %`),
+      el('span', 'r', `Pressure ${f(Math.min(...ps.map((pt) => pt.atm)))} to ${f(Math.max(...ps.map((pt) => pt.atm)))} atm`));
+    wire(item, focus((pt) => pt.psiId === id, item));
+    list.append(item);
   }
-  const crewKey = el('span', 'atmap-key');
-  crewKey.append(el('i', 'diamond'), document.createTextNode('Crew atmosphere (PSI-20)'));
-  legend.append(crewKey);
-  side.append(legend);
-
-  // Table view of the same data.
-  const details = el('details', 'atmap-table');
-  details.append(el('summary', '', 'Show as a table'));
-  const table = el('table');
-  const hr = el('tr');
-  for (const h of ['Investigation', 'Tests', 'Oxygen (%)', 'Pressure (atm)']) hr.append(el('th', '', h));
-  table.append(hr);
-  for (const id of series) {
-    const ps = points.filter((p) => p.psiId === id);
-    const f = (v: number) => (Math.round(v * 100) / 100).toString();
-    const tr = el('tr');
-    for (const v of [`${id} ${names[id] ?? ''}`, String(ps.length), `${f(Math.min(...ps.map((p) => p.o2)))} to ${f(Math.max(...ps.map((p) => p.o2)))}`, `${f(Math.min(...ps.map((p) => p.atm)))} to ${f(Math.max(...ps.map((p) => p.atm)))}`]) tr.append(el('td', '', v));
-    table.append(tr);
-  }
-  details.append(table);
+  const crewKey = el('div', 'atmap-key');
+  crewKey.append(el('i', 'diamond'), document.createTextNode('Crew atmosphere named in the PSI-20 record'));
+  side.append(list, crewKey);
+  side.append(el('p', 'atmap-note', 'Point at a result or an investigation to light its tests; select it to keep it lit. Point at a dot for its table, row and values as NASA wrote them. A dashed zone is within 2 oxygen points and 10% of the pressure; Entropy chose this size. Oxygen and pressure are converted only to place the dots. PSI-20 (ACME BRE) set out to examine all three atmospheres, but its table does not record pressure per test, so its tests are not dots here. Inverse-flame tables are left out because their oxygen column is the burner stream.'));
 
   body.append(plot, side);
-  box.append(head, body, details);
+  box.append(head, stats, body);
 }

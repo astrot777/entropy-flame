@@ -1,0 +1,62 @@
+/* Shared by the pages after the hero: the same space behind each one, and pages 3 and 4. */
+
+/* Page 3: the prism, a page of its own shown in a frame that fills the screen. */
+.pg3 { position: relative; height: 100vh; height: 100svh; background: #000; }
+.pg3 iframe { display: block; width: 100%; height: 100%; border: 0; background: #000; }
+@media (max-width: 820px) { .pg3 { height: max(100svh, 720px); } }
+
+/* Page 4: key benefits. Three cards; the middle one carries a looping clip. */
+.kb { position: relative; overflow: clip; background: #000; color: #fff; font-family: var(--sans); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+.kb-wrap { position: relative; width: 100%; max-width: 1400px; margin: 0 auto; padding: 48px 16px; }
+.kb-title { margin: 0 0 48px; text-align: center; font: 700 30px/1.2 var(--sans); letter-spacing: -0.02em; color: #fff; }
+.kb-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.kb-card { position: relative; height: 380px; border-radius: 16px; background: #0a0a0a; overflow: hidden; }
+.kb-pad { padding: 24px; }
+.kb-video { display: flex; flex-direction: column; }
+.kb-blob { position: absolute; border-radius: 9999px; background: #1e3a8a; filter: blur(64px); opacity: 0.4; }
+.kb-blob-l { top: 50%; left: -420px; width: 460px; height: 460px; transform: translateY(-50%); }
+.kb-blob-r { top: -112px; right: -112px; width: 224px; height: 224px; }
+.kb-in { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; }
+.kb-card h3 { margin: 0; font: 600 20px/1.25 var(--sans); letter-spacing: -0.01em; color: #fff; }
+.kb-card p { margin: 0; font: 400 13px/1.625 var(--sans); color: rgba(255, 255, 255, 0.7); }
+.kb-mid { margin-top: 48px !important; max-width: 280px; }
+.kb-bot { margin-top: auto !important; max-width: 320px; }
+.kb-vid { position: relative; width: 100%; height: 75%; overflow: hidden; }
+.kb-vid video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.kb-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 128px; pointer-events: none; background: linear-gradient(to bottom, rgba(10, 10, 10, 0), #0a0a0a); }
+.kb-cap { flex: 1; display: flex; align-items: center; justify-content: flex-start; padding: 24px; }
+.kb-cap h3 { text-align: left; }
+@media (min-width: 640px) {
+  .kb-wrap { padding: 80px 24px; }
+  .kb-title { margin-bottom: 96px; font-size: 36px; }
+  .kb-grid { gap: 16px; }
+  .kb-card { height: 460px; }
+  .kb-pad, .kb-cap { padding: 32px; }
+  .kb-card h3 { font-size: 24px; }
+  .kb-card p { font-size: 14px; }
+  .kb-mid { margin-top: 80px !important; }
+}
+@media (min-width: 768px) {
+  .kb-wrap { padding-left: 40px; padding-right: 40px; }
+  .kb-title { font-size: 48px; line-height: 1; }
+  .kb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* The Apollo 11 liftoff photo stands beside the three benefit cards, as a fourth panel of the same size. */
+.kb-rocket { position: relative; margin: 0; height: 380px; border-radius: 16px; overflow: hidden; background: #0a0a0a; }
+.kb-rocket img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 36% center; }
+.kb-rocket figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 36px 16px 12px; font: 400 11px/1.4 var(--sans); color: rgba(255, 255, 255, 0.85); background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.78)); }
+@media (min-width: 640px) { .kb-rocket { height: 460px; } }
+@media (min-width: 1100px) { .kb-grid { grid-template-columns: minmax(0, 0.85fr) repeat(3, minmax(0, 1fr)); } }
+
+/* The launch section without the photo: its text and the timeline, side by side. */
+.launch { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); min-height: 0; padding-top: clamp(48px, 6vw, 90px); }
+.launch::before { content: none; }
+.launch::after { background: linear-gradient(180deg, var(--bg) 0%, transparent 10%, transparent 90%, var(--bg) 100%); }
+.launch-text { grid-column: 1; }
+.launch-time { grid-column: 2; }
+@media (max-width: 900px) {
+  .launch { grid-template-columns: 1fr; padding-top: clamp(48px, 6vw, 90px); }
+  .launch::after { background: none; }
+  .launch-text, .launch-time { grid-column: 1; }
+}

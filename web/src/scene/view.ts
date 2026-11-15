@@ -58,10 +58,26 @@ export function mountScene(container: HTMLElement, spec: SceneSpec, onPick: (par
   scene.environment = envMap;
   scene.environmentIntensity = 0.55;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  scene.add(new THREE.AmbientLight(0xffffff, 0.45));
-  const sun = new THREE.DirectionalLight(0xffffff, 1.4);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const sun = new THREE.DirectionalLight(0xfff6e5, 2.3);
   sun.position.set(3, 5, 4);
   scene.add(sun);
+  const rimLight = new THREE.DirectionalLight(0x7fb6ff, 1.2);
+  rimLight.position.set(-4, 2, -5);
+  scene.add(rimLight);
+
+  // Space behind the experiment: NASA's star map and a cloud of stars. Decoration only.
+  const starMap = new THREE.TextureLoader().load('assets/stars-svs-1k.jpg');
+  starMap.colorSpace = THREE.SRGBColorSpace;
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(80, 32, 24), new THREE.MeshBasicMaterial({ map: starMap, side: THREE.BackSide, toneMapped: false, transparent: true, opacity: 0.7, depthWrite: false })));
+  const starPos = new Float32Array(2500 * 3);
+  for (let i = 0; i < 2500; i++) {
+    const v = new THREE.Vector3().randomDirection().multiplyScalar(55 + Math.random() * 20);
+    starPos.set([v.x, v.y, v.z], i * 3);
+  }
+  const starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.6, sizeAttenuation: false, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false })));
   const grid = new THREE.GridHelper(16, 16, 0x243042, 0x18202b);
   grid.position.y = -BOX.y - 0.02;
   scene.add(grid);

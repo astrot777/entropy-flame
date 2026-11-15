@@ -1,0 +1,124 @@
+/* Page 2: the catalogue as a table. Colours, type, radii and shadows follow the Huly style reference:
+   graphite surfaces, pill controls, 12px cards, borders instead of shadows. The reference's blue is replaced
+   by its coral everywhere on this page, so coral is the one accent. */
+.hp {
+  --hp-void: #090a0c; --hp-card: #111111; --hp-canvas: #303236; --hp-edge: #4a4b50; --hp-veil: #6b6c6d;
+  --hp-smoke: #95979e; --hp-ash: #a9a9aa; --hp-snow: #ffffff; --hp-iris: #ff8964; --hp-ember: #ff8964; --hp-molasses: #5a250a;
+  --hp-ui: var(--sans); --hp-display: var(--sans); --hp-label: var(--space);
+  position: relative; overflow: clip; padding: 96px 0; background: #000; color: var(--hp-snow);
+  font: 400 15px/1.5 var(--hp-ui); letter-spacing: 0; scroll-margin-top: 0;
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* The aurora: one narrow vertical beam, coral into white, with a warm glow at its base. Used once. */
+.hp-beam { position: absolute; top: 0; right: 14%; width: 15%; height: 440px; pointer-events: none; }
+.hp-beam::before, .hp-beam::after { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(255, 137, 100, 0) 0%, rgba(255, 137, 100, 0.6) 26%, #ff8964 66%, #ffffff 88%, rgba(255, 255, 255, 0) 100%); }
+.hp-beam::before { width: 100%; filter: blur(44px); opacity: 0.4; }
+.hp-beam::after { width: 14%; min-width: 14px; filter: blur(7px); opacity: 0.95; border-radius: 9999px; }
+.hp-beam i { position: absolute; left: 50%; bottom: -70px; width: 420px; height: 150px; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 170, 129, 0.5) 0%, rgba(255, 218, 159, 0.2) 40%, transparent 70%); filter: blur(12px); }
+/* The table uses the full width of the screen. */
+.hp-wrap { position: relative; max-width: none; margin: 0 auto; padding: 0 clamp(16px, 3vw, 56px); }
+.hp-kicker { margin: 0 0 16px; font: 600 12px/1.38 var(--hp-label); letter-spacing: 0.24em; text-transform: uppercase; color: var(--hp-ember); }
+.hp-title { margin: 0; max-width: 14ch; font: 700 clamp(2.4rem, 1.2rem + 4.6vw, 4.5rem)/1 var(--hp-display); letter-spacing: -0.02em; color: var(--hp-snow); text-wrap: balance; }
+.hp-lead { margin: 24px 0 0; max-width: 46ch; font-size: 18px; line-height: 1.5; color: var(--hp-ash); }
+
+/* Filters: 4px inputs, one filled pill for the main action. */
+.hp .controls { margin: 40px 0 12px; padding: 0; border: 0; border-radius: 0; background: none; gap: 12px; }
+.hp .controls input, .hp .controls select { height: 40px; padding: 0 12px; border: 1px solid var(--hp-edge); border-radius: 4px; background: var(--hp-card); color: var(--hp-snow); font: 400 15px/1 var(--hp-ui); }
+.hp .controls input::placeholder { color: var(--hp-smoke); }
+.hp .controls input:focus, .hp .controls select:focus { outline: 0; border-color: var(--hp-iris); box-shadow: 0 0 0 3px rgba(255, 137, 100, 0.35); }
+.hp .controls button.primary { height: 40px; padding: 0 24px; border: 0; border-radius: 9999px; background: var(--hp-iris); color: var(--hp-void); font: 600 12px/1 var(--hp-label); letter-spacing: 0.1em; text-transform: uppercase; transition: box-shadow 160ms, filter 160ms; }
+.hp .controls button.primary:hover:not(:disabled) { background: var(--hp-iris); box-shadow: 0 0 24px rgba(255, 137, 100, 0.55); filter: brightness(1.08); }
+.hp .controls button.primary:disabled { background: var(--hp-veil); color: var(--hp-card); opacity: 0.6; }
+.hp .controls .hint { font-size: 11px; line-height: 1.38; color: var(--hp-smoke); }
+
+/* The table sits in a product frame: dark surface, 12px radius, a border, one soft shadow. */
+.hp-frame { border: 1px solid var(--hp-edge); border-radius: 12px; background: var(--hp-card); box-shadow: rgba(0, 0, 0, 0.5) 0 6px 25px 0; overflow: clip; }
+.hp-scroll { scrollbar-color: var(--hp-edge) transparent; scrollbar-width: thin; }
+.hp table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.hp th, .hp td { padding: 12px; text-align: left; vertical-align: top; border-bottom: 1px solid rgba(74, 75, 80, 0.55); }
+.hp th { position: sticky; top: 0; z-index: 2; background: #0e0e10; font: 600 10px/1.38 var(--hp-label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--hp-smoke); white-space: nowrap; }
+.hp tbody tr:last-child td { border-bottom: 0; }
+.hp tbody tr { transition: background-color 140ms; }
+.hp tbody tr:hover { background: rgba(255, 255, 255, 0.035); }
+.hp td { max-width: 300px; color: #e5e5e7; overflow-wrap: normal; word-break: normal; font-family: var(--hp-ui); font-style: normal; }
+.hp td[data-field='name'] { min-width: 170px; }
+.hp td[data-field='type'] { min-width: 150px; }
+.hp td[data-field='objectives'], .hp td[data-field='hardware'], .hp td[data-field='sensors'] { min-width: 260px; }
+.hp td[data-field='fuel'], .hp td[data-field='sample'] { min-width: 170px; }
+.hp td[data-field='oxygen'], .hp td[data-field='pressure'], .hp td[data-field='airflow'] { min-width: 180px; }
+.hp td.cell { cursor: pointer; }
+.hp td.cell:hover { background: rgba(255, 137, 100, 0.12); }
+.hp td.cell:focus-visible, .hp td.cell.sel { outline: 2px solid var(--hp-iris); outline-offset: -2px; }
+.hp td.ns { color: var(--hp-smoke); }
+.hp td.id { font: 500 14px/1.5 var(--mono); color: var(--hp-snow); white-space: nowrap; }
+.hp td.num { font-family: var(--mono); font-size: 14px; }
+.hp td.empty { padding: 32px 12px; color: var(--hp-ash); }
+.hp td[data-field='name'] { font-weight: 500; color: var(--hp-snow); }
+.hp .unit { color: var(--hp-smoke); }
+.hp td.pick { white-space: nowrap; }
+.hp td.pick input { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 3px 8px 0 0; padding: 0; border: 1px solid var(--hp-veil); border-radius: 4px; background: transparent; vertical-align: top; cursor: pointer; }
+.hp td.pick input:checked { border-color: var(--hp-iris); background: var(--hp-iris) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23090a0c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px no-repeat; }
+.hp td.pick input:focus-visible { outline: 2px solid var(--hp-iris); outline-offset: 2px; }
+.hp .view3d { padding: 3px 10px; border: 1px solid var(--hp-edge); border-radius: 9999px; background: transparent; color: var(--hp-snow); font: 600 10px/1.38 var(--hp-label); letter-spacing: 0.08em; cursor: pointer; transition: background-color 140ms, color 140ms; }
+.hp .view3d:hover:not(:disabled) { background: #fff; border-color: #fff; color: var(--hp-void); }
+/* Tags: pills in the two brand colours and one grey. */
+.hp .pill, .hp .cab, .hp .badge { display: inline-block; padding: 4px 10px; border: 0; border-radius: 9999px; font: 500 11px/1.38 var(--hp-ui); letter-spacing: 0; white-space: nowrap; }
+.hp .pill.Prevention { color: #ffffff; background: rgba(255, 255, 255, 0.1); }
+.hp .pill.Suppression { color: var(--hp-ember); background: rgba(255, 137, 100, 0.12); }
+.hp .pill.Detection { color: #d1d1d1; background: rgba(169, 169, 170, 0.14); }
+.hp .cab { display: block; width: fit-content; margin: 8px 0 0; color: #d1d1d1; background: rgba(169, 169, 170, 0.14); }
+.hp .cab.like { color: #ffffff; background: rgba(255, 255, 255, 0.1); }
+.hp .cab.above { color: var(--hp-ember); background: rgba(255, 137, 100, 0.12); }
+.hp .badge { margin-left: 6px; color: var(--hp-ember); background: rgba(90, 37, 10, 0.55); }
+.hp tr.live { background: rgba(255, 137, 100, 0.06); }
+
+@media (max-width: 720px) {
+  .hp { padding: 64px 0; }
+  .hp-wrap { padding: 0 16px; }
+  .hp-beam { right: -4%; width: 30%; height: 300px; opacity: 0.8; }
+  .hp-lead { font-size: 16px; }
+  .hp .controls input, .hp .controls select { flex: 1 1 100%; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .hp tbody tr, .hp .view3d, .hp .controls button.primary { transition: none; } }
+
+/* Under the table: Ask and Add live keep their own look until their page is decided. */
+.add-slot { margin-top: 16px; }
+
+/* Space behind the page, the same backdrop as the first page; the table's tools sit under the table. */
+.hp .space-bg::after { content: ''; position: absolute; inset: 0 0 auto 0; height: 140px; background: linear-gradient(180deg, #000, rgba(0, 0, 0, 0)); }
+.hp-tools { margin-top: 24px; display: grid; gap: 16px; }
+.hp-tools .ask, .hp-tools .compare, .hp-tools .add-card { border-color: var(--hp-edge); background: var(--hp-card); }
+.hp-tools .add-slot { margin-top: 0; }
+
+/* Compact table: six fields are columns, the other six open under the row. The header stays in view
+   while the page scrolls, and a long value is cut to one line; its full text is in the source panel. */
+.hp th:first-child { width: 104px; }
+.hp th[data-field='psiId'] { width: 96px; }
+/* Investigation, fuel, oxygen and pressure share what is left equally. */
+.hp th[data-field='pillar'] { width: 132px; }
+.hp th:last-child { width: 116px; }
+.hp tbody td[data-field] { min-width: 0; max-width: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hp tbody td .clamp { display: inline; }
+.hp tr.is-open > td { border-bottom-color: transparent; }
+.hp td.more-cell { text-align: right; }
+.hp-toggle { padding: 3px 12px; border: 1px solid var(--hp-edge); border-radius: 9999px; background: transparent; color: var(--hp-snow); font: 600 10px/1.38 var(--hp-label); letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background-color 140ms, color 140ms; }
+.hp-toggle:hover:not(:disabled), .hp-toggle[aria-expanded='true'] { background: #fff; border-color: #fff; color: var(--hp-void); }
+.hp tr.more:hover { background: none; }
+.hp tr.more > td { padding: 4px 12px 20px 116px; max-width: none; }
+.hp-more { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 28px; padding: 16px 20px; border: 1px solid rgba(74, 75, 80, 0.55); border-radius: 12px; background: #0b0b0d; }
+.hp-fact { min-width: 0; }
+.hp-k { display: block; margin-bottom: 4px; font: 600 10px/1.38 var(--hp-label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--hp-smoke); }
+.hp-fact .cell { padding: 2px 4px; margin: 0 -4px; border-radius: 4px; color: #e5e5e7; cursor: pointer; overflow-wrap: anywhere; }
+.hp-fact .cell:hover { background: rgba(255, 137, 100, 0.12); }
+.hp-fact .cell:focus-visible, .hp-fact .cell.sel { outline: 2px solid var(--hp-iris); outline-offset: 1px; }
+.hp-fact .cell.ns { color: var(--hp-smoke); }
+.hp-fact .cell.num { font-family: var(--mono); font-size: 14px; }
+@media (max-width: 900px) {
+  .hp-scroll { overflow-x: auto; }
+  .hp table { min-width: 860px; }
+  .hp tr.more > td { padding-left: 12px; }
+  .hp-more { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { .hp-toggle { transition: none; } }

@@ -1,32 +1,24 @@
-// The "Map" view: a full-screen space scene whose markers are the project's investigations, test tables
-// and results. It opens like the experiment view and loads three.js only when asked.
-import type { Row } from '../../src/shared/types';
-import type { TestTables } from '../../src/psi/tables';
+// The "Map" view: a full-screen space scene with one marker per investigation. It opens like the
+// experiment view and loads three.js only when asked. A value selected on a marker's panel opens the same
+// source panel as the catalogue: the quote and the link to the PSI record.
+import type { FieldKey, Row } from '../../src/shared/types';
 import { el, setText } from './dom';
-import { buildMarkers, tabsOf, type AccuracyFile } from './scene/mapdata';
+import { buildMarkers, tabsOf } from './scene/mapdata';
 import type { SpaceHandle } from './scene/space';
+import { openPanel } from './sourcePanel';
 
 let closeCurrent: (() => void) | null = null;
 
-async function json<T>(url: string): Promise<T | null> {
-  try {
-    const res = await fetch(url);
-    return res.ok && (res.headers.get('content-type') ?? '').includes('json') ? ((await res.json()) as T) : null;
-  } catch {
-    return null;
-  }
-}
-
-export async function openMap(rows: Row[]): Promise<void> {
+export async function openMap(rows: Row[], sourcePanel: HTMLElement): Promise<void> {
   closeCurrent?.();
   const overlay = el('div', 'xp map');
   overlay.setAttribute('role', 'dialog');
   overlay.setAttribute('aria-modal', 'true');
-  overlay.setAttribute('aria-label', 'Map of the project');
+  overlay.setAttribute('aria-label', 'Map of the investigations');
 
   const head = el('header', 'xp-head');
   const title = el('div');
-  title.append(el('h2', '', 'Map · الخريطة'), el('p', 'hint', 'The investigations, NASA test tables and results of this project, above the Earth.'));
+  title.append(el('h2', '', 'Map'), el('p', 'hint', 'One marker per investigation, grouped by the hardware its NASA record states.'));
   const close = el('button', '', 'Close');
   head.append(title, close);
   const stage = el('div', 'xp-stage map-stage');
@@ -34,7 +26,7 @@ export async function openMap(rows: Row[]): Promise<void> {
   const tabsBar = el('div', 'map-tabs');
   tabsBar.setAttribute('role', 'tablist');
   stage.append(loading, tabsBar);
-  const note = el('p', 'xp-note', 'Marker positions are a layout, not locations. Earth and Moon imagery: NASA. Drag to orbit, right-drag to pan, scroll to zoom, click a marker for its data, R resets the view, Esc closes a panel.');
+  const note = el('p', 'xp-note', 'The catalogue holds no coordinates, so a marker is not a location. Markers are grouped by the hardware each record states, and where a group sits on the ring carries no meaning. The Earth, the Moon and the stars are scenery (NASA imagery). Drag to orbit, right-drag to pan, scroll to zoom, select a marker for its 12 facts, select a fact for its NASA source, R resets the view, Esc closes a panel.');
   overlay.append(head, stage, note);
   document.body.append(overlay);
   document.body.classList.add('xp-open');
@@ -42,34 +34,30 @@ export async function openMap(rows: Row[]): Promise<void> {
   let handle: SpaceHandle | null = null;
   const onKey = (e: KeyboardEvent) => {
     if (e.key !== 'Escape') return;
+    if (!sourcePanel.hidden) { sourcePanel.hidden = true; e.stopImmediatePropagation(); return; }
     if (!handle?.closePanel()) shut();
   };
   function shut() {
     handle?.dispose();
     overlay.remove();
+    sourcePanel.classList.remove('over-map');
     document.body.classList.remove('xp-open');
-    document.removeEventListener('keydown', onKey);
+    document.removeEventListener('keydown', onKey, true);
     delete (window as { entropyMap?: SpaceHandle }).entropyMap;
     closeCurrent = null;
   }
   closeCurrent = shut;
   close.addEventListener('click', shut);
-  document.addEventListener('keydown', onKey);
+  document.addEventListener('keydown', onKey, true);
   close.focus();
+  sourcePanel.classList.add('over-map');
 
-  const ids = rows.map((r) => r.psiId.value ?? '');
-  const [tables, accuracy] = await Promise.all([
-    Promise.all(ids.map((id) => json<TestTables>(`tests/${id}.json`))),
-    json<AccuracyFile>('review/accuracy.json'),
-  ]);
-  if (closeCurrent !== shut) return;
-  const markers = buildMarkers(rows, tables.filter((t): t is TestTables => !!t), accuracy);
+  const markers = buildMarkers(rows);
   const tabs = tabsOf(markers);
-
   const buttons = new Map<string, HTMLButtonElement>();
   const mark = (active: string) => { for (const [t, b] of buttons) { b.classList.toggle('active', t === active); b.setAttribute('aria-selected', String(t === active)); } };
   for (const t of tabs) {
-    const b = el('button', '', `${t} (${markers.filter((m) => m.tab === t).length})`);
+    const b = el('button', '', `${t} (${markers.filter((m) => m.sets.includes(t)).length})`);
     b.type = 'button';
     b.setAttribute('role', 'tab');
     b.addEventListener('click', () => { handle?.setTab(t); mark(t); });
@@ -85,11 +73,16 @@ export async function openMap(rows: Row[]): Promise<void> {
   homeBtn.addEventListener('click', () => handle?.resetView());
   tabsBar.append(moonBtn, homeBtn);
 
+  const onField = (psiId: string, field: FieldKey) => {
+    const row = rows.find((r) => r.psiId.value === psiId);
+    if (row) openPanel(sourcePanel, row, field);
+  };
+
   try {
     const { mountSpace } = await import('./scene/space');
     if (closeCurrent !== shut) return;
     loading.remove();
-    handle = mountSpace(stage, markers, tabs[0], mark);
+    handle = mountSpace(stage, markers, tabs[0], mark, { onField });
     (window as { entropyMap?: SpaceHandle }).entropyMap = handle;
   } catch {
     setText(loading, 'The map could not start in this browser.');

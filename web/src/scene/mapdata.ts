@@ -1,103 +1,70 @@
-// The markers of the space map. Every value is read from the project's own data files and carries the file it
-// came from; a value the files do not hold is the literal string NA. Nothing here is invented.
-// Marker positions are a layout over the globe, not locations: these experiments have no place on Earth.
-import type { FieldKey, Row } from '../../../src/shared/types';
-import type { TestTables } from '../../../src/psi/tables';
+// The markers of the space map: one per investigation, built only from the catalogue row.
+// The data has no geographic coordinates, so position never stands for a place. Each marker sits in the
+// group of the hardware its record states (words taken from the stated value); a record that states no
+// hardware goes to a group labelled "Not stated". Where a group sits on the ring carries no meaning.
+import { FIELDS, type FieldKey, type Row } from '../../../src/shared/types';
+import { LABELS } from '../labels';
 import { cellText } from '../source';
-import { closestTest, CREW_ATMOSPHERES, testPoints, testsNear } from '../atmosphere';
 
-export const NA = 'غير متوفر';
-export interface MapField { name: string; value: string; source: string }
+export interface MapField { key: FieldKey; name: string; value: string; stated: boolean }
 export interface MapMarker {
-  id: string; label: string; tab: string; lat: number; lon: number; radiusFromEarth: number;
-  kind: 'earth' | 'moon'; fields: MapField[];
+  id: string; psiId: string; label: string; fuel: string;
+  /** The stated hardware group, and whether the record states one. */
+  group: string; groupStated: boolean;
+  /** Place on the layout ring, in radians. A layout, not a location. */
+  angle: number;
+  radiusFromEarth: number; kind: 'earth' | 'moon';
+  unreviewed: boolean; stated: number; notStated: number;
+  sets: string[]; fields: MapField[];
 }
-export interface AccuracyFile { reviewedAt: string; marks: { id: string; cells: Record<string, boolean> }[] }
 
-const BEAM = 26;
-const INV = 'data/investigations.json';
-const REVIEW = 'data/review/accuracy.json';
-const SHOWN: [FieldKey, string][] = [
-  ['type', 'Type'], ['pillar', 'Pillar'], ['fuel', 'Fuel'], ['sample', 'Sample'], ['oxygen', 'Oxygen'],
-  ['pressure', 'Pressure'], ['airflow', 'Airflow'], ['hardware', 'Hardware'], ['sensors', 'Sensors'],
-];
+// Facilities several records name. Each label is a phrase found inside the stated hardware value.
+const SHARED = ['Combustion Integrated Rack', 'Microgravity Science Glovebox', 'Cygnus'];
 
-/** An even spread over the sphere (a golden-angle spiral), kept away from the poles. */
-export function layout(n: number, i: number): { lat: number; lon: number } {
-  const y = n === 1 ? 0 : 0.8 - (1.6 * i) / (n - 1);
-  const lat = (Math.asin(y) * 180) / Math.PI;
-  const lon = ((((i * 137.50776405) % 360) + 540) % 360) - 180;
-  return { lat, lon };
+export function platformOf(row: Row): { label: string; stated: boolean } {
+  const c = row.hardware;
+  if (c.status !== 'stated' || !c.value) return { label: 'Not stated', stated: false };
+  const shared = SHARED.find((s) => c.value!.toLowerCase().includes(s.toLowerCase()));
+  return { label: shared ?? c.value, stated: true };
 }
 
 export function tabsOf(markers: MapMarker[]): string[] {
-  return [...new Set(markers.map((m) => m.tab))];
+  const pillars = [...new Set(markers.flatMap((m) => m.sets.slice(1)))];
+  const order = ['Prevention', 'Detection', 'Suppression', 'Pillar not stated'];
+  return ['All', ...order.filter((p) => pillars.includes(p))];
 }
 
-export function buildMarkers(rows: Row[], tables: TestTables[], accuracy: AccuracyFile | null): MapMarker[] {
-  const name = (id: string) => rows.find((r) => r.psiId.value === id)?.name.value ?? '';
-  const place = (list: Omit<MapMarker, 'lat' | 'lon' | 'radiusFromEarth' | 'kind'>[]): MapMarker[] =>
-    list.map((m, i) => ({ ...m, ...layout(list.length, i), radiusFromEarth: BEAM, kind: 'earth' as const }));
-
-  const investigations = place(rows.map((r) => ({
-    id: `inv-${r.psiId.value}`,
-    label: `${r.psiId.value} ${r.name.value ?? ''}`.trim(),
-    tab: 'Investigations',
-    fields: SHOWN.map(([key, label]) => ({ name: label, value: r[key].status === 'stated' ? cellText(key, r[key]) : NA, source: INV })),
-  })));
-
-  const tests = place(tables.flatMap((t) => t.tables.map((table, i) => {
-    const source = `data/tests/${t.psiId}.json`;
+export function buildMarkers(rows: Row[]): MapMarker[] {
+  const groups: string[] = [];
+  const platform = rows.map((r) => platformOf(r));
+  for (const p of platform) if (!groups.includes(p.label)) groups.push(p.label);
+  // One slot per marker and one empty slot after each group, so groups read as separate clusters.
+  const slots = rows.length + groups.length;
+  const slotOf = new Map<Row, number>();
+  let slot = 0;
+  for (const g of groups) {
+    rows.forEach((r, i) => { if (platform[i].label === g) slotOf.set(r, slot++); });
+    slot++;
+  }
+  return rows.map((r, i) => {
+    const fields: MapField[] = FIELDS.map((key) => ({ key, name: LABELS[key], value: cellText(key, r[key]), stated: r[key].status === 'stated' }));
+    const stated = fields.filter((f) => f.stated).length;
+    const pillar = r.pillar.status === 'stated' && r.pillar.value ? r.pillar.value : 'Pillar not stated';
     return {
-      id: `tests-${t.psiId}-${i}`,
-      label: `${t.psiId} ${name(t.psiId)}`.trim(),
-      tab: 'Tests',
-      fields: [
-        { name: 'Table file', value: table.file, source },
-        { name: 'Tests (rows)', value: String(table.rows.length), source },
-        { name: 'Columns', value: String(table.columns.length), source },
-      ],
-    };
-  })));
-
-  const stated = rows.reduce((n, r) => n + Object.values(r).filter((c) => typeof c === 'object' && c !== null && 'status' in c && c.status === 'stated').length, 0);
-  const cells = rows.reduce((n, r) => n + Object.values(r).filter((c) => typeof c === 'object' && c !== null && 'status' in c).length, 0);
-  const marks = accuracy ? accuracy.marks.flatMap((m) => Object.entries(m.cells).map(([field, ok]) => ({ id: m.id, field, ok }))) : [];
-  const wrong = marks.filter((m) => !m.ok).map((m) => `${m.id} ${m.field}`);
-  const review: MapField[] = accuracy
-    ? [
-      { name: 'Reviewed on', value: accuracy.reviewedAt, source: REVIEW },
-      { name: 'Cells checked', value: String(marks.length), source: REVIEW },
-      { name: 'Correct', value: String(marks.filter((m) => m.ok).length), source: REVIEW },
-      { name: 'Marked wrong', value: wrong.length ? wrong.join(', ') : 'none', source: REVIEW },
-    ]
-    : ['Reviewed on', 'Cells checked', 'Correct', 'Marked wrong'].map((n) => ({ name: n, value: NA, source: REVIEW }));
-
-  const points = tables.flatMap(testPoints);
-  const atmospheres = CREW_ATMOSPHERES.map((a) => {
-    const near = testsNear(points, a).length;
-    const c = near === 0 ? closestTest(points, a) : null;
-    return {
-      id: `res-atm-${a.psia}`,
-      label: `${a.psia} psia, ${a.o2}% oxygen`,
-      tab: 'Results',
-      fields: [
-        { name: 'Named in', value: `${a.psiId} record`, source: INV },
-        { name: 'Tests inside the zone', value: points.length ? String(near) : NA, source: 'data/tests/*.json' },
-        { name: 'Closest test', value: c ? `${c.psiId}: ${c.o2Text}, ${c.pText}` : near > 0 ? 'inside the zone' : NA, source: 'data/tests/*.json' },
-      ],
+      id: `inv-${r.psiId.value}`,
+      psiId: r.psiId.value ?? '',
+      label: `${r.psiId.value} ${r.name.value ?? ''}`.trim(),
+      fuel: cellText('fuel', r.fuel),
+      group: platform[i].label,
+      groupStated: platform[i].stated,
+      angle: ((slotOf.get(r)! + 0.5) / slots) * Math.PI * 2,
+      radiusFromEarth: 26,
+      kind: 'earth' as const,
+      unreviewed: !!r.unreviewed,
+      stated,
+      notStated: fields.length - stated,
+      sets: ['All', pillar],
+      fields,
     };
   });
-
-  const results = place([
-    { id: 'res-catalogue', label: 'Catalogue', tab: 'Results', fields: [
-      { name: 'Investigations', value: String(rows.length), source: INV },
-      { name: 'Values with a NASA source', value: String(stated), source: INV },
-      { name: 'Not stated', value: String(cells - stated), source: INV },
-    ] },
-    { id: 'res-review', label: 'Hand review', tab: 'Results', fields: review },
-    ...atmospheres,
-  ]);
-
-  return [...investigations, ...tests, ...results];
 }

@@ -1,19 +1,23 @@
 import type { Cell, FieldKey, Row } from '../../src/shared/types';
 import { applyFilters, type Filters } from './filters';
-import { renderCatalogue } from './catalogue';
 import { openPanel } from './sourcePanel';
 import { el, setText } from './dom';
 import { renderCompare } from './compare';
+import { mountAsk } from './ask';
 import { mountAdd } from './add';
 import { mountAbout } from './about';
 import { openExperiment } from './experiment';
 import { mountAtmosphereMap } from './atmap';
-import { openMap } from './map';
+import { mountJourney } from './journey';
+import { renderTable } from './table';
+import { mountPlanet } from './planet';
 
 interface DataFile { meta: { generatedAt: string; generatedBy: string; source: string }; rows: Row[] }
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
-const table = $<HTMLTableElement>('catalogue');
+const tbl = $<HTMLTableElement>('tbl');
+const addCard = el('section', 'card add-card');
+addCard.id = 'add';
 const panel = $('panel');
 const status = $('status');
 const compareBox = $('compare');
@@ -28,7 +32,7 @@ let lastCell: HTMLElement | null = null;
 export const allRows = () => [...reviewed, ...live];
 
 const handlers = {
-  onCell: (row: Row, field: FieldKey, td: HTMLTableCellElement) => {
+  onCell: (row: Row, field: FieldKey, td: HTMLElement) => {
     lastCell?.classList.remove('sel');
     td.classList.add('sel');
     lastCell = td;
@@ -68,11 +72,20 @@ function renderStats() {
   }
 }
 
-export function render() {
+let firstRender = true;
+function draw() {
   const rows = applyFilters(allRows(), filters);
-  renderCatalogue(table, rows, handlers);
+  renderTable(tbl, rows, handlers);
   if (!status.classList.contains('error')) setText(status, rows.length ? '' : 'No investigation matches these filters.');
   renderStats();
+}
+
+/** Redraws the table. After the first draw, rows glide to their new places where the browser supports it. */
+export function render() {
+  const start = (document as Document & { startViewTransition?: (cb: () => void) => unknown }).startViewTransition;
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (firstRender || calm || typeof start !== 'function') { firstRender = false; draw(); return; }
+  start.call(document, draw);
 }
 
 function buildControls() {
@@ -116,7 +129,7 @@ function buildControls() {
   compareBtn.addEventListener('click', () => {
     const rows = allRows().filter((r) => selected.has(r.psiId.value ?? ''));
     renderCompare(compareBox, rows);
-    compareBox.scrollIntoView({ behavior: 'smooth' });
+    compareBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
   c.append(search, pillar, cabin, fuel, hw, compareBtn, el('span', 'hint', 'Tick 2 to 4 rows to compare'));
 }
@@ -137,6 +150,21 @@ function buildFooter(meta: DataFile['meta']) {
   );
 }
 
+// Page 1: the clip, the menu and the motion live in planet.ts; the search box here is the catalogue's own.
+function mountHero() {
+  mountPlanet();
+  // The search box in the hero is the catalogue's own search: it fills that box and goes to the table.
+  $('hero-search').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const box = document.querySelector<HTMLInputElement>('#controls input[type="search"]');
+    if (box) {
+      box.value = $<HTMLInputElement>('hero-q').value;
+      box.dispatchEvent(new Event('input'));
+    }
+    $('table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
 async function load() {
   buildControls();
   setText(status, 'Loading investigations...');
@@ -145,23 +173,35 @@ async function load() {
     if (!res.ok) throw new Error(String(res.status));
     const data = (await res.json()) as DataFile;
     reviewed = data.rows;
+    mountAsk($('ask'), allRows, panel);
     buildFooter(data.meta);
     render();
     void mountAbout($('about'), data.meta.generatedAt.slice(0, 10));
-    $('open-map').addEventListener('click', () => { void openMap(data.rows); });
     const names = Object.fromEntries(data.rows.map((r) => [r.psiId.value ?? '', r.name.value ?? '']));
     void mountAtmosphereMap($('atmap'), data.rows.map((r) => r.psiId.value ?? ''), names);
   } catch {
     status.className = 'status error';
     setText(status, 'The investigation data could not be loaded. Refresh the page; if this persists, the data file is missing from this deployment.');
   }
-  mountAdd($('add'), {
+  $('add-slot').append(addCard);
+  mountAdd(addCard, {
     has: (id: string) => allRows().some((r) => r.psiId.value === id),
     onRow: (row: Row) => { live.push(row); render(); },
     refresh: () => render(),
-    reveal: (id: string) => document.querySelector(`tr[data-id="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+    reveal: (id: string) => document.querySelector(`[data-id="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
   });
 }
 
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') panel.hidden = true; });
+
+// The looping clip on the benefits page plays only while it is on screen, and not at all under reduced motion.
+const clip = document.getElementById('kb-video') as HTMLVideoElement | null;
+if (clip && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) clip.play().catch(() => { /* autoplay refused: the first frame stays */ });
+    else clip.pause();
+  }, { threshold: 0.15 }).observe(clip);
+}
+mountJourney($('journey'));
+mountHero();
 void load();

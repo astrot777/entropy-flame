@@ -1,11 +1,13 @@
 // The space map: Earth beneath the viewer, the Moon far away, and the project's markers above the globe.
 // Same pipeline as the experiment view (view.ts): one WebGLRenderer with ACES tone mapping, a CSS2D label
 // layer, one requestAnimationFrame loop, and the glow texture from materials.ts. Loaded on demand.
-// Marker positions are a layout, not locations. Every value a panel shows comes from mapdata.ts.
+// The data has no coordinates, so a marker's place is never a location: markers are grouped on a layout ring
+// by the hardware their record states. Every value a panel shows comes from mapdata.ts.
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { glowTexture } from './materials';
+import type { FieldKey } from '../../../src/shared/types';
 import type { MapMarker } from './mapdata';
 
 export interface SpaceHandle {
@@ -16,8 +18,10 @@ export interface SpaceHandle {
   resetView(): void;
   /** Moves the camera out to look at the Moon. */
   viewMoon(): void;
+  /** Stops drawing while the scene is off screen. */
+  setPaused(paused: boolean): void;
   /** Read-only state for checks: what exists in the scene right now. */
-  state(): { tab: string; markers: number; panel: boolean; cameraDistance: number; fps: number; flying: boolean };
+  state(): { tab: string; markers: number; groups: number; panel: boolean; cameraDistance: number; fps: number; flying: boolean };
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   /** Opens the panel of a marker as a click would. */
@@ -28,27 +32,30 @@ const EARTH_R = 100;
 const MOON = { position: new THREE.Vector3(-1400, 520, -1800), radius: 27 };
 const MARKER = 0x16c784;
 const HOME = new THREE.Vector3(0, 110, 300);
+const AMBIENT_HOME = new THREE.Vector3(40, 70, 300);
+const RING_TILT = (24 * Math.PI) / 180; // the tilt of the layout ring is for looks only
+const UNREVIEWED = 0xe5b454;
+// Panel layout, in canvas pixels: the 12 fact rows start at ROW_Y0 and are ROW_H apart.
+const PANEL = { w: 960, h: 600, rowY0: 160, rowH: 34 };
 const FLIGHT_MS = 1400;
 const FADE_MS = 250;
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
-function onGlobe(lat: number, lon: number, r: number): THREE.Vector3 {
-  const phi = (lat * Math.PI) / 180;
-  const theta = (lon * Math.PI) / 180;
-  return new THREE.Vector3(r * Math.cos(phi) * Math.sin(theta), r * Math.sin(phi), r * Math.cos(phi) * Math.cos(theta));
+function onRing(angle: number, r: number): THREE.Vector3 {
+  return new THREE.Vector3(Math.cos(angle), Math.sin(angle) * Math.sin(RING_TILT), Math.sin(angle) * Math.cos(RING_TILT)).multiplyScalar(r);
 }
 
 function drawPanel(marker: MapMarker): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
-  canvas.width = 960;
-  canvas.height = 600;
+  canvas.width = PANEL.w;
+  canvas.height = PANEL.h;
   const g = canvas.getContext('2d')!;
-  g.fillStyle = 'rgba(11, 19, 43, 0.94)';
+  g.fillStyle = 'rgba(11, 19, 43, 0.95)';
   g.beginPath();
-  g.roundRect(4, 4, 952, 592, 26);
+  g.roundRect(4, 4, PANEL.w - 8, PANEL.h - 8, 26);
   g.fill();
   g.lineWidth = 4;
-  g.strokeStyle = '#d8a844';
+  g.strokeStyle = marker.unreviewed ? '#e5b454' : '#d8a844';
   g.stroke();
   const fit = (text: string, width: number) => {
     if (g.measureText(text).width <= width) return text;
@@ -58,36 +65,43 @@ function drawPanel(marker: MapMarker): THREE.CanvasTexture {
   };
   g.textBaseline = 'alphabetic';
   g.fillStyle = '#d8a844';
-  g.font = '600 24px Orbitron, Raleway, sans-serif';
-  g.fillText(marker.tab.toUpperCase(), 44, 62);
+  g.font = '600 20px Orbitron, Raleway, sans-serif';
+  g.fillText(fit(`HARDWARE GROUP: ${marker.group.toUpperCase()}`, 880), 40, 46);
   g.fillStyle = '#ffffff';
-  g.font = '700 44px Raleway, sans-serif';
-  g.fillText(fit(marker.label, 872), 44, 118);
-  const rows = marker.fields.slice(0, 9);
-  const step = Math.min(50, 380 / Math.max(rows.length, 1));
-  rows.forEach((f, i) => {
-    const y = 172 + i * step;
+  g.font = '700 36px Raleway, sans-serif';
+  g.fillText(fit(marker.label + (marker.unreviewed ? '  (Unreviewed)' : ''), 880), 40, 90);
+  g.fillStyle = '#a9b2ca';
+  g.font = '500 20px Raleway, sans-serif';
+  g.fillText(`${marker.stated} stated   ·   ${marker.notStated} Not stated   ·   select a value for its NASA source`, 40, 124);
+  marker.fields.forEach((f, i) => {
+    const y = PANEL.rowY0 + i * PANEL.rowH;
     g.fillStyle = '#16c784';
-    g.font = '600 24px Raleway, sans-serif';
-    g.fillText(fit(f.name, 220), 44, y);
-    g.fillStyle = '#eef1f8';
-    g.font = '500 26px Raleway, sans-serif';
-    g.fillText(fit(f.value, 640), 280, y);
+    g.font = '600 20px Raleway, sans-serif';
+    g.fillText(fit(f.name, 200), 40, y);
+    g.fillStyle = f.stated ? '#eef1f8' : '#7d87a3';
+    g.font = `${f.stated ? '500' : 'italic 400'} 21px Raleway, sans-serif`;
+    g.fillText(fit(f.value.replace(/\s+/g, ' '), 670), 250, y);
   });
-  const sources = [...new Set(marker.fields.map((f) => f.source))].join(', ');
-  g.fillStyle = '#a3acc4';
-  g.font = '400 20px "IBM Plex Mono", monospace';
-  g.fillText(fit(`Source: ${sources}`, 872), 44, 566);
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
   return tex;
 }
 
-export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTab: string, onTab?: (tab: string) => void): SpaceHandle {
+/** The fact row under a point of the panel, from its texture coordinate (v runs bottom to top). */
+export function panelRowAt(v: number, rows: number): number | null {
+  const y = (1 - v) * PANEL.h;
+  const i = Math.floor((y - (PANEL.rowY0 - PANEL.rowH + 8)) / PANEL.rowH);
+  return i >= 0 && i < rows ? i : null;
+}
+
+/** ambient: a backdrop that only turns. It takes no mouse or keyboard input, so the page scrolls over it. */
+export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTab: string, onTab?: (tab: string) => void, opts: { ambient?: boolean; onField?: (psiId: string, field: FieldKey) => void } = {}): SpaceHandle {
+  const ambient = !!opts.ambient;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, 1, 30000);
-  camera.position.copy(HOME);
+  camera.position.copy(ambient ? AMBIENT_HOME : HOME);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -110,6 +124,11 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   controls.minDistance = 130;
   controls.maxDistance = 3000;
   let dragging = false;
+  if (ambient) {
+    controls.enabled = false;
+    labels.domElement.style.pointerEvents = 'none';
+    renderer.domElement.style.pointerEvents = 'none';
+  }
   controls.addEventListener('start', () => { dragging = true; });
   controls.addEventListener('end', () => { dragging = false; });
 
@@ -137,6 +156,14 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   earth.receiveShadow = true;
   earthGroup.add(earth);
   scene.add(earthGroup);
+
+  // The layout ring the markers sit on. It is not an orbit and not a place.
+  const ringPts: THREE.Vector3[] = [];
+  for (let i = 0; i <= 180; i++) ringPts.push(onRing((i / 180) * Math.PI * 2, EARTH_R + 26));
+  const ring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), new THREE.LineBasicMaterial({ color: 0x8a94b0, transparent: true, opacity: 0.45 }));
+  ring.name = 'layout-ring';
+  ring.visible = !ambient && markers.length > 0;
+  earthGroup.add(ring);
 
   // Atmosphere: a Fresnel rim.
   const rim = new THREE.Mesh(new THREE.SphereGeometry(EARTH_R * 1.035, 96, 72), new THREE.ShaderMaterial({
@@ -178,16 +205,16 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   const built: Built[] = markers.filter((m) => m.kind === 'earth').map((data) => {
     const group = new THREE.Group();
     group.name = `marker:${data.id}`;
-    const base = onGlobe(data.lat, data.lon, EARTH_R);
-    const up = base.clone().normalize();
-    const beamMat = new THREE.MeshBasicMaterial({ color: MARKER, transparent: true, opacity: 0.75 });
+    const up = onRing(data.angle, 1);
+    const tint = data.unreviewed ? UNREVIEWED : MARKER;
+    const beamMat = new THREE.MeshBasicMaterial({ color: tint, transparent: true, opacity: 0.75 });
     const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, data.radiusFromEarth, 8), beamMat);
     beam.position.copy(up.clone().multiplyScalar(EARTH_R + data.radiusFromEarth / 2));
     beam.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), up);
-    const ballMat = new THREE.MeshStandardMaterial({ color: MARKER, emissive: MARKER, emissiveIntensity: 1.6, roughness: 0.4, transparent: true });
+    const ballMat = new THREE.MeshStandardMaterial({ color: tint, emissive: tint, emissiveIntensity: 1.6, roughness: 0.4, transparent: true });
     const ball = new THREE.Mesh(ballGeo, ballMat);
     ball.position.copy(up.clone().multiplyScalar(EARTH_R + data.radiusFromEarth));
-    const haloMat = new THREE.SpriteMaterial({ map: glow, color: MARKER, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
+    const haloMat = new THREE.SpriteMaterial({ map: glow, color: tint, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
     const halo = new THREE.Sprite(haloMat);
     halo.scale.setScalar(16);
     ball.add(halo);
@@ -196,7 +223,7 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
     hit.userData.id = data.id;
     const el = document.createElement('div');
     el.className = 's3d-label map-label';
-    el.textContent = data.label;
+    el.textContent = `${data.psiId} · ${data.fuel === 'Not stated' ? 'fuel Not stated' : data.fuel} · ${data.stated} of 12 stated${data.unreviewed ? ' · Unreviewed' : ''}`;
     el.hidden = true;
     const label = new CSS2DObject(el);
     label.position.copy(up.clone().multiplyScalar(EARTH_R + data.radiusFromEarth + 9));
@@ -207,12 +234,26 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   });
   const baseOpacity = [0.75, 1, 0.8];
 
+  // One label per hardware group, above its cluster. Hidden while its cluster is behind the Earth.
+  const groupLabels: { obj: CSS2DObject; el: HTMLElement; members: Built[] }[] = [];
+  for (const name of [...new Set(built.map((b) => b.data.group))]) {
+    const members = built.filter((b) => b.data.group === name);
+    const mid = members.reduce((sum, b) => sum + b.data.angle, 0) / members.length;
+    const el = document.createElement('div');
+    el.className = `map-group${members[0].data.groupStated ? '' : ' ns'}`;
+    el.textContent = `${members[0].data.groupStated ? name : 'Hardware: Not stated'} · ${members.length}`;
+    const obj = new CSS2DObject(el);
+    obj.position.copy(onRing(mid, EARTH_R + 26 + 24));
+    earthGroup.add(obj);
+    groupLabels.push({ obj, el, members });
+  }
+
   let tab = firstTab;
   let fade = 1;
   let fadeFrom: { start: number; next: string } | null = null;
   let fadeIn = 0;
-  const visible = () => built.filter((b) => b.data.tab === tab);
-  const show = () => { for (const b of built) b.group.visible = b.data.tab === tab; };
+  const visible = () => built.filter((b) => b.data.sets.includes(tab));
+  const show = () => { for (const b of built) b.group.visible = b.data.sets.includes(tab); };
   show();
 
   // The in-scene panel: one at a time, a textured plane that always faces the camera.
@@ -262,6 +303,7 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   };
   const under = (): Built | null => {
     ray.setFromCamera(pointer, camera);
+    if (panel && ray.intersectObject(panel, false).length) return null; // the open panel covers what is behind it
     const hits = ray.intersectObjects([earth, ...visible().map((b) => b.hit)], false);
     const first = hits[0]?.object;
     return first && first !== earth ? built.find((b) => b.hit === first) ?? null : null;
@@ -271,6 +313,16 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   const onUp = (e: PointerEvent) => {
     if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5 || flight) return;
     toNdc(e);
+    // A click on the open panel selects the fact row under it and hands it to the page, which shows its source.
+    if (panel && panelOf) {
+      ray.setFromCamera(pointer, camera);
+      const hit = ray.intersectObject(panel, false)[0];
+      if (hit?.uv) {
+        const i = panelRowAt(hit.uv.y, panelOf.data.fields.length);
+        if (i !== null) opts.onField?.(panelOf.data.psiId, panelOf.data.fields[i].key);
+        return;
+      }
+    }
     const b = under();
     if (b) pickBuilt(b);
   };
@@ -288,7 +340,7 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
     camera.up.set(0, 1, 0);
   }
   const onKey = (e: KeyboardEvent) => {
-    if ((e.key === 'r' || e.key === 'R') && !(e.target as HTMLElement).closest?.('input, textarea')) resetView();
+    if (!ambient && (e.key === 'r' || e.key === 'R') && !(e.target as HTMLElement).closest?.('input, textarea')) resetView();
   };
   window.addEventListener('keydown', onKey);
 
@@ -297,7 +349,8 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
     const h = container.clientHeight || 1;
     camera.aspect = w / h;
     // The picture is shifted down so the globe sits low in the frame, like ground beneath the viewer.
-    camera.setViewOffset(w, h, 0, -Math.round(h * 0.2), w, h);
+    if (ambient) camera.setViewOffset(w, h, -Math.round(w * 0.2), -Math.round(h * 0.06), w, h);
+    else camera.setViewOffset(w, h, 0, -Math.round(h * 0.2), w, h);
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
     labels.setSize(w, h);
@@ -310,15 +363,17 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
   const clock = new THREE.Clock();
   let frame = 0;
   let fps = 60;
+  let paused = false;
   const loop = () => {
     frame = requestAnimationFrame(loop);
+    if (paused) { clock.getDelta(); return; }
     const raw = clock.getDelta();
     const dt = Math.min(raw, 0.05);
     if (raw > 0) fps += (1 / raw - fps) * 0.05;
     const now = performance.now();
 
     // Earth turns at 0.05 rad/s; it holds still while the user drags, a panel is open or the camera flies.
-    if (!dragging && !panel && !flight) earthGroup.rotation.y += 0.05 * dt;
+    if (!dragging && !panel && !flight && !(ambient && reduceMotion)) earthGroup.rotation.y += 0.05 * dt;
 
     if (flight) {
       const t = Math.min(1, (now - flight.start) / FLIGHT_MS);
@@ -342,7 +397,7 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
       if (fade === 1) fadeIn = 0;
     }
 
-    const over = flight || fadeFrom ? null : under();
+    const over = ambient || flight || fadeFrom ? null : under();
     if (over !== hovered) {
       if (hovered) hovered.label.element.hidden = true;
       hovered = over;
@@ -355,6 +410,12 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
       b.scale += (target - b.scale) * Math.min(1, dt * 14);
       b.ball.scale.setScalar(b.scale);
       b.mats.forEach((m, i) => { m.opacity = baseOpacity[i] * fade; });
+    }
+
+    const camDir = camera.position.clone().normalize();
+    for (const gl of groupLabels) {
+      const w = gl.obj.getWorldPosition(new THREE.Vector3());
+      gl.el.hidden = ambient || !gl.members.some((b) => b.group.visible) || w.clone().normalize().dot(camDir) < 0.15;
     }
 
     if (panel && panelOf) {
@@ -380,6 +441,7 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
     },
     closePanel,
     resetView,
+    setPaused(p) { paused = p; },
     viewMoon() {
       closePanel();
       flight = null;
@@ -390,9 +452,9 @@ export function mountSpace(container: HTMLElement, markers: MapMarker[], firstTa
     },
     pick(id) {
       const b = built.find((x) => x.data.id === id);
-      if (b) { if (b.data.tab !== tab) { tab = b.data.tab; show(); onTab?.(tab); } pickBuilt(b); }
+      if (b) { if (!b.data.sets.includes(tab)) { tab = 'All'; show(); onTab?.(tab); } pickBuilt(b); }
     },
-    state: () => ({ tab, markers: visible().length, panel: !!panel, cameraDistance: camera.position.length(), fps: Math.round(fps), flying: !!flight }),
+    state: () => ({ tab, markers: visible().length, groups: groupLabels.length, panel: !!panel, cameraDistance: camera.position.length(), fps: Math.round(fps), flying: !!flight }),
     dispose() {
       cancelAnimationFrame(frame);
       observer.disconnect();

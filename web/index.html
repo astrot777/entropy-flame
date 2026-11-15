@@ -7,33 +7,135 @@
   <meta name="description" content="A fire-safety atlas of NASA microgravity combustion research: every value traced to its source sentence or table." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b132b'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23d8a844'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Orbitron:wght@500;600;700&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Orbitron:wght@500;600;700&family=Raleway:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/planet.css" />
+  <script>if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("js-motion");</script>
+  <link rel="stylesheet" href="/src/tablePage.css" />
+  <link rel="stylesheet" href="/src/pages.css" />
 </head>
 <body>
-  <header class="top">
-    <div class="sky" aria-hidden="true"><span class="shoot s1"></span><span class="shoot s2"></span><span class="shoot s3"></span></div>
-    <svg class="orbit" viewBox="0 0 600 600" aria-hidden="true">
-      <circle cx="300" cy="300" r="290" fill="none" stroke="currentColor" stroke-width="1.2" />
-      <circle cx="300" cy="300" r="200" fill="none" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 7" />
-    </svg>
-    <svg class="star star-1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z" /></svg>
-    <svg class="star star-2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z" /></svg>
-    <svg class="star star-3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z" /></svg>
-    <div class="brand">
-      <p class="eyebrow">NASA Space Apps 2026 · Flame in Freefall</p>
-      <h1>Entropy</h1>
-      <p class="tag">A fire-safety atlas of microgravity combustion research</p>
+  <div class="np-stack" id="np-stack">
+  <header class="np" id="top">
+    <video id="hero-video" class="np-video" muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1" data-in></video>
+    <div class="np-content">
+      <nav class="np-nav" aria-label="Sections" data-in>
+        <a class="np-logo" href="#top">
+          <svg viewBox="0 0 480 480" aria-hidden="true"><path d="M480 240a240 240 0 0 0-240 240 240 240 0 0 0 240-240Z"/><path d="M240 0A240 240 0 0 0 0 240 240 240 0 0 0 240 0Z"/><path d="M480 240A240 240 0 0 0 240 0a240 240 0 0 0 240 240Z"/><path d="M240 480A240 240 0 0 0 0 240a240 240 0 0 0 240 240Z"/></svg>
+          <span>ENTROPY</span>
+        </a>
+        <div class="np-links">
+          <a href="#table">Experiments</a>
+          <a href="#benefits">Key benefits</a>
+          <a href="#atmap">Atmospheres</a>
+          <a href="#about">About</a>
+          <a href="#add-slot">Add live</a>
+        </div>
+        <a class="np-cta" href="#table">See the experiments <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        <button class="np-burger" id="np-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="np-menu">
+          <svg class="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg class="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </nav>
+      <div class="np-backdrop" id="np-backdrop" hidden></div>
+      <div class="np-menu" id="np-menu" hidden>
+        <div class="np-menu-blur"></div>
+        <div class="np-menu-in">
+          <a href="#table">Experiments</a>
+          <a href="#benefits">Key benefits</a>
+          <a href="#atmap">Atmospheres</a>
+          <a href="#about">About</a>
+          <a href="#add-slot">Add live</a>
+          <a class="np-cta" href="#table">See the experiments <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+      <div class="np-hero">
+        <p class="np-line" data-in>Every flame</p>
+        <p class="np-line np-line2" data-in>teaches us safety</p>
+        <div class="np-big-wrap"><h1 class="np-big" aria-label="Entropy" data-in-letters><span aria-hidden="true">E</span><span aria-hidden="true">n</span><span aria-hidden="true">t</span><span aria-hidden="true">r</span><span aria-hidden="true">o</span><span aria-hidden="true">p</span><span aria-hidden="true">y</span></h1></div>
+        <a class="liquid-glass np-return" href="#atmap" data-in>Tested atmospheres</a>
+      </div>
+      <footer class="np-foot" data-in>
+        <div class="np-grid">
+          <div class="np-col"><h2>Catalogue</h2><ul><li><a href="#table">Experiments</a></li><li><a href="#table">Compare</a></li><li><a href="#ask">Ask Entropy</a></li><li><a href="#add-slot">Add live</a></li></ul></div>
+          <div class="np-col"><h2>Data</h2><ul><li><a href="https://psi.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA PSI</a></li><li><a href="#atmap">Tested atmospheres</a></li></ul></div>
+          <div class="np-col"><h2>Explore</h2><ul><li><a href="#benefits">Key benefits</a></li><li><a href="#launch">From the launch pad to Mars</a></li></ul></div>
+          <div class="np-col"><h2>About</h2><ul><li><a href="#about">About Entropy</a></li></ul></div>
+          <div class="np-col np-wide">
+            <h2>Search the catalogue</h2>
+            <form class="np-form" id="hero-search" role="search">
+              <input id="hero-q" type="search" placeholder="Search every value (fuel, hardware, sensor...)" aria-label="Search the catalogue" autocomplete="off" />
+              <button type="submit">Search</button>
+            </form>
+            <h2>The catalogue now</h2>
+            <div class="np-stats stats" id="stats"></div>
+          </div>
+        </div>
+      </footer>
     </div>
-    <div class="top-right"><div class="stats" id="stats"></div><button class="map-open" id="open-map" type="button">Map · الخريطة</button><a class="about-link" href="#about">About</a></div>
   </header>
-  <section class="add" id="add"></section>
-  <section class="controls" id="controls"></section>
+  <section class="pg3" id="prism">
+    <iframe src="/pages/halo-prism.html" title="A glass prism splitting one beam of light into a spectrum" loading="lazy"></iframe>
+  </section>
+  </div>
+  <section class="hp" id="table">
+    <div class="hp-wrap">
+      <p class="hp-kicker">The catalogue</p>
+      <h2 class="hp-title">NASA microgravity combustion investigations</h2>
+      <p class="hp-lead">Select any value. You see the NASA sentence or table line it came from.</p>
+      <div class="controls" id="controls"></div>
+      <div class="hp-frame"><div class="hp-scroll"><table id="tbl"></table></div></div>
+      <div class="hp-tools" id="experiments">
+        <div class="status" id="status" role="status"></div>
+        <section id="compare" class="compare" hidden></section>
+        <section class="ask" id="ask"></section>
+        <div class="add-slot" id="add-slot"></div>
+      </div>
+    </div>
+  </section>
+  <section class="kb" id="benefits">
+    <div class="kb-wrap">
+      <h2 class="kb-title">Key Benefits</h2>
+      <div class="kb-grid">
+        <figure class="kb-rocket">
+          <img src="/assets/apollo11-liftoff.jpg" alt="A Saturn V rocket lifting off beside its launch tower" loading="lazy" />
+          <figcaption>Photo: Apollo 11 liftoff, 16 July 1969. NASA.</figcaption>
+        </figure>
+        <article class="kb-card kb-pad">
+          <div class="kb-blob kb-blob-l" aria-hidden="true"></div>
+          <div class="kb-in">
+            <h3>Every value keeps<br />its NASA source</h3>
+            <p class="kb-mid">A value is kept only if its quote appears in the PSI text and the value appears inside the quote. Select any value to see the sentence or table line it came from.</p>
+          </div>
+        </article>
+        <article class="kb-card kb-video">
+          <div class="kb-vid">
+            <video id="kb-video" loop muted playsinline preload="metadata" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260421_072701_f6a01abb-eb30-4559-9d6e-774362defbc3.mp4"></video>
+            <div class="kb-fade"></div>
+          </div>
+          <div class="kb-cap"><h3>Compare experiments<br />side by side</h3></div>
+        </article>
+        <article class="kb-card kb-pad">
+          <div class="kb-blob kb-blob-r" aria-hidden="true"></div>
+          <div class="kb-in">
+            <h3>Gaps stay<br />visible</h3>
+            <p class="kb-bot">"Not stated" means Entropy found no supporting text in what it read, so it leaves the cell empty instead of guessing. The record may still state it elsewhere.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
   <main>
-    <div class="status" id="status" role="status"></div>
+    <section class="launch" id="launch">
+      <div class="launch-text">
+        <p class="kicker">Why it matters</p>
+        <h2>From the launch pad to Mars</h2>
+        <p>Fire safety was written into spaceflight after Apollo 1. The experiments on this page are how NASA keeps learning before crews travel farther.</p>
+        <p class="launch-credit">NASA milestones, not a full history of spaceflight.</p>
+      </div>
+      <div class="launch-time" id="journey"></div>
+    </section>
     <section class="atmap" id="atmap"></section>
-    <div class="table-wrap"><table id="catalogue"></table></div>
-    <section id="compare" class="compare" hidden></section>
     <section id="about" class="about"></section>
   </main>
   <aside class="panel" id="panel" hidden aria-live="polite"></aside>
